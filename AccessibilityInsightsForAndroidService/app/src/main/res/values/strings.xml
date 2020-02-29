@@ -19,7 +19,7 @@
 -->
 
 <resources>
-    <string name="accessibility_service_label">Accessibility Insights Service</string>
+    <string name="accessibility_service_label">Accessibility Insights for Android Service</string>
     <string name="accessibility_insights_service_description">This service allows Accessibility Insights for Android to scan your device for accessibility issues.</string>
     <string name="screenshot_permission_not_granted">Note: permission to capture the screen is required for ColorContrast rules.</string>
 </resources>
