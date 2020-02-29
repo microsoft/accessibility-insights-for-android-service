@@ -1,0 +1,61 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    buildToolsVersion '28.0.3'
+    defaultConfig {
+        applicationId "com.microsoft.accessibilityinsightsforandroidservice"
+        minSdkVersion 26
+        targetSdkVersion 26
+        versionCode project.hasProperty("apkVersionCode") ? project.findProperty("apkVersionCode").toInteger() : 1
+        versionName project.findProperty("apkVersionName") ?: "DEVELOPMENT"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable false
+            buildConfigField "Boolean", "DEBUG_MODE", "false"
+        }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
+            buildConfigField "Boolean", "DEBUG_MODE", "true"
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    lintOptions {
+        abortOnError false
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestImplementation('com.android.support.test.espresso:espresso-core:3.0.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+//    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    testImplementation 'junit:junit:4.13'
+    testImplementation 'org.mockito:mockito-core:2.28.2'
+    testImplementation 'org.powermock:powermock-core:2.0.4'
+    testImplementation 'org.powermock:powermock-module-junit4:2.0.4'
+    testImplementation 'org.powermock:powermock-api-mockito2:2.0.4'
+    lintClassPath 'org.bouncycastle:bcpkix-jdk15on:1.64'
+    lintClassPath 'org.bouncycastle:bcprov-jdk15on:1.64'
+    lintClassPath 'org.apache.commons:commons-compress:1.20'
+}
+
+dependencyLocking {
+    lockAllConfigurations()
+}

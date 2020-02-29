@@ -1,0 +1,43 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+trigger: none
+pr: none
+
+jobs:
+    - job: 'gradlew_build_publish'
+
+      pool:
+          vmImage: 'windows-latest'
+
+      steps:
+          - script: | 
+              echo This build requires you to override APK_VERSION_NAME and APK_VERSION_CODE vars at queue-time
+              exit 1
+            displayName: ensure version vars are set
+            failOnStderr: true
+            condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'))
+
+          - template: clone-src-with-deps.yaml
+
+          - task: Gradle@2
+            displayName: build and test ai-android service
+            inputs:
+              workingDirectory: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService'
+              gradleWrapperFile: 'AccessibilityInsightsForAndroidService/gradlew'
+              gradleOptions: '-Xmx3072m'
+              options: -S -PapkVersionCode=$(APK_VERSION_CODE) -PapkVersionName=$(APK_VERSION_NAME)
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.8'
+              jdkArchitectureOption: 'x64'
+              publishJUnitResults: true
+              testResultsFiles: '**/TEST-*.xml'
+              tasks: 'build'
+
+          - task: PublishPipelineArtifact@1
+            displayName: publish apk folder as artifact
+            inputs:
+              targetPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/'
+
+          - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output.json
+            displayName: print out generated release APK info

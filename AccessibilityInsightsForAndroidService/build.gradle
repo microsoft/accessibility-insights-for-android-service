@@ -1,0 +1,60 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.3'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+plugins {
+    id "com.diffplug.gradle.spotless" version "3.27.1"
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+    }
+}
+
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//}
+
+spotless {
+    java {
+        googleJavaFormat()
+        target '**/*.java'
+    }
+    java {
+        target '**/*.java'
+        // This file has the APACHE license header, which we need to keep
+        targetExclude '**/AccessibilityInsightsForAndroidService.java'
+        licenseHeader '// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n'
+    }
+}
+
+task fastpass {
+    dependsOn 'spotlessCheck'
+    dependsOn 'app:lint'
+}
+
+task fastpassFix {
+    gradle.startParameter.writeDependencyLocks = true
+    dependsOn 'spotlessApply'
+    dependsOn 'app:lintFix'
+}
+
+dependencyLocking {
+    lockAllConfigurations()
+}

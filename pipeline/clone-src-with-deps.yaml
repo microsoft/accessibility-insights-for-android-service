@@ -1,0 +1,27 @@
+# Copyright (c) Microsoft Corporation. All rights reserved.
+# Licensed under the MIT License.
+
+steps:
+- script: git clone -b 0.1.16 https://github.com/dequelabs/axe-android.git
+  displayName: clone axe-android repo at 0.1.16
+
+- task: Gradle@2
+  displayName: build axe-android apk
+  inputs:
+    workingDirectory: '$(system.defaultWorkingDirectory)/axe-android'
+    gradleWrapperFile: 'axe-android/gradlew'
+    gradleOptions: '-Xmx3072m'
+    options: -S
+    javaHomeOption: 'JDKVersion'
+    jdkVersionOption: '1.8'
+    jdkArchitectureOption: 'x64'
+    publishJUnitResults: false
+    testResultsFiles: '**/TEST-*.xml'
+    tasks: 'build'
+
+- task: CopyFiles@2
+  displayName: move axe-android apk to /app/libs
+  inputs:
+    sourceFolder: axe-android/build/libs/
+    contents: 'axe-android.jar' 
+    targetFolder: AccessibilityInsightsForAndroidService/app/libs
