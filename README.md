@@ -52,7 +52,7 @@ Accessibility Insights for Android Service is a service for Android that helps i
 1. 	Run the app from Android Studio (this will install the APK onto the emulator). The app won't show up in the list of programs--it shows up as a downloaded accessibility service. It will be off by default. To activate it:
     * Open the Settings app in the emulator. *If you have trouble opening the emulator, see [Unable to start emulator](#unable-to-start-emulator) under [Known Issues](#known-issues) below*
     * Scroll down and select **Accessibility**
-    * Select "Accessibility Insights Service" under **Downloaded services** 
+    * Select "Accessibility Insights for Android Service" under **Downloaded services**
     * Toggle on **Use service** to enable the service
     * Select **Allow** on the resulting dialog to grant the necessary permissions
     * An "Exposing sensitive info during casting/recording" dialog should appear. Select **Start now** 
