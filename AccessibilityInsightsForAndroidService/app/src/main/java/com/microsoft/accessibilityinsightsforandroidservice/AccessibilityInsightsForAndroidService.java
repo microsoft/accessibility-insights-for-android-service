@@ -126,9 +126,10 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     // https://www.android-doc.com/reference/android/accessibilityservice/AccessibilityService.html
     int windowId = event.getWindowId();
 
-    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
-        || event.getEventType() == AccessibilityEvent.TYPE_VIEW_HOVER_ENTER
-        || event.getEventType() == AccessibilityEvent.TYPE_VIEW_HOVER_EXIT) {
+    int eventType = event.getEventType();
+    if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+        || eventType == AccessibilityEvent.TYPE_VIEW_HOVER_ENTER
+        || eventType == AccessibilityEvent.TYPE_VIEW_HOVER_EXIT) {
       activeWindowId = windowId;
     }
 
