@@ -26,19 +26,17 @@ import android.util.DisplayMetrics;
 import android.view.accessibility.AccessibilityEvent;
 
 public class AccessibilityInsightsForAndroidService extends AccessibilityService {
+  private static final String TAG = "AccessibilityInsightsForAndroidService";
+  private static ServerThread ServerThread = null;
   private final AxeScanner axeScanner;
   private final EventHelper eventHelper;
   private final DeviceConfigFactory deviceConfigFactory;
-  private HandlerThread screenshotHandlerThread = null;
-  private ScreenshotController screenshotController = null;
-  private int activeWindowId = -1; // Set initial state to an invalid ID
   private final OnScreenshotAvailableProvider onScreenshotAvailableProvider =
       new OnScreenshotAvailableProvider();
   private final BitmapProvider bitmapProvider = new BitmapProvider();
-
-  private static final String TAG = "AccessibilityInsightsForAndroidService";
-
-  private static ServerThread ServerThread = null;
+  private HandlerThread screenshotHandlerThread = null;
+  private ScreenshotController screenshotController = null;
+  private int activeWindowId = -1; // Set initial state to an invalid ID
 
   public AccessibilityInsightsForAndroidService() {
     deviceConfigFactory = new DeviceConfigFactory();
@@ -128,11 +126,11 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     // https://www.android-doc.com/reference/android/accessibilityservice/AccessibilityService.html
     int windowId = event.getWindowId();
 
-    switch (event.getEventType()) {
-      case AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED:
-      case AccessibilityEvent.TYPE_VIEW_HOVER_ENTER:
-      case AccessibilityEvent.TYPE_VIEW_HOVER_EXIT:
-        activeWindowId = windowId;
+    int eventType = event.getEventType();
+    if (eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED
+        || eventType == AccessibilityEvent.TYPE_VIEW_HOVER_ENTER
+        || eventType == AccessibilityEvent.TYPE_VIEW_HOVER_EXIT) {
+      activeWindowId = windowId;
     }
 
     if (activeWindowId == windowId) {
