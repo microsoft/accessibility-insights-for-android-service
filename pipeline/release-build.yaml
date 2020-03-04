@@ -37,6 +37,7 @@ jobs:
           - task: PublishPipelineArtifact@1
             displayName: publish apk folder as artifact
             inputs:
+              artifactName: 'apk'
               targetPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/'
 
           - task: CopyFiles@2
@@ -51,6 +52,7 @@ jobs:
           - task: PublishPipelineArtifact@1
             displayName: publish license and notice as artifact
             inputs:
+              artifactName: 'terms'
               targetPath: '$(build.artifactstagingdirectory)/terms'
 
           - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output.json
