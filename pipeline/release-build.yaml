@@ -39,5 +39,19 @@ jobs:
             inputs:
               targetPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/'
 
+          - task: CopyFiles@2
+            displayName: prepare license and notice to publish as artifact
+            inputs:
+              sourceFolder: '$(system.defaultWorkingDirectory)'
+              contents: |
+                LICENSE
+                NOTICE.txt
+              targetFolder: '$(build.artifactstagingdirectory)/terms'
+
+          - task: PublishPipelineArtifact@1
+            displayName: publish license and notice as artifact
+            inputs:
+              targetPath: '$(build.artifactstagingdirectory)/terms'
+
           - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output.json
             displayName: print out generated release APK info
