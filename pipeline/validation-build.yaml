@@ -22,7 +22,7 @@ jobs:
               options: -S
               javaHomeOption: 'JDKVersion'
               jdkVersionOption: '1.8'
-              jdkArchitectureOption: 'x64'
+              jdkArchitectureOption: 'x86'
               publishJUnitResults: true
               testResultsFiles: '**/TEST-*.xml'
               tasks: 'build'
