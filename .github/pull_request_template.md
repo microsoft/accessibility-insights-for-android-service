@@ -17,4 +17,3 @@
 - [ ] Added/updated relevant unit test(s)
 - [ ] Ran `./gradlew fastpass` from `AccessibilityInsightsForAndroidService`
 - [ ] PR title _AND_ final merge commit title both start with a semantic tag (`fix:`, `chore:`, `feat(feature-name):`, `refactor:`).
-- [ ] **Important:** If pull request builds don't automatically run, they may be explicitly triggered. To do so, a team member should comment `/azp run` on this PR.
