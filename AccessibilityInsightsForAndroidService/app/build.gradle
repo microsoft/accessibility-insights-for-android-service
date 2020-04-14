@@ -56,6 +56,12 @@ dependencies {
     lintClassPath 'org.apache.commons:commons-compress:1.20'
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'commons-codec:commons-codec:1.14'
+    }
+}
+
 dependencyLocking {
     lockAllConfigurations()
 }
