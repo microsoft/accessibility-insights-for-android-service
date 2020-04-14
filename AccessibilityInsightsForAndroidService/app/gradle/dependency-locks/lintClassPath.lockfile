@@ -42,7 +42,7 @@ com.squareup:javawriter:2.5.0
 com.sun.activation:javax.activation:1.2.0
 com.sun.istack:istack-commons-runtime:2.21
 com.sun.xml.fastinfoset:FastInfoset:1.2.13
-commons-codec:commons-codec:1.10
+commons-codec:commons-codec:1.14
 commons-logging:commons-logging:1.2
 it.unimi.dsi:fastutil:7.2.0
 javax.inject:javax.inject:1
