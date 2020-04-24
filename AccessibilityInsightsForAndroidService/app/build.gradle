@@ -54,6 +54,7 @@ dependencies {
     lintClassPath 'org.bouncycastle:bcpkix-jdk15on:1.64'
     lintClassPath 'org.bouncycastle:bcprov-jdk15on:1.64'
     lintClassPath 'org.apache.commons:commons-compress:1.20'
+    implementation 'com.deque.android:axe-android:0.2.0'
 }
 
 configurations.all {

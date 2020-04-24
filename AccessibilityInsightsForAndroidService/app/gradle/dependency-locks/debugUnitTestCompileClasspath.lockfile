@@ -2,6 +2,7 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 androidx.annotation:annotation:1.1.0
+com.deque.android:axe-android:0.2.0
 com.google.code.gson:gson:2.8.6
 junit:junit:4.13
 net.bytebuddy:byte-buddy-agent:1.9.10
