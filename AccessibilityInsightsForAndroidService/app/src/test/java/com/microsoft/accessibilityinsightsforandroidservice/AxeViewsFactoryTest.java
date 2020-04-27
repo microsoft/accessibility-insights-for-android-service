@@ -43,11 +43,11 @@ public class AxeViewsFactoryTest {
 
   @Before
   public void prepare() {
-    when(nodeViewFactoryMock.buildAxeViewForNode(eq(rootNodeMock), any(), any()))
+    when(nodeViewFactoryMock.buildAxeViewForNode(eq(rootNodeMock), any(), any(), any()))
         .thenReturn(rootViewMock);
-    when(nodeViewFactoryMock.buildAxeViewForNode(eq(childNodeMock), any(), any()))
+    when(nodeViewFactoryMock.buildAxeViewForNode(eq(childNodeMock), any(), any(), any()))
         .thenReturn(childViewMock);
-    when(nodeViewFactoryMock.buildAxeViewForNode(eq(labelNodeMock), any(), any()))
+    when(nodeViewFactoryMock.buildAxeViewForNode(eq(labelNodeMock), any(), any(), any()))
         .thenReturn(labelViewMock);
 
     queue = new LinkedList<>();
@@ -75,7 +75,7 @@ public class AxeViewsFactoryTest {
     Assert.assertEquals(axeView, rootViewMock);
 
     verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(rootNodeMock, new ArrayList<>(), null);
+        .buildAxeViewForNode(eq(rootNodeMock), eq(new ArrayList<>()), eq(null), any());
   }
 
   @Test
@@ -93,9 +93,10 @@ public class AxeViewsFactoryTest {
     ArrayList<AxeView> children = new ArrayList<>();
     children.add(childViewMock);
 
-    verify(nodeViewFactoryMock, times(1)).buildAxeViewForNode(rootNodeMock, children, null);
     verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(childNodeMock, new ArrayList<>(), null);
+        .buildAxeViewForNode(eq(rootNodeMock), eq(children), eq(null), any());
+    verify(nodeViewFactoryMock, times(1))
+        .buildAxeViewForNode(eq(childNodeMock), eq(new ArrayList<>()), eq(null), any());
   }
 
   @Test
@@ -110,9 +111,9 @@ public class AxeViewsFactoryTest {
     Assert.assertEquals(axeView, rootViewMock);
 
     verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(rootNodeMock, new ArrayList<>(), labelViewMock);
+        .buildAxeViewForNode(eq(rootNodeMock), eq(new ArrayList<>()), eq(labelViewMock), any());
     verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(labelNodeMock, new ArrayList<>(), null);
+        .buildAxeViewForNode(eq(labelNodeMock), eq(new ArrayList<>()), eq(null), any());
   }
 
   @Test

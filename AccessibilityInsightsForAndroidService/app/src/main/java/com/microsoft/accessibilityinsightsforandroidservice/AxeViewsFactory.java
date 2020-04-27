@@ -59,7 +59,9 @@ public class AxeViewsFactory {
       AccessibilityNodeInfo node = queueObject.node;
       List<AxeView> children = getChildViews(node);
       AxeView labeledByView = getLabeledByView(node);
-      AxeView nodeView = nodeViewFactory.buildAxeViewForNode(node, children, labeledByView);
+      AxeView nodeView =
+          nodeViewFactory.buildAxeViewForNode(
+              node, children, labeledByView, new NodeViewBuilderFactory());
       axeMap.put(node, nodeView);
     }
 

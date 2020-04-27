@@ -7,16 +7,13 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import com.deque.axe.android.AxeView;
 import java.util.List;
 
-public class NodeViewFactory {
+public class NodeViewBuilderFactory {
 
-  public AxeView buildAxeViewForNode(
+  public NodeViewBuilder createNodeViewBuilder(
       AccessibilityNodeInfo node,
       List<AxeView> children,
       AxeView labeledBy,
-      NodeViewBuilderFactory nodeViewBuilderFactory) {
-    NodeViewBuilder builder =
-        nodeViewBuilderFactory.createNodeViewBuilder(
-            node, children, labeledBy, new AxeRectProvider());
-    return builder.build();
+      AxeRectProvider boundsRectProvider) {
+    return new NodeViewBuilder(node, children, labeledBy, boundsRectProvider);
   }
 }
