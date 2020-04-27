@@ -4,15 +4,6 @@
       "component": {
         "type": "git",
         "git": {
-          "repositoryUrl":"https://github.com/dequelabs/axe-android",
-          "commitHash": "078eba552e3f76287a4f6c5d4c822b51a89bc83a"
-        }
-      }
-    },
-    {
-      "component": {
-        "type": "git",
-        "git": {
           "repositoryUrl":"https://github.com/googlecodelabs/android-accessibility",
           "commitHash": "d78994bf77b2438f4bc31e557d4c12e35a0219fb"
         }
