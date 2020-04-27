@@ -11,8 +11,6 @@ jobs:
           vmImage: 'windows-latest'
 
       steps:
-          - template: clone-src-with-deps.yaml
-
           - task: Gradle@2
             displayName: build and test dev ai-android service
             inputs:
