@@ -43,6 +43,7 @@ public class NodeViewBuilderTest {
     children = new ArrayList<>();
     when(rectProvider.createAxeRect(boundsLeft, boundsRight, boundsTop, boundsBottom))
         .thenReturn(expectedBoundsRect);
+    when(node.getClassName()).thenReturn("class name");
   }
 
   @Test
