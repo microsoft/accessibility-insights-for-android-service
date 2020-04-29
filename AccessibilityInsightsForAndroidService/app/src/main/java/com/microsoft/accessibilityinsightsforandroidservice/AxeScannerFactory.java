@@ -11,7 +11,7 @@ public class AxeScannerFactory {
       DeviceConfigFactory deviceConfigFactory, Supplier<DisplayMetrics> displayMetricsSupplier) {
     final AxeViewsFactory axeViewsFactory =
         new AxeViewsFactory(
-            new NodeViewFactory(),
+            new NodeViewBuilderFactory(),
             new AccessibilityNodeInfoQueueBuilder(new AccessibilityNodeInfoSorterFactory()));
     final AxeImageFactory axeImageFactory =
         new AxeImageFactory(new ByteArrayOutputStreamProvider());

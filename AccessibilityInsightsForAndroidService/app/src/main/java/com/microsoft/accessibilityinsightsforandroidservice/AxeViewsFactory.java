@@ -17,13 +17,14 @@ public class AxeViewsFactory {
 
   private static final int maxRetries = 5;
 
-  NodeViewFactory nodeViewFactory;
+  NodeViewBuilderFactory nodeViewBuilderFactory;
   AccessibilityNodeInfoQueueBuilder queueBuilder;
   Map<AccessibilityNodeInfo, AxeView> axeMap;
 
   public AxeViewsFactory(
-      NodeViewFactory nodeViewFactory, AccessibilityNodeInfoQueueBuilder queueBuilder) {
-    this.nodeViewFactory = nodeViewFactory;
+      NodeViewBuilderFactory nodeViewBuilderFactory,
+      AccessibilityNodeInfoQueueBuilder queueBuilder) {
+    this.nodeViewBuilderFactory = nodeViewBuilderFactory;
     this.queueBuilder = queueBuilder;
   }
 
@@ -59,7 +60,8 @@ public class AxeViewsFactory {
       AccessibilityNodeInfo node = queueObject.node;
       List<AxeView> children = getChildViews(node);
       AxeView labeledByView = getLabeledByView(node);
-      AxeView nodeView = nodeViewFactory.buildAxeViewForNode(node, children, labeledByView);
+      AxeView nodeView =
+          this.nodeViewBuilderFactory.createNodeViewBuilder(node, children, labeledByView).build();
       axeMap.put(node, nodeView);
     }
 

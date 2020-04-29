@@ -26,8 +26,11 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class AxeViewsFactoryTest {
 
-  @Mock NodeViewFactory nodeViewFactoryMock;
+  @Mock NodeViewBuilderFactory nodeViewBuilderFactoryMock;
   @Mock AccessibilityNodeInfoQueueBuilder queueBuilderMock;
+  @Mock NodeViewBuilder rootNodeBuilder;
+  @Mock NodeViewBuilder childNodeBuilder;
+  @Mock NodeViewBuilder labelNodeBuilder;
   @Mock AccessibilityNodeInfo rootNodeMock;
   @Mock AccessibilityNodeInfo childNodeMock;
   @Mock AccessibilityNodeInfo labelNodeMock;
@@ -43,12 +46,9 @@ public class AxeViewsFactoryTest {
 
   @Before
   public void prepare() {
-    when(nodeViewFactoryMock.buildAxeViewForNode(eq(rootNodeMock), any(), any()))
-        .thenReturn(rootViewMock);
-    when(nodeViewFactoryMock.buildAxeViewForNode(eq(childNodeMock), any(), any()))
-        .thenReturn(childViewMock);
-    when(nodeViewFactoryMock.buildAxeViewForNode(eq(labelNodeMock), any(), any()))
-        .thenReturn(labelViewMock);
+    setupNodeViewCreation(rootNodeBuilder, rootNodeMock, rootViewMock);
+    setupNodeViewCreation(childNodeBuilder, childNodeMock, childViewMock);
+    setupNodeViewCreation(labelNodeBuilder, labelNodeMock, labelViewMock);
 
     queue = new LinkedList<>();
     when(queueBuilderMock.buildPriorityQueue(rootNodeMock)).thenReturn(queue);
@@ -56,7 +56,7 @@ public class AxeViewsFactoryTest {
     when(childNodeMock.getClassName()).thenReturn(nodeClassName);
     when(labelNodeMock.getClassName()).thenReturn(nodeClassName);
 
-    testSubject = new AxeViewsFactory(nodeViewFactoryMock, queueBuilderMock);
+    testSubject = new AxeViewsFactory(nodeViewBuilderFactoryMock, queueBuilderMock);
   }
 
   @Test
@@ -74,8 +74,8 @@ public class AxeViewsFactoryTest {
     Assert.assertNotNull(axeView);
     Assert.assertEquals(axeView, rootViewMock);
 
-    verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(rootNodeMock, new ArrayList<>(), null);
+    verify(nodeViewBuilderFactoryMock, times(1))
+        .createNodeViewBuilder(eq(rootNodeMock), eq(new ArrayList<>()), eq(null));
   }
 
   @Test
@@ -93,9 +93,10 @@ public class AxeViewsFactoryTest {
     ArrayList<AxeView> children = new ArrayList<>();
     children.add(childViewMock);
 
-    verify(nodeViewFactoryMock, times(1)).buildAxeViewForNode(rootNodeMock, children, null);
-    verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(childNodeMock, new ArrayList<>(), null);
+    verify(nodeViewBuilderFactoryMock, times(1))
+        .createNodeViewBuilder(eq(rootNodeMock), eq(children), eq(null));
+    verify(nodeViewBuilderFactoryMock, times(1))
+        .createNodeViewBuilder(eq(childNodeMock), eq(new ArrayList<>()), eq(null));
   }
 
   @Test
@@ -109,10 +110,10 @@ public class AxeViewsFactoryTest {
     Assert.assertNotNull(axeView);
     Assert.assertEquals(axeView, rootViewMock);
 
-    verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(rootNodeMock, new ArrayList<>(), labelViewMock);
-    verify(nodeViewFactoryMock, times(1))
-        .buildAxeViewForNode(labelNodeMock, new ArrayList<>(), null);
+    verify(nodeViewBuilderFactoryMock, times(1))
+        .createNodeViewBuilder(eq(rootNodeMock), eq(new ArrayList<>()), eq(labelViewMock));
+    verify(nodeViewBuilderFactoryMock, times(1))
+        .createNodeViewBuilder(eq(labelNodeMock), eq(new ArrayList<>()), eq(null));
   }
 
   @Test
@@ -192,6 +193,13 @@ public class AxeViewsFactoryTest {
       verify(labelNodeMock, times(numRetries + 1)).recycle();
       verify(rootNodeMock, never()).recycle();
     }
+  }
+
+  private void setupNodeViewCreation(
+      NodeViewBuilder builder, AccessibilityNodeInfo node, AxeView view) {
+    when(nodeViewBuilderFactoryMock.createNodeViewBuilder(eq(node), any(), any()))
+        .thenReturn(builder);
+    when(builder.build()).thenReturn(view);
   }
 
   private void setupViewChangedScenario(boolean retryShouldSucceed, boolean withLabelNode) {

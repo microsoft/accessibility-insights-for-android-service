@@ -4,6 +4,7 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.view.accessibility.AccessibilityNodeInfo;
+import com.deque.axe.android.AxeView;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,19 +13,20 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class NodeViewFactoryTest {
+public class NodeViewBuilderFactoryTest {
 
   @Mock AccessibilityNodeInfo node;
+  @Mock AxeView view;
 
-  NodeViewFactory testSubject;
+  NodeViewBuilderFactory testSubject;
 
   @Before
   public void prepare() {
-    testSubject = new NodeViewFactory();
+    testSubject = new NodeViewBuilderFactory();
   }
 
   @Test
   public void nodeViewIsNotNull() {
-    Assert.assertNotNull(testSubject.buildAxeViewForNode(node, null, null));
+    Assert.assertNotNull(testSubject.createNodeViewBuilder(node, null, null));
   }
 }
