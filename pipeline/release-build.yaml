@@ -18,8 +18,6 @@ jobs:
             failOnStderr: true
             condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'))
 
-          - template: clone-src-with-deps.yaml
-
           - task: Gradle@2
             displayName: build and test ai-android service
             inputs:

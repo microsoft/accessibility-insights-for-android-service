@@ -33,13 +33,6 @@ Accessibility Insights for Android Service is a service for Android that helps i
 
 1. Fork and clone the repository
 
-1. Obtain a copy of axe-android.jar from [axe-android@0.1.16](https://github.com/dequelabs/axe-android/tree/0.1.16) and move it to `accessibility-insights-android-service\AccessibilityInsightsForAndroidService\app\libs`:
-    * Using JDK 8 for axe-android seems to work best
-    * Clone [axe-android](https://github.com/dequelabs/axe-android) in a separate folder
-    * Open the axe-android project in Android Studio and wait for sync to complete
-    * From the **Build** menu, select **Make Project**
-    * Copy resulting axe-android.jar from `build\libs` in axe-android to `accessibility-insights-android-service\AccessibilityInsightsForAndroidService\app\libs` *(You may have to create the libs folder yourself)*
-    
 1. Open the project with Android Studio
     * This must be the Android project `AccessibilityInsightsForAndroidService` inside the repo, **not** the top-level `accessibility-insights-for-android-service` folder
     

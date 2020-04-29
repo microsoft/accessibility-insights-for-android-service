@@ -67,6 +67,17 @@ public class NodeViewBuilder implements AxeView.Builder {
     return children;
   }
 
+  public String value() {
+    return null;
+  }
+
+  public String hintText() {
+    if (android.os.Build.VERSION.SDK_INT >= 26) {
+      return safeToString(accessibilityNode.getHintText());
+    }
+    return null;
+  }
+
   public NodeViewBuilder(
       AccessibilityNodeInfo node,
       List<AxeView> children,
