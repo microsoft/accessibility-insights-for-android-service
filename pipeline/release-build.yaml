@@ -40,22 +40,22 @@ jobs:
               Pattern: '*.apk'
               signConfigType: inlineSignParams
               inlineOperation: |
-              [
-                      {
-                          "KeyCode" : "CP-458288-Java",
-                          "OperationCode" : "AndroidSign",
-                          "Parameters" : {},
-                          "ToolName" : "sign",
-                          "ToolVersion" : "1.0"
-                      },
-                      {
-                          "KeyCode" : "CP-458288-Java",
-                          "OperationCode" : "JavaVerify",
-                          "Parameters" : {},
-                          "ToolName" : "sign",
-                          "ToolVersion" : "1.0"
-                      }
-              ]
+                [
+                        {
+                            "KeyCode" : "CP-458288-Java",
+                            "OperationCode" : "AndroidSign",
+                            "Parameters" : {},
+                            "ToolName" : "sign",
+                            "ToolVersion" : "1.0"
+                        },
+                        {
+                            "KeyCode" : "CP-458288-Java", 
+                            "OperationCode" : "JavaVerify",
+                            "Parameters" : {},
+                            "ToolName" : "sign",
+                            "ToolVersion" : "1.0"
+                        }
+                ]
 
           - task: PublishPipelineArtifact@1
             displayName: publish apk folder as artifact
