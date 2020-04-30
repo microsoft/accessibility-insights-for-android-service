@@ -32,6 +32,31 @@ jobs:
               testResultsFiles: '**/TEST-*.xml'
               tasks: 'build'
 
+          - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+            displayName: 'sign release apk with ESRP CodeSigning'
+            inputs:
+              ConnectedServiceName: 'Accessibility Insights for Android Service AAD APP Id'
+              FolderPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/release'
+              Pattern: '*.apk'
+              signConfigType: inlineSignParams
+              inlineOperation: |
+              [
+                      {
+                          "KeyCode" : "CP-458288-Java",
+                          "OperationCode" : "AndroidSign",
+                          "Parameters" : {},
+                          "ToolName" : "sign",
+                          "ToolVersion" : "1.0"
+                      },
+                      {
+                          "KeyCode" : "CP-458288-Java",
+                          "OperationCode" : "JavaVerify",
+                          "Parameters" : {},
+                          "ToolName" : "sign",
+                          "ToolVersion" : "1.0"
+                      }
+              ]
+
           - task: PublishPipelineArtifact@1
             displayName: publish apk folder as artifact
             inputs:
