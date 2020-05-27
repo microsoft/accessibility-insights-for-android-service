@@ -5,78 +5,170 @@ trigger: none
 pr: none
 
 jobs:
-    - job: 'gradlew_build_publish'
+  - job: 'gradlew_build_publish'
 
-      pool:
-          vmImage: 'windows-latest'
+    pool:
+        vmImage: 'windows-latest'
 
-      steps:
-          - script: | 
-              echo This build requires you to override APK_VERSION_NAME and APK_VERSION_CODE vars at queue-time
-              exit 1
-            displayName: ensure version vars are set
-            failOnStderr: true
-            condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'))
+    steps:
+      # setup and build
 
-          - task: Gradle@2
-            displayName: build and test ai-android service
-            inputs:
-              workingDirectory: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService'
-              gradleWrapperFile: 'AccessibilityInsightsForAndroidService/gradlew'
-              gradleOptions: '-Xmx3072m'
-              options: -S -PapkVersionCode=$(APK_VERSION_CODE) -PapkVersionName=$(APK_VERSION_NAME)
-              javaHomeOption: 'JDKVersion'
-              jdkVersionOption: '1.8'
-              jdkArchitectureOption: 'x64'
-              publishJUnitResults: true
-              testResultsFiles: '**/TEST-*.xml'
-              tasks: 'build'
+      - script: | 
+          echo This build requires you to override APK_VERSION_NAME, APK_VERSION_CODE, and NPM_VERSION vars at queue-time
+          exit 1
+        displayName: ensure version vars are set
+        failOnStderr: true
+        condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'), eq(variables['NPM_VERSION'], 'REPLACE_ME')))
 
-          - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-            displayName: 'sign release apk with ESRP CodeSigning'
-            inputs:
-              ConnectedServiceName: 'Accessibility Insights for Android Service AAD APP Id'
-              FolderPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/release'
-              Pattern: '*.apk'
-              signConfigType: inlineSignParams
-              inlineOperation: |
-                [
-                        {
-                            "KeyCode" : "CP-458288-Java",
-                            "OperationCode" : "AndroidSign",
-                            "Parameters" : {},
-                            "ToolName" : "sign",
-                            "ToolVersion" : "1.0"
-                        },
-                        {
-                            "KeyCode" : "CP-458288-Java", 
-                            "OperationCode" : "JavaVerify",
-                            "Parameters" : {},
-                            "ToolName" : "sign",
-                            "ToolVersion" : "1.0"
-                        }
-                ]
+      - task: NodeTool@0
+        inputs:
+          versionSpec: '12.x'
+        displayName: use node 12.x (latest LTS)
 
-          - task: PublishPipelineArtifact@1
-            displayName: publish apk folder as artifact
-            inputs:
-              artifactName: 'apk'
-              targetPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/'
+      - task: Gradle@2
+        displayName: build and test ai-android service
+        inputs:
+          workingDirectory: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService'
+          gradleWrapperFile: 'AccessibilityInsightsForAndroidService/gradlew'
+          gradleOptions: '-Xmx3072m'
+          options: -S -PapkVersionCode=$(APK_VERSION_CODE) -PapkVersionName=$(APK_VERSION_NAME)
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.8'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: true
+          testResultsFiles: '**/TEST-*.xml'
+          tasks: 'build'
 
-          - task: CopyFiles@2
-            displayName: prepare license and notice to publish as artifact
-            inputs:
-              sourceFolder: '$(system.defaultWorkingDirectory)'
-              contents: |
-                LICENSE
-                NOTICE.txt
-              targetFolder: '$(build.artifactstagingdirectory)/terms'
+      - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output.json
+        displayName: print out generated release APK info
 
-          - task: PublishPipelineArtifact@1
-            displayName: publish license and notice as artifact
-            inputs:
-              artifactName: 'terms'
-              targetPath: '$(build.artifactstagingdirectory)/terms'
+      # unsigned-apk artifact
 
-          - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output.json
-            displayName: print out generated release APK info
+      - task: CopyFiles@2
+        displayName: (unsigned-apk) copy build output to artifact staging
+        inputs:
+          sourceFolder: '$(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk'
+          targetFolder: '$(build.artifactstagingdirectory)/unsigned-apk'
+
+      - task: PublishPipelineArtifact@1
+        displayName: (unsigned-apk) publish artifact
+        inputs:
+          artifactName: 'unsigned-apk'
+          targetPath: '$(build.artifactstagingdirectory)/unsigned-apk'
+
+      # signed-apk artifact
+
+      - script: |
+          copy $(build.artifactstagingdirectory)/unsigned-apk/release/app-release-unsigned.apk $(build.artifactstagingdirectory)/signed-apk/AccessibilityInsightsforAndroidService.apk
+        displayName: (signed-apk) copy unsigned APK to signing working directory
+
+      - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+        displayName: '(signed-apk) sign release apk with ESRP CodeSigning'
+        inputs:
+          ConnectedServiceName: 'Accessibility Insights for Android Service AAD APP Id'
+          FolderPath: '$(build.artifactstagingdirectory)/signed-apk'
+          Pattern: '*.apk'
+          signConfigType: inlineSignParams
+          inlineOperation: |
+            [
+                    {
+                        "KeyCode" : "CP-458288-Java",
+                        "OperationCode" : "AndroidSign",
+                        "Parameters" : {},
+                        "ToolName" : "sign",
+                        "ToolVersion" : "1.0"
+                    },
+                    {
+                        "KeyCode" : "CP-458288-Java", 
+                        "OperationCode" : "JavaVerify",
+                        "Parameters" : {},
+                        "ToolName" : "sign",
+                        "ToolVersion" : "1.0"
+                    }
+            ]
+
+      - task: PublishPipelineArtifact@1
+        displayName: (signed-apk) publish artifact
+        inputs:
+          artifactName: 'signed-apk'
+          targetPath: '$(build.artifactstagingdirectory)/signed-apk'
+
+      # terms artifact
+
+      - task: CopyFiles@2
+        displayName: (terms) copy LICENSE/NOTICE to artifact staging
+        inputs:
+          sourceFolder: '$(system.defaultWorkingDirectory)'
+          contents: |
+            LICENSE
+            NOTICE.txt
+          targetFolder: '$(build.artifactstagingdirectory)/terms'
+
+      - task: PublishPipelineArtifact@1
+        displayName: (terms) publish artifact
+        inputs:
+          artifactName: 'terms'
+          targetPath: '$(build.artifactstagingdirectory)/terms'
+
+      # github-release-archive artifact
+
+      - task: CopyFiles@2
+        displayName: (github-release-archive) copy files to artifact staging
+        inputs:
+          sourceFolder: '$(system.defaultWorkingDirectory)'
+          contents: |
+            terms/LICENSE
+            terms/NOTICE.txt
+            signed-apk/AccessibilityInsightsforAndroidService.apk
+          targetFolder: '$(build.artifactstagingdirectory)/github-release-archive'
+
+      - task: ArchiveFiles@2
+        displayName: '(github-release-archive) create release archive'
+        inputs:
+          rootFolderOrFile: '$(build.artifactstagingdirectory)/github-release-archive'
+          includeRootFolder: false
+          archiveFile: AccessibilityInsightsForAndroid.zip
+
+      - task: PublishPipelineArtifact@1
+        displayName: (github-release-archive) publish artifact
+        inputs:
+          artifactName: 'github-release-archive'
+          targetPath: '$(build.artifactstagingdirectory)/github-release-archive'
+
+      # npm-wrapper artifact
+
+      - task: CopyFiles@2
+        displayName: (npm-wrapper) Copy generated files for packaging
+        inputs:
+          sourceFolder: '$(system.artifactstagingdirectory)'
+          contents: |
+            terms/LICENSE
+            terms/NOTICE.txt
+            signed-apk/AccessibilityInsightsforAndroidService.apk
+          targetFolder: '$(build.defaultWorkingDirectory)/npm-wrapper'
+          flattenFolders: true
+
+      - script: npm version $(NPM_VERSION)
+        displayName: (npm-wrapper) set package version to NPM_VERSION
+        workingDirectory: '$(system.defaultWorkingDirectory)/npm-wrapper'
+
+      - script: npm pack
+        displayName: (npm-wrapper) npm pack
+        workingDirectory: '$(system.defaultWorkingDirectory)/npm-wrapper'
+
+      - task: CopyFiles@2
+        displayName: (npm-wrapper) copy packed NPM wrapper to artifact staging
+        inputs:
+          sourceFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
+          contents: 'accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz'
+          targetFolder: '$(build.artifactstagingdirectory)/npm-wrapper'
+
+      - script: |
+          move $(build.artifactstagingdirectory)/npm-wrapper/accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz $(build.artifactstagingdirectory)/npm-wrapper/accessibility-insights-for-android-service-bin.tgz
+        displayName: (npm-wrapper) remove version from filename of package archive
+
+      - task: PublishPipelineArtifact@1
+        displayName: (npm-wrapper) publish artifact
+        inputs:
+          artifactName: 'npm-wrapper'
+          targetPath: '$(build.artifactstagingdirectory)/npm-wrapper'
