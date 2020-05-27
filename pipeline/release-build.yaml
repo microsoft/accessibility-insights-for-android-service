@@ -63,7 +63,7 @@ jobs:
         inputs:
           contents: |
             app-release-unsigned.apk
-          sourceFolder: '$(system.defaultWorkingDirectory)/unsigned-apk/release'
+          sourceFolder: '$(build.artifactstagingdirectory)/unsigned-apk/release'
           targetFolder: '$(build.artifactstagingdirectory)/signed-apk'
 
       - script: 'move app-release-unsigned.apk AccessibilityInsightsforAndroidService.apk'
