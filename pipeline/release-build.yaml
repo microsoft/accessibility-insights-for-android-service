@@ -14,11 +14,12 @@ jobs:
       # setup and build
 
       - script: | 
-          echo This build requires you to override APK_VERSION_NAME, APK_VERSION_CODE, and NPM_VERSION vars at queue-time
+          echo This build requires you to override APK_VERSION_NAME and APK_VERSION_CODE vars at queue-time
+          echo Refer to the release validation template for guidance on determining appropriate values
           exit 1
         displayName: ensure version vars are set
         failOnStderr: true
-        condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'), eq(variables['NPM_VERSION'], 'REPLACE_ME'))
+        condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'))
 
       - task: NodeTool@0
         inputs:
@@ -128,15 +129,15 @@ jobs:
             terms/NOTICE.txt
             signed-apk/AccessibilityInsightsforAndroidService.apk
           sourceFolder: '$(build.artifactstagingdirectory)'
-          targetFolder: '$(build.artifactstagingdirectory)/github-release-archive'
+          targetFolder: '$(build.artifactstagingdirectory)/github-release-archive/contents'
           flattenFolders: true
 
       - task: ArchiveFiles@2
         displayName: '(github-release-archive) create release archive'
         inputs:
-          rootFolderOrFile: '$(build.artifactstagingdirectory)/github-release-archive'
+          rootFolderOrFile: '$(build.artifactstagingdirectory)/github-release-archive/contents'
           includeRootFolder: false
-          archiveFile: AccessibilityInsightsForAndroid.zip
+          archiveFile: '$(build.artifactstagingdirectory)/github-release-archive/AccessibilityInsightsForAndroid.zip'
 
       - task: PublishPipelineArtifact@1
         displayName: (github-release-archive) publish artifact
@@ -154,11 +155,11 @@ jobs:
             terms/NOTICE.txt
             signed-apk/AccessibilityInsightsforAndroidService.apk
           sourceFolder: '$(build.artifactstagingdirectory)'
-          targetFolder: '$(build.defaultWorkingDirectory)/npm-wrapper'
+          targetFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
           flattenFolders: true
 
-      - script: npm version $(NPM_VERSION)
-        displayName: (npm-wrapper) set package version to NPM_VERSION
+      - script: npm version $(APK_VERSION_NAME)
+        displayName: (npm-wrapper) set package version to APK_VERSION_NAME
         workingDirectory: '$(system.defaultWorkingDirectory)/npm-wrapper'
 
       - script: npm pack
@@ -169,11 +170,11 @@ jobs:
         displayName: (npm-wrapper) copy packed NPM wrapper to artifact staging
         inputs:
           contents: |
-            accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz
+            accessibility-insights-for-android-service-bin-$(APK_VERSION_NAME).tgz
           sourceFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
           targetFolder: '$(build.artifactstagingdirectory)/npm-wrapper'
 
-      - script: 'move accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz accessibility-insights-for-android-service-bin.tgz'
+      - script: 'move accessibility-insights-for-android-service-bin-$(APK_VERSION_NAME).tgz accessibility-insights-for-android-service-bin.tgz'
         displayName: (npm-wrapper) rename packed archive to remove version number
         workingDirectory: '$(build.artifactstagingdirectory)/npm-wrapper'
 
