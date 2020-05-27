@@ -18,7 +18,7 @@ jobs:
           exit 1
         displayName: ensure version vars are set
         failOnStderr: true
-        condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'), eq(variables['NPM_VERSION'], 'REPLACE_ME')))
+        condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'), eq(variables['NPM_VERSION'], 'REPLACE_ME'))
 
       - task: NodeTool@0
         inputs:
