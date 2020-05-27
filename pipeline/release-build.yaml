@@ -58,12 +58,20 @@ jobs:
 
       # signed-apk artifact
 
-      - script: |
-          copy $(build.artifactstagingdirectory)/unsigned-apk/release/app-release-unsigned.apk $(build.artifactstagingdirectory)/signed-apk/AccessibilityInsightsforAndroidService.apk
+      - task: CopyFiles@2
         displayName: (signed-apk) copy unsigned APK to signing working directory
+        inputs:
+          contents: |
+            app-release-unsigned.apk
+          sourceFolder: '$(system.defaultWorkingDirectory)/unsigned-apk/release'
+          targetFolder: '$(build.artifactstagingdirectory)/signed-apk'
+
+      - script: 'move app-release-unsigned.apk AccessibilityInsightsforAndroidService.apk'
+        displayName: (signed-apk) rename APK file to remove unsigned qualifier
+        workingDirectory: '$(build.artifactstagingdirectory)/signed-apk'
 
       - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
-        displayName: '(signed-apk) sign release apk with ESRP CodeSigning'
+        displayName: '(signed-apk) sign release APK with ESRP CodeSigning'
         inputs:
           ConnectedServiceName: 'Accessibility Insights for Android Service AAD APP Id'
           FolderPath: '$(build.artifactstagingdirectory)/signed-apk'
@@ -98,10 +106,10 @@ jobs:
       - task: CopyFiles@2
         displayName: (terms) copy LICENSE/NOTICE to artifact staging
         inputs:
-          sourceFolder: '$(system.defaultWorkingDirectory)'
           contents: |
             LICENSE
             NOTICE.txt
+          sourceFolder: '$(system.defaultWorkingDirectory)'
           targetFolder: '$(build.artifactstagingdirectory)/terms'
 
       - task: PublishPipelineArtifact@1
@@ -115,12 +123,13 @@ jobs:
       - task: CopyFiles@2
         displayName: (github-release-archive) copy files to artifact staging
         inputs:
-          sourceFolder: '$(system.defaultWorkingDirectory)'
           contents: |
             terms/LICENSE
             terms/NOTICE.txt
             signed-apk/AccessibilityInsightsforAndroidService.apk
+          sourceFolder: '$(build.artifactstagingdirectory)'
           targetFolder: '$(build.artifactstagingdirectory)/github-release-archive'
+          flattenFolders: true
 
       - task: ArchiveFiles@2
         displayName: '(github-release-archive) create release archive'
@@ -140,11 +149,11 @@ jobs:
       - task: CopyFiles@2
         displayName: (npm-wrapper) Copy generated files for packaging
         inputs:
-          sourceFolder: '$(system.artifactstagingdirectory)'
           contents: |
             terms/LICENSE
             terms/NOTICE.txt
             signed-apk/AccessibilityInsightsforAndroidService.apk
+          sourceFolder: '$(build.artifactstagingdirectory)'
           targetFolder: '$(build.defaultWorkingDirectory)/npm-wrapper'
           flattenFolders: true
 
@@ -159,13 +168,14 @@ jobs:
       - task: CopyFiles@2
         displayName: (npm-wrapper) copy packed NPM wrapper to artifact staging
         inputs:
+          contents: |
+            accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz
           sourceFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
-          contents: 'accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz'
           targetFolder: '$(build.artifactstagingdirectory)/npm-wrapper'
 
-      - script: |
-          move $(build.artifactstagingdirectory)/npm-wrapper/accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz $(build.artifactstagingdirectory)/npm-wrapper/accessibility-insights-for-android-service-bin.tgz
-        displayName: (npm-wrapper) remove version from filename of package archive
+      - script: 'move accessibility-insights-for-android-service-bin-$(NPM_VERSION).tgz accessibility-insights-for-android-service-bin.tgz'
+        displayName: (npm-wrapper) rename packed archive to remove version number
+        workingDirectory: '$(build.artifactstagingdirectory)/npm-wrapper'
 
       - task: PublishPipelineArtifact@1
         displayName: (npm-wrapper) publish artifact
