@@ -5,7 +5,7 @@
   "main": "index.js",
   "types": "index.d.ts",
   "files": [
-    "accessibility-insights-for-android-service.apk",
+    "AccessibilityInsightsforAndroidService.apk",
     "index.d.ts",
     "index.js",
     "LICENSE",

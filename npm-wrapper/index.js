@@ -1,4 +1,4 @@
 module.exports = {
-    apkPath: `${__dirname}/accessibility-insights-for-android-service.apk`,
+    apkPath: `${__dirname}/AccessibilityInsightsforAndroidService.apk`,
     noticePath: `${__dirname}/NOTICE.txt`,
 };
