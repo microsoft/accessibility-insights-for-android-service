@@ -1,4 +1,4 @@
 # These files are lifted from ../ during release builds
 NOTICE.*
 LICENSE
-accessibility-insights-for-android-service.apk
+*.apk
