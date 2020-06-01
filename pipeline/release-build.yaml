@@ -5,13 +5,13 @@ trigger: none
 pr: none
 
 jobs:
-  - job: 'gradlew_build_publish'
+  - job: 'release_build'
 
     pool:
         vmImage: 'windows-latest'
 
     steps:
-      # setup and build
+      # setup dependencies
 
       - script: | 
           echo This build requires you to override APK_VERSION_NAME and APK_VERSION_CODE vars at queue-time
@@ -25,6 +25,8 @@ jobs:
         inputs:
           versionSpec: '12.x'
         displayName: use node 12.x (latest LTS)
+
+      # build
 
       - task: Gradle@2
         displayName: build and test ai-android service
