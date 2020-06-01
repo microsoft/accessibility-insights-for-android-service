@@ -11,9 +11,10 @@ This wrapper package's version matches the version of the bundled APK. It **does
 ### Usage
 
 ```js
-import { noticePath, apkPath } from 'accessibility-insights-for-android-service-bin';
+import { noticePath, apkPath, apkVersionName } from 'accessibility-insights-for-android-service-bin';
 
 console.log(`Absolute path of the APK bundled with the package: ${apkPath}`);
+console.log(`APK_VERSION_NAME of the bundled APK: ${apkVersionName}`);
 console.log(`Absolute path of the NOTICE file for the APK: ${noticePath}`);
 ```
 
