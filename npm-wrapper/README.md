@@ -2,6 +2,12 @@
 
 This NPM package is a thin wrapper around the [Accessibility Insights for Android Service](../README.md) APK file. The package bundles a copy of the APK and exports the path of the bundled APK (and its associated NOTICE file) as the only library exports.
 
+This wrapper package is intended for consumption by [Accessibility Insights for Android](https://github.com/microsoft/accessibility-insights-web); **we make no guarantees about its API stability or fitness for other purposes.**
+
+### Versioning
+
+This wrapper package's version matches the version of the bundled APK. It **does not use semantic versioning**; we reserve the right to make breaking API changes to the wrapper package without a major version update.
+
 ### Usage
 
 ```js
@@ -10,12 +16,6 @@ import { noticePath, apkPath } from 'accessibility-insights-for-android-service-
 console.log(`Absolute path of the APK bundled with the package: ${apkPath}`);
 console.log(`Absolute path of the NOTICE file for the APK: ${noticePath}`);
 ```
-
-This wrapper package is intended for consumption by [Accessibility Insights for Android](https://github.com/microsoft/accessibility-insights-web); we make no guarantees about its API stability or fitness for other purposes.
-
-### Versioning
-
-This wrapper package **does not use semantic versioning**. Its versioning strategy is modeled after the same one used by `chromedriver` and `7zip-bin`; the major and minor version will always match the major and minor version of the APK, and the patch version will increment with each released version of the NPM wrapper package for a given major/minor version of the APK.
 
 ### Reporting security vulnerabilities
 
