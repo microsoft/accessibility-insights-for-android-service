@@ -1,0 +1,4 @@
+# These files are lifted from ../ during release builds
+NOTICE.*
+LICENSE
+*.apk

@@ -1,0 +1,26 @@
+{
+  "name": "accessibility-insights-for-android-service-bin",
+  "version": "0.0.0-set-by-release-build",
+  "description": "Wrapper package containing a pre-built APK version of Accessibility Insights for Android Service",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "AccessibilityInsightsforAndroidService.apk",
+    "index.d.ts",
+    "index.js",
+    "LICENSE",
+    "NOTICE.txt",
+    "package.json",
+    "README.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/microsoft/accessibility-insights-for-android-service.git"
+  },
+  "author": "Microsoft",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/microsoft/accessibility-insights-for-android-service/issues"
+  },
+  "homepage": "https://github.com/microsoft/accessibility-insights-for-android-service#readme"
+}
