@@ -85,7 +85,6 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
   // selectively copy just the real/unpadded pixel data into it first.
   private void copyPixelsFromImagePlane(
       Bitmap destination, Image.Plane source, int width, int height) throws ImageFormatException {
-    // Note: rowStride is usually pixelStride * width, but can sometimes be larger (with padding)
     int sourcePixelStride = source.getPixelStride(); // bytes per pixel
     int sourceRowStride = source.getRowStride(); // bytes per row, including any source row-padding
     int unpaddedRowStride = width * sourcePixelStride; // bytes per row in destination
