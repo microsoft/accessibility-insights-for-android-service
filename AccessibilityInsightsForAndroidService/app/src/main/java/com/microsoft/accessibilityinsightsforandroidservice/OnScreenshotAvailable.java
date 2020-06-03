@@ -116,9 +116,9 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
       bitmapPixelDataWithoutRowPadding = ByteBuffer.allocate(unpaddedRowStride * height);
       for (int row = 0; row < height; ++row) {
         int sourceOffset = row * sourceRowStride;
-        int destOffest = row * unpaddedRowStride;
+        int destOffset = row * unpaddedRowStride;
         sourceBuffer.position(sourceOffset);
-        sourceBuffer.get(bitmapPixelDataWithoutRowPadding.array(), destOffest, unpaddedRowStride);
+        sourceBuffer.get(bitmapPixelDataWithoutRowPadding.array(), destOffset, unpaddedRowStride);
       }
     }
 
