@@ -34,14 +34,21 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
     }
 
     Image image = imageReader.acquireLatestImage();
+    Bitmap screenshotBitmap = null;
     try {
-      Bitmap screenshotBitmap = getBitmapFromImage(image);
-      image.close();
-      imageAlreadyProcessed = true;
-      bitmapConsumer.accept(screenshotBitmap);
+      screenshotBitmap = getBitmapFromImage(image);
     } catch (ImageFormatException e) {
       Logger.logError(TAG, "ImageFormatException: " + e.toString());
+    } finally {
       image.close();
+    }
+
+    // If we failed to convert the image, we just log an error and don't forward anything on to the
+    // consumer that's forming the API response. From the API consumer's perspective, it will
+    // propagate as results with no screenshot data available.
+    if (screenshotBitmap != null) {
+      imageAlreadyProcessed = true;
+      bitmapConsumer.accept(screenshotBitmap);
     }
   }
 
