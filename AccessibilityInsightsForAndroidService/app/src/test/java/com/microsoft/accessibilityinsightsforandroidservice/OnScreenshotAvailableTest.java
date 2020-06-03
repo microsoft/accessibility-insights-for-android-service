@@ -111,10 +111,10 @@ public class OnScreenshotAvailableTest {
     int rowPaddingBytes = 1;
     rowStrideStub = (pixelStrideStub * widthStub + rowPaddingBytes);
 
-    imagePlaneStubBuffer = ByteBuffer.wrap(
-            new byte[] { 1, 1, 1, 1, 2, 2, 2, 2, 0, 3, 3, 3, 3, 4, 4, 4, 4, 0 });
-    ByteBuffer bufferWithPaddingRemoved = ByteBuffer.wrap(
-            new byte[] { 1, 1, 1, 1, 2, 2, 2, 2,    3, 3, 3, 3, 4, 4, 4, 4    });
+    imagePlaneStubBuffer =
+        ByteBuffer.wrap(new byte[] {1, 1, 1, 1, 2, 2, 2, 2, 0, 3, 3, 3, 3, 4, 4, 4, 4, 0});
+    ByteBuffer bufferWithPaddingRemoved =
+        ByteBuffer.wrap(new byte[] {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4});
 
     setupMocksToCreateBitmap();
 

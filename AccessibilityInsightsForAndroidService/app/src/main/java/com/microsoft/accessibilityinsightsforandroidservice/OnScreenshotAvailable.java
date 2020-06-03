@@ -6,11 +6,8 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.graphics.Bitmap;
 import android.media.Image;
 import android.media.ImageReader;
-import android.nfc.FormatException;
 import android.util.DisplayMetrics;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.util.function.Consumer;
 
 public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListener {
@@ -42,7 +39,7 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
       image.close();
       imageAlreadyProcessed = true;
       bitmapConsumer.accept(screenshotBitmap);
-    } catch(ImageFormatException e) {
+    } catch (ImageFormatException e) {
       Logger.logError(TAG, "ImageFormatException: " + e.toString());
       image.close();
     }
@@ -52,7 +49,16 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
     int width = image.getWidth();
     int height = image.getHeight();
     if (width != metrics.widthPixels || height != metrics.heightPixels) {
-      Logger.logError(TAG, "Received image of dimensions " + width + "x" + height + ", mismatches device DisplayMetrics " + metrics.widthPixels + "x" + metrics.heightPixels);
+      Logger.logError(
+          TAG,
+          "Received image of dimensions "
+              + width
+              + "x"
+              + height
+              + ", mismatches device DisplayMetrics "
+              + metrics.widthPixels
+              + "x"
+              + metrics.heightPixels);
     }
 
     Bitmap bitmap = bitmapProvider.createBitmap(width, height, IMAGE_BITMAP_FORMAT);
@@ -61,16 +67,24 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
     return bitmap;
   }
 
-  private void copyPixelsFromImagePlane(Bitmap destination, Image.Plane source, int width, int height) throws ImageFormatException {
+  private void copyPixelsFromImagePlane(
+      Bitmap destination, Image.Plane source, int width, int height) throws ImageFormatException {
     // Note: rowStride is usually pixelStride * width, but can sometimes be larger (with padding)
     int pixelStride = source.getPixelStride(); // bytes per pixel
     int rowStride = source.getRowStride(); // bytes per row
 
     if (pixelStride != IMAGE_PIXEL_STRIDE) {
-      throw new ImageFormatException("Invalid source Image: pixelStride=" + pixelStride + ", expected " + IMAGE_PIXEL_STRIDE);
+      throw new ImageFormatException(
+          "Invalid source Image: pixelStride=" + pixelStride + ", expected " + IMAGE_PIXEL_STRIDE);
     }
     if (rowStride < width * pixelStride) {
-      throw new ImageFormatException("Invalid source Image: rowStride " + rowStride + " is too small for width " + width + " at pixelStride " + pixelStride);
+      throw new ImageFormatException(
+          "Invalid source Image: rowStride "
+              + rowStride
+              + " is too small for width "
+              + width
+              + " at pixelStride "
+              + pixelStride);
     }
 
     ByteBuffer sourceBuffer = source.getBuffer();
@@ -84,7 +98,8 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
     ByteBuffer pixelDataWithRowPaddingRemoved = ByteBuffer.allocate(unpaddedRowStride * height);
     for (int row = 0; row < height; ++row) {
       sourceBuffer.position(row * rowStride);
-      sourceBuffer.get(pixelDataWithRowPaddingRemoved.array(), row * unpaddedRowStride, unpaddedRowStride);
+      sourceBuffer.get(
+          pixelDataWithRowPaddingRemoved.array(), row * unpaddedRowStride, unpaddedRowStride);
     }
 
     destination.copyPixelsFromBuffer(pixelDataWithRowPaddingRemoved);
