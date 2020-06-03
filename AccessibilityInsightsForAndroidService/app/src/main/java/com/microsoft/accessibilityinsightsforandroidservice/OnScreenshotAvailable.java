@@ -74,41 +74,54 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
     return bitmap;
   }
 
+  // The source Image.Plane and the destination Bitmap use the same byte encoding for image data,
+  // 4 bytes per pixel in normal reading order, *except* that the Image.Plane can optionally contain
+  // padding bytes at the end of each row's worth of pixel data, which the Bitmap doesn't support.
+  //
+  // The "row stride" refers to the number of bytes per row, *including* any optional padding.
+  //
+  // If the source doesn't use any padding, we copy its backing ByteBuffer directly into the
+  // destination. If it *does* use padding, we create an intermediate ByteBuffer of our own and
+  // selectively copy just the real/unpadded pixel data into it first.
   private void copyPixelsFromImagePlane(
       Bitmap destination, Image.Plane source, int width, int height) throws ImageFormatException {
     // Note: rowStride is usually pixelStride * width, but can sometimes be larger (with padding)
-    int pixelStride = source.getPixelStride(); // bytes per pixel
-    int rowStride = source.getRowStride(); // bytes per row
+    int sourcePixelStride = source.getPixelStride(); // bytes per pixel
+    int sourceRowStride = source.getRowStride(); // bytes per row, including any source row-padding
+    int unpaddedRowStride = width * sourcePixelStride; // bytes per row in destination
 
-    if (pixelStride != IMAGE_PIXEL_STRIDE) {
+    if (sourcePixelStride != IMAGE_PIXEL_STRIDE) {
       throw new ImageFormatException(
-          "Invalid source Image: pixelStride=" + pixelStride + ", expected " + IMAGE_PIXEL_STRIDE);
+          "Invalid source Image: sourcePixelStride="
+              + sourcePixelStride
+              + ", expected "
+              + IMAGE_PIXEL_STRIDE);
     }
-    if (rowStride < width * pixelStride) {
+    if (sourceRowStride < unpaddedRowStride) {
       throw new ImageFormatException(
-          "Invalid source Image: rowStride "
-              + rowStride
+          "Invalid source Image: sourceRowStride "
+              + sourceRowStride
               + " is too small for width "
               + width
-              + " at pixelStride "
-              + pixelStride);
+              + " at sourcePixelStride "
+              + sourcePixelStride);
     }
 
     ByteBuffer sourceBuffer = source.getBuffer();
+    ByteBuffer bitmapPixelDataWithoutRowPadding;
 
-    if (rowStride == width * pixelStride) {
-      destination.copyPixelsFromBuffer(sourceBuffer);
-      return;
+    if (sourceRowStride == unpaddedRowStride) {
+      bitmapPixelDataWithoutRowPadding = sourceBuffer;
+    } else {
+      bitmapPixelDataWithoutRowPadding = ByteBuffer.allocate(unpaddedRowStride * height);
+      for (int row = 0; row < height; ++row) {
+        int sourceOffset = row * sourceRowStride;
+        int destOffest = row * unpaddedRowStride;
+        sourceBuffer.position(sourceOffset);
+        sourceBuffer.get(bitmapPixelDataWithoutRowPadding.array(), destOffest, unpaddedRowStride);
+      }
     }
 
-    int unpaddedRowStride = width * pixelStride;
-    ByteBuffer pixelDataWithRowPaddingRemoved = ByteBuffer.allocate(unpaddedRowStride * height);
-    for (int row = 0; row < height; ++row) {
-      sourceBuffer.position(row * rowStride);
-      sourceBuffer.get(
-          pixelDataWithRowPaddingRemoved.array(), row * unpaddedRowStride, unpaddedRowStride);
-    }
-
-    destination.copyPixelsFromBuffer(pixelDataWithRowPaddingRemoved);
+    destination.copyPixelsFromBuffer(bitmapPixelDataWithoutRowPadding);
   }
 }
