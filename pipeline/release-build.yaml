@@ -13,18 +13,13 @@ jobs:
     steps:
       # setup dependencies
 
-      - script: | 
-          echo This build requires you to override APK_VERSION_NAME and APK_VERSION_CODE vars at queue-time
-          echo Refer to the release validation template for guidance on determining appropriate values
-          exit 1
-        displayName: ensure version vars are set
-        failOnStderr: true
-        condition: or(eq(variables['APK_VERSION_NAME'], 'REPLACE_ME'), eq(variables['APK_VERSION_CODE'], 'REPLACE_ME'))
-
       - task: NodeTool@0
         inputs:
           versionSpec: '12.x'
         displayName: use node 12.x (latest LTS)
+
+      - script: node $(system.defaultWorkingDirectory)/pipeline/infer-version-code-from-version-name.js
+        displayName: validate APK_VERSION_NAME and infer APK_VERSION_CODE
 
       # build
 
