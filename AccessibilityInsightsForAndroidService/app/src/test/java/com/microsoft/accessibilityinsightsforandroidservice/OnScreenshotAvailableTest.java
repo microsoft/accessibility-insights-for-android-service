@@ -21,9 +21,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({Logger.class})
 public class OnScreenshotAvailableTest {
 
   @Mock ImageReader imageReaderMock;
@@ -35,19 +38,21 @@ public class OnScreenshotAvailableTest {
 
   Image.Plane[] imagePlanesStub;
   OnScreenshotAvailable testSubject;
-  int widthStub = 100;
-  int heightStub = 200;
+  int widthStub;
+  int heightStub;
   ByteBuffer imagePlaneStubBuffer;
   int pixelStrideStub;
   int rowStrideStub;
-  int rowPadding;
-  int expectedBitmapWidth;
 
   @Before
   public void prepare() {
+    PowerMockito.mockStatic(Logger.class);
+
     DisplayMetrics metricsStub = new DisplayMetrics();
     metricsStub.widthPixels = widthStub;
     metricsStub.heightPixels = heightStub;
+    widthStub = 100;
+    heightStub = 200;
     pixelStrideStub = 4;
     rowStrideStub = widthStub * pixelStrideStub;
     imagePlanesStub = new Image.Plane[1];
@@ -143,8 +148,9 @@ public class OnScreenshotAvailableTest {
     when(imagePlaneMock.getPixelStride()).thenReturn(pixelStrideStub);
     when(imagePlaneMock.getRowStride()).thenReturn(rowStrideStub);
     when(imageMock.getWidth()).thenReturn(widthStub);
+    when(imageMock.getHeight()).thenReturn(heightStub);
     when(imagePlaneMock.getBuffer()).thenReturn(imagePlaneStubBuffer);
-    when(bitmapProviderMock.createBitmap(expectedBitmapWidth, heightStub, Bitmap.Config.ARGB_8888))
+    when(bitmapProviderMock.createBitmap(widthStub, heightStub, Bitmap.Config.ARGB_8888))
         .thenReturn(bitmapMock);
   }
 }
