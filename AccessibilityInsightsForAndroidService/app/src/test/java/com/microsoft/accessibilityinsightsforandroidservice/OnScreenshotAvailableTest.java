@@ -95,7 +95,7 @@ public class OnScreenshotAvailableTest {
   }
 
   @Test
-  public void onImageAvailableWithUnpaddedImageBufferCreatesBitmapDirectlyBuffer() {
+  public void onImageAvailableWithUnpaddedImageBufferCreatesBitmapDirectlyFromSourceBuffer() {
     setupMocksToCreateBitmap();
 
     testSubject.onImageAvailable(imageReaderMock);
