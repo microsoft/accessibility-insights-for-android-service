@@ -1,6 +1,6 @@
 ## accessibility-insights-for-android-service-bin
 
-This NPM package is a thin wrapper around the [Accessibility Insights for Android Service](../README.md) APK file. The package bundles a copy of the APK and exports the path of the bundled APK (and its associated NOTICE file) as the only library exports.
+This NPM package is CommonJS module that acts as a thin wrapper around the [Accessibility Insights for Android Service](../README.md) APK file. The package bundles a copy of the APK and exports the path and version of the bundled APK (and its associated NOTICE file).
 
 This wrapper package is intended for consumption by [Accessibility Insights for Android](https://github.com/microsoft/accessibility-insights-web); **we make no guarantees about its API stability or fitness for other purposes.**
 
@@ -11,7 +11,8 @@ This wrapper package's version matches the version of the bundled APK. It **does
 ### Usage
 
 ```js
-import { noticePath, apkPath, apkVersionName } from 'accessibility-insights-for-android-service-bin';
+import serviceBin from 'accessibility-insights-for-android-service-bin';
+const { noticePath, apkPath, apkVersionName } = serviceBin;
 
 console.log(`Absolute path of the APK bundled with the package: ${apkPath}`);
 console.log(`APK_VERSION_NAME of the bundled APK: ${apkVersionName}`);
