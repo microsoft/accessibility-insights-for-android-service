@@ -101,6 +101,14 @@ jobs:
 
       # terms artifact
 
+      - task: CopyFiles@2
+        displayName: (terms) copy LICENSE to artifact staging
+        inputs:
+          contents: |
+            LICENSE
+          sourceFolder: '$(system.defaultWorkingDirectory)'
+          targetFolder: '$(build.artifactstagingdirectory)/terms'
+
       - task: ComponentGovernanceComponentDetection@0
         displayName: '(terms) dependency detection (Component Governance)'
         inputs:
@@ -115,14 +123,6 @@ jobs:
           outputfile: '$(build.artifactstagingdirectory)/terms/NOTICE.html'
           outputformat: html
         timeoutInMinutes: 5
-      
-      - task: CopyFiles@2
-        displayName: (terms) copy LICENSE to artifact staging
-        inputs:
-          contents: |
-            LICENSE
-          sourceFolder: '$(system.defaultWorkingDirectory)'
-          targetFolder: '$(build.artifactstagingdirectory)/terms'
 
       - task: PublishPipelineArtifact@1
         displayName: (terms) publish artifact
