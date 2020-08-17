@@ -1,0 +1,12 @@
+version: 1
+update_configs:
+  - package-ecosystem: "gradle"
+    directory: "AccessibilityInsightsForAndroidService/app/"
+    default_labels:
+      - "category: engineering"
+      - "dependencies"
+    commit_message:
+      prefix: "chore"
+      include_scope: true
+    schedule:
+      interval: "daily"
