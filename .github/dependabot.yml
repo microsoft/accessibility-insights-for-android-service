@@ -10,3 +10,4 @@ update_configs:
       include_scope: true
     schedule:
       interval: "daily"
+      
