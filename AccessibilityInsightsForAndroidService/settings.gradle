@@ -3,3 +3,6 @@
 
 include ':app'
 rootProject.name='Accessibility Insights For Android Service'
+
+// This is easier to manage and will become the default in Gradle 7
+enableFeaturePreview('ONE_LOCKFILE_PER_PROJECT')
