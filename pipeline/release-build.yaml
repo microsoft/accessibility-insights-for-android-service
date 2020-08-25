@@ -37,7 +37,7 @@ jobs:
           testResultsFiles: '**/TEST-*.xml'
           tasks: 'build'
 
-      - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output.json
+      - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output-metadata.json
         displayName: print out generated release APK info
 
       # unsigned-apk artifact
