@@ -49,7 +49,7 @@ jobs:
       run: chmod +x ./AccessibilityInsightsForAndroidService/gradlew
 
     - name: build
-      run: gradlew build
+      run: ./gradlew build
       working-directory: ./AccessibilityInsightsForAndroidService
 
     - name: Perform CodeQL Analysis
