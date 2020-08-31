@@ -45,6 +45,9 @@ jobs:
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
 
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+
     - name: build
       run: gradlew build
       working-directory: ./AccessibilityInsightsForAndroidService
