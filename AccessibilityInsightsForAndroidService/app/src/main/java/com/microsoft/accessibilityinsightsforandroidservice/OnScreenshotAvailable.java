@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 
 public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListener {
   private final Bitmap.Config IMAGE_BITMAP_FORMAT = Bitmap.Config.ARGB_8888;
-  private final int IMAGE_PIXEL_STRIDE = 4; // Implied by ARGB_8888 (4 bytes per pixel)
+  private static final int IMAGE_PIXEL_STRIDE = 4; // Implied by ARGB_8888 (4 bytes per pixel)
 
   private static final String TAG = "OnScreenshotAvailable";
   private boolean imageAlreadyProcessed = false;
