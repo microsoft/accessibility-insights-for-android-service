@@ -5,7 +5,6 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.view.accessibility.AccessibilityNodeInfo;
 import androidx.annotation.NonNull;
-
 import java.util.Objects;
 
 public class AccessibilityNodeInfoSorter implements Comparable<AccessibilityNodeInfoSorter> {
