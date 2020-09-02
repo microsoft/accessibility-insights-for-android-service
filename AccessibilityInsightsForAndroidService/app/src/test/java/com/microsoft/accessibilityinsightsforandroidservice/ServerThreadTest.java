@@ -49,7 +49,7 @@ public class ServerThreadTest {
   }
 
   @Before
-  public void prepare() {
+  public void prepare() throws Exception {
     responseThreadCompletedCount = 0;
     try {
       when(serverSocketFactory.createServerSocket(ServerThread.ServerPort))
@@ -61,6 +61,7 @@ public class ServerThreadTest {
     PowerMockito.mockStatic(Logger.class);
     PowerMockito.mockStatic(StackTrace.class);
     Whitebox.setInternalState(ServerThread.class, "ServerSocket", (Object) null);
+    PowerMockito.when(ServerThread.class, "setServerSocket", serverSocketMock).thenCallRealMethod();
     testSubject = new ServerThread(serverSocketFactory, responseThreadFactory);
     when(StackTrace.getStackTrace(testException)).thenReturn(errorStackTrace);
   }
@@ -73,13 +74,13 @@ public class ServerThreadTest {
   @Test
   public void runsResponseThread() {
     runServerThread(1);
-    Assert.assertEquals(responseThreadCompletedCount, 1);
+    Assert.assertEquals(1, responseThreadCompletedCount);
   }
 
   @Test
   public void runs3ResponseThreads() {
     runServerThread(3);
-    Assert.assertEquals(responseThreadCompletedCount, 3);
+    Assert.assertEquals(3, responseThreadCompletedCount);
   }
 
   @Test
