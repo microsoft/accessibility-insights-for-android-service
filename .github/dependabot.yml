@@ -1,0 +1,12 @@
+version: 2
+updates:
+  - package-ecosystem: "gradle"
+    directory: "/AccessibilityInsightsForAndroidService/app/"
+    labels:
+      - "category: engineering"
+      - "dependencies"
+    commit-message:
+      prefix: "chore"
+      include: "scope"
+    schedule:
+      interval: "daily"
