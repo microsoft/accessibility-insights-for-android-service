@@ -30,7 +30,8 @@ public class ServerThread extends Thread {
       if (ServerSocket != null) {
         ServerSocket.close();
       }
-      ServerSocket = serverSocketFactory.createServerSocket(ServerPort);
+
+      setServerSocket(serverSocketFactory.createServerSocket(ServerPort));
 
       while (acceptRequests) {
         Socket socket = ServerSocket.accept();
@@ -44,6 +45,10 @@ public class ServerThread extends Thread {
     } catch (InterruptedException e) {
       logExceptionIfRunning(e);
     }
+  }
+
+  private static void setServerSocket(java.net.ServerSocket socket) {
+    ServerSocket = socket;
   }
 
   public void exit() {
