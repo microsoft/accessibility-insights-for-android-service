@@ -58,7 +58,7 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        force 'commons-codec:commons-codec:1.14'
+        force 'commons-codec:commons-codec:1.15'
     }
 }
 
