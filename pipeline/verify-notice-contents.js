@@ -19,7 +19,7 @@ const releaseDepsNotKnownToGradle = [
 ]
 
 function isDevTarget(target) {
-    return target === 'lintClassPath' || /Test/.test(target);
+    return target === 'lintClassPath' || target === '_internal_aapt2_binary' || /Test/.test(target);
 }
 function isReleaseTarget(target) {
     return !isDevTarget(target);
