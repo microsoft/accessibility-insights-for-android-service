@@ -101,11 +101,15 @@ jobs:
 
       # terms artifact
 
+      - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js
+        displayName: verify NOTICE.html content matches lockfile
+
       - task: CopyFiles@2
-        displayName: (terms) copy LICENSE to artifact staging
+        displayName: (terms) copy LICENSE and NOTICE.html to artifact staging
         inputs:
           contents: |
             LICENSE
+            NOTICE.html
           sourceFolder: '$(system.defaultWorkingDirectory)'
           targetFolder: '$(build.artifactstagingdirectory)/terms'
 

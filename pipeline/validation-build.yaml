@@ -2,25 +2,28 @@
 # Licensed under the MIT License.
 
 trigger:
-    - master
+  - master
 
 jobs:
-    - job: 'gradlew_build'
+  - job: 'gradlew_build'
 
-      pool:
-          vmImage: 'windows-latest'
+    pool:
+        vmImage: 'windows-latest'
 
-      steps:
-          - task: Gradle@2
-            displayName: build and test dev ai-android service
-            inputs:
-              workingDirectory: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService'
-              gradleWrapperFile: 'AccessibilityInsightsForAndroidService/gradlew'
-              gradleOptions: '-Xmx3072m'
-              options: -S
-              javaHomeOption: 'JDKVersion'
-              jdkVersionOption: '1.8'
-              jdkArchitectureOption: 'x64'
-              publishJUnitResults: true
-              testResultsFiles: '**/TEST-*.xml'
-              tasks: 'build'
+    steps:
+      - task: Gradle@2
+        displayName: build and test dev ai-android service
+        inputs:
+          workingDirectory: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService'
+          gradleWrapperFile: 'AccessibilityInsightsForAndroidService/gradlew'
+          gradleOptions: '-Xmx3072m'
+          options: -S
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.8'
+          jdkArchitectureOption: 'x64'
+          publishJUnitResults: true
+          testResultsFiles: '**/TEST-*.xml'
+          tasks: 'build'
+
+      - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js
+        displayName: verify NOTICE.html content matches lockfile
