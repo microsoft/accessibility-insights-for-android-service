@@ -1,4 +1,4 @@
-// Copyright (c) Microsoft Corporation.
+// Portions Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 //
 // Copyright (C) 2020 The Android Open Source Project
