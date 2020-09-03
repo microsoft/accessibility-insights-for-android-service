@@ -10,6 +10,7 @@ com.android.tools.analytics-library:protos:27.0.1=lintClassPath
 com.android.tools.analytics-library:shared:27.0.1=lintClassPath
 com.android.tools.analytics-library:tracker:27.0.1=lintClassPath
 com.android.tools.build:aapt2-proto:0.4.0=lintClassPath
+com.android.tools.build:aapt2:4.0.1-6197926=_internal_aapt2_binary
 com.android.tools.build:apksig:4.0.1=lintClassPath
 com.android.tools.build:apkzlib:4.0.1=lintClassPath
 com.android.tools.build:builder-model:4.0.1=lintClassPath
