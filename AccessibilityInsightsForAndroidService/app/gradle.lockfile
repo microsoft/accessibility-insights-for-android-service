@@ -2,10 +2,10 @@
 # Manual edits can break the build and are not advised.
 # This file is expected to be part of source control.
 androidx.annotation:annotation:1.1.0=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath,debugCompileClasspath,debugRuntimeClasspath,debugUnitTestCompileClasspath,debugUnitTestRuntimeClasspath,releaseCompileClasspath,releaseRuntimeClasspath,releaseUnitTestCompileClasspath,releaseUnitTestRuntimeClasspath
-androidx.test.espresso:espresso-core:3.1.0-alpha3=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
-androidx.test.espresso:espresso-idling-resource:3.1.0-alpha3=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
-androidx.test:monitor:1.1.0-alpha3=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
-androidx.test:runner:1.1.0-alpha3=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
+androidx.test.espresso:espresso-core:3.1.0=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
+androidx.test.espresso:espresso-idling-resource:3.1.0=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
+androidx.test:monitor:1.1.0=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
+androidx.test:runner:1.1.0=debugAndroidTestCompileClasspath,debugAndroidTestRuntimeClasspath
 com.android.tools.analytics-library:protos:27.0.1=lintClassPath
 com.android.tools.analytics-library:shared:27.0.1=lintClassPath
 com.android.tools.analytics-library:tracker:27.0.1=lintClassPath
