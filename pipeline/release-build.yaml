@@ -101,24 +101,21 @@ jobs:
 
       # terms artifact
 
-      - task: CopyFiles@2
-        displayName: (terms) copy LICENSE to artifact staging
-        inputs:
-          contents: |
-            LICENSE
-          sourceFolder: '$(system.defaultWorkingDirectory)'
-          targetFolder: '$(build.artifactstagingdirectory)/terms'
-
       - task: ComponentGovernanceComponentDetection@0
         displayName: '(terms) dependency detection (Component Governance)'
         timeoutInMinutes: 5
 
-      - task: msospo.ospo-extension.8d7f9abb-6896-461d-9e25-4f74ed65ddb2.notice@0
-        displayName: '(terms) generate NOTICE.html file'
+      - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js
+        displayName: (terms) verify NOTICE.html content matches lockfile
+
+      - task: CopyFiles@2
+        displayName: (terms) copy LICENSE and NOTICE.html to artifact staging
         inputs:
-          outputfile: '$(build.artifactstagingdirectory)/terms/NOTICE.html'
-          outputformat: html
-        timeoutInMinutes: 5
+          contents: |
+            LICENSE
+            NOTICE.html
+          sourceFolder: '$(system.defaultWorkingDirectory)'
+          targetFolder: '$(build.artifactstagingdirectory)/terms'
 
       - task: PublishPipelineArtifact@1
         displayName: (terms) publish artifact

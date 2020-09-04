@@ -38,8 +38,8 @@ spotless {
     }
     java {
         target '**/*.java'
-        // This file has the APACHE license header, which we need to keep
-        targetExclude '**/AccessibilityInsightsForAndroidService.java'
+        // These files have an APACHE license header, which we need to keep
+        targetExclude '**/AccessibilityInsightsForAndroidService.java','**/AccessibilityNodeInfoSorter.java'
         licenseHeader '// Copyright (c) Microsoft Corporation.\n// Licensed under the MIT License.\n\n'
     }
 }
