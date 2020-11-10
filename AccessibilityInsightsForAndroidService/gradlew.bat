@@ -24,7 +24,20 @@ set JAVA_EXE=java.exe
 if "%ERRORLEVEL%" == "0" goto init
 
 echo.
-echo ERROR: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+echo WARNING: JAVA_HOME is not set and no 'java' command could be found in your PATH.
+echo          Attempting to infer JAVA_HOME based on a default Android Studio
+echo          installation.
+echo.
+
+set JAVA_HOME=%ProgramFiles%\Android\Android Studio\jre
+set JAVA_EXE=%JAVA_HOME%\bin\java.exe
+"%JAVA_EXE%" -version >NUL 2>&1
+if "%ERRORLEVEL%" == "0" goto init
+set JAVA_HOME=
+
+echo.
+echo ERROR: JAVA_HOME is not set, could not be inferred from your Android Studio
+echo        installation, and no 'java' command could be found in your PATH.
 echo.
 echo Please set the JAVA_HOME variable in your environment to match the
 echo location of your Java installation.
