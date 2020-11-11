@@ -50,6 +50,11 @@ public class ResultRequestFulfiller implements RequestFulfiller {
         });
   }
 
+  @Override
+  public boolean getIsBlockingRequest() {
+    return true;
+  }
+
   private String getScanContent(AccessibilityNodeInfo rootNode, Bitmap screenshot)
       throws ScanException, ViewChangedException {
     if (rootNode == null) {

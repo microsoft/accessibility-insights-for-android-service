@@ -33,6 +33,11 @@ public class UnrecognizedRequestFulfillerTest {
   }
 
   @Test
+  public void getIsBlockingRequestReturnsTrue() {
+    Assert.assertTrue(testSubject.getIsBlockingRequest());
+  }
+
+  @Test
   public void callsOnRequestFulfilled() {
     testSubject.fulfillRequest(onRequestFulfilledMock);
   }

@@ -38,7 +38,9 @@ public class ServerThread extends Thread {
 
         ResponseThread responseThread = responseThreadFactory.createResponseThread(socket);
         responseThread.start();
-        responseThread.join();
+        if (responseThread.getIsBlockingRequest()) {
+          responseThread.join();
+        }
       }
     } catch (IOException e) {
       logExceptionIfRunning(e);

@@ -64,6 +64,11 @@ public class ResultRequestFulfillerTest {
   }
 
   @Test
+  public void getIsBlockingRequestReturnsTrue() {
+    Assert.assertTrue(testSubject.getIsBlockingRequest());
+  }
+
+  @Test
   public void callsOnRequestFulfilled() {
     setupSuccessfulRequest();
 
