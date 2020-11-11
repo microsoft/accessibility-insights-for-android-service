@@ -13,7 +13,7 @@ public class ResponseThread extends Thread {
   private ResponseWriterFactory responseWriterFactory;
   private RequestReaderFactory requestReaderFactory;
   private RequestHandlerFactory requestHandlerFactory;
-  private boolean isLongRunningRequest;
+  private boolean isBlockingRequest;
 
   ResponseThread(
       Socket socket,
@@ -27,7 +27,7 @@ public class ResponseThread extends Thread {
   }
 
   public boolean getIsBlockingRequest() {
-    return isLongRunningRequest;
+    return isBlockingRequest;
   }
 
   @Override
@@ -51,7 +51,7 @@ public class ResponseThread extends Thread {
     try {
       RequestHandler handler =
           requestHandlerFactory.createHandlerForRequest(socket, requestString, responseWriter);
-      isLongRunningRequest = handler.getIsBlockingRequest();
+      isBlockingRequest = handler.getIsBlockingRequest();
       handler.handleRequest();
     } catch (Exception e) {
       responseWriter.writeErrorResponse(e);
