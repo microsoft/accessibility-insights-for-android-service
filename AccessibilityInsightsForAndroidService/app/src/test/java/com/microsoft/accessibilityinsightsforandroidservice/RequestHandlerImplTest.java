@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -39,6 +40,20 @@ public class RequestHandlerImplTest {
   @Test
   public void requestHandlerExists() {
     Assert.assertNotNull(testSubject);
+  }
+
+  @Test
+  public void isBlockingRequest_FulfillerReturnsFalse_ReturnsFalse() {
+    when(requestFulfiller.isBlockingRequest()).thenReturn(false);
+    Assert.assertFalse(testSubject.isBlockingRequest());
+    verify(requestFulfiller, times(1)).isBlockingRequest();
+  }
+
+  @Test
+  public void isBlockingRequest_FulfillerReturnsTrue_ReturnsTrue() {
+    when(requestFulfiller.isBlockingRequest()).thenReturn(true);
+    Assert.assertTrue(testSubject.isBlockingRequest());
+    verify(requestFulfiller, times(1)).isBlockingRequest();
   }
 
   @Test

@@ -13,6 +13,7 @@ public class ResponseThread extends Thread {
   private ResponseWriterFactory responseWriterFactory;
   private RequestReaderFactory requestReaderFactory;
   private RequestHandlerFactory requestHandlerFactory;
+  private boolean isBlockingRequest;
 
   ResponseThread(
       Socket socket,
@@ -23,6 +24,10 @@ public class ResponseThread extends Thread {
     this.responseWriterFactory = responseWriterFactory;
     this.requestReaderFactory = requestReaderFactory;
     this.requestHandlerFactory = requestHandlerFactory;
+  }
+
+  public boolean isBlockingRequest() {
+    return isBlockingRequest;
   }
 
   @Override
@@ -46,6 +51,7 @@ public class ResponseThread extends Thread {
     try {
       RequestHandler handler =
           requestHandlerFactory.createHandlerForRequest(socket, requestString, responseWriter);
+      isBlockingRequest = handler.isBlockingRequest();
       handler.handleRequest();
     } catch (Exception e) {
       responseWriter.writeErrorResponse(e);

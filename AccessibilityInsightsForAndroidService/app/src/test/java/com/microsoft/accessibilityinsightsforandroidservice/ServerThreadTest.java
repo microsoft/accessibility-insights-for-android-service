@@ -46,6 +46,11 @@ public class ServerThreadTest {
     public void run() {
       responseThreadCompletedCount++;
     }
+
+    @Override
+    public boolean isBlockingRequest() {
+      return true;
+    }
   }
 
   @Before

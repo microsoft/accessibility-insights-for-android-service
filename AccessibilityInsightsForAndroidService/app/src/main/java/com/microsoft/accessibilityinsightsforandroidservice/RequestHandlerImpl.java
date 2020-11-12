@@ -25,6 +25,11 @@ public class RequestHandlerImpl implements RequestHandler {
     requestFulfiller.fulfillRequest(this::onRequestFulfilled);
   }
 
+  @Override
+  public boolean isBlockingRequest() {
+    return this.requestFulfiller.isBlockingRequest();
+  }
+
   private void onRequestFulfilled() {
     socketHolder.close(logTag);
   }

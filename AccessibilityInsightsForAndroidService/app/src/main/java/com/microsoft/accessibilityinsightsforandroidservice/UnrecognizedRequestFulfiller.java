@@ -17,4 +17,9 @@ public class UnrecognizedRequestFulfiller implements RequestFulfiller {
     responseWriter.writeNotFoundResponse(requestString);
     onRequestFulfilled.run();
   }
+
+  @Override
+  public boolean isBlockingRequest() {
+    return false;
+  }
 }

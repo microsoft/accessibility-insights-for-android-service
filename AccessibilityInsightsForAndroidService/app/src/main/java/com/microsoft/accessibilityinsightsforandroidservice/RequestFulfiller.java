@@ -5,4 +5,6 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 public interface RequestFulfiller {
   void fulfillRequest(RunnableFunction onRequestFulfilled);
+
+  boolean isBlockingRequest();
 }

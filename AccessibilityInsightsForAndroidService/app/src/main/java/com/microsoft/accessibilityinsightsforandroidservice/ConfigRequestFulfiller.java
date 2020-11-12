@@ -27,6 +27,11 @@ public class ConfigRequestFulfiller implements RequestFulfiller {
     onRequestFulfilled.run();
   }
 
+  @Override
+  public boolean isBlockingRequest() {
+    return true;
+  }
+
   private void writeConfigResponse() {
     AccessibilityNodeInfo source = eventHelper.claimLastSource();
     AccessibilityNodeInfo rootNode = rootNodeFinder.getRootNodeFromSource(source);
