@@ -26,8 +26,8 @@ public class RequestHandlerImpl implements RequestHandler {
   }
 
   @Override
-  public boolean getIsBlockingRequest() {
-    return this.requestFulfiller.getIsBlockingRequest();
+  public boolean isBlockingRequest() {
+    return this.requestFulfiller.isBlockingRequest();
   }
 
   private void onRequestFulfilled() {

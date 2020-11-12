@@ -26,7 +26,7 @@ public class ResponseThread extends Thread {
     this.requestHandlerFactory = requestHandlerFactory;
   }
 
-  public boolean getIsBlockingRequest() {
+  public boolean isBlockingRequest() {
     return isBlockingRequest;
   }
 
@@ -51,7 +51,7 @@ public class ResponseThread extends Thread {
     try {
       RequestHandler handler =
           requestHandlerFactory.createHandlerForRequest(socket, requestString, responseWriter);
-      isBlockingRequest = handler.getIsBlockingRequest();
+      isBlockingRequest = handler.isBlockingRequest();
       handler.handleRequest();
     } catch (Exception e) {
       responseWriter.writeErrorResponse(e);

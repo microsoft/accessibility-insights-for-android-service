@@ -48,7 +48,7 @@ public class ServerThreadTest {
     }
 
     @Override
-    public boolean getIsBlockingRequest() {
+    public boolean isBlockingRequest() {
       return true;
     }
   }

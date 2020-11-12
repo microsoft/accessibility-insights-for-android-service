@@ -28,7 +28,7 @@ public class ConfigRequestFulfiller implements RequestFulfiller {
   }
 
   @Override
-  public boolean getIsBlockingRequest() {
+  public boolean isBlockingRequest() {
     return true;
   }
 

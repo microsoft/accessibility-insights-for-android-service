@@ -43,17 +43,17 @@ public class RequestHandlerImplTest {
   }
 
   @Test
-  public void getIsBlockingRequest_ReturnsFalse() {
-    when(requestFulfiller.getIsBlockingRequest()).thenReturn(false);
-    Assert.assertFalse(testSubject.getIsBlockingRequest());
-    verify(requestFulfiller, times(1)).getIsBlockingRequest();
+  public void isBlockingRequest_FulfillerReturnsFalse_ReturnsFalse() {
+    when(requestFulfiller.isBlockingRequest()).thenReturn(false);
+    Assert.assertFalse(testSubject.isBlockingRequest());
+    verify(requestFulfiller, times(1)).isBlockingRequest();
   }
 
   @Test
-  public void getIsBlockingRequest_ReturnsTrue() {
-    when(requestFulfiller.getIsBlockingRequest()).thenReturn(true);
-    Assert.assertTrue(testSubject.getIsBlockingRequest());
-    verify(requestFulfiller, times(1)).getIsBlockingRequest();
+  public void isBlockingRequest_FulfillerReturnsTrue_ReturnsTrue() {
+    when(requestFulfiller.isBlockingRequest()).thenReturn(true);
+    Assert.assertTrue(testSubject.isBlockingRequest());
+    verify(requestFulfiller, times(1)).isBlockingRequest();
   }
 
   @Test

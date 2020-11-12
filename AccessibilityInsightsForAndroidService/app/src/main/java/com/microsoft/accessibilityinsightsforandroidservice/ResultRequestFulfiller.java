@@ -51,7 +51,7 @@ public class ResultRequestFulfiller implements RequestFulfiller {
   }
 
   @Override
-  public boolean getIsBlockingRequest() {
+  public boolean isBlockingRequest() {
     return true;
   }
 

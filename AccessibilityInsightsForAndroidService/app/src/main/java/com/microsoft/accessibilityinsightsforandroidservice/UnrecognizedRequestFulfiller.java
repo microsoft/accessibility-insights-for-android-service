@@ -19,7 +19,7 @@ public class UnrecognizedRequestFulfiller implements RequestFulfiller {
   }
 
   @Override
-  public boolean getIsBlockingRequest() {
+  public boolean isBlockingRequest() {
     return false;
   }
 }

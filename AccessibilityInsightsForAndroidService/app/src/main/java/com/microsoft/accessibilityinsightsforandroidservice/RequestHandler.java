@@ -6,5 +6,5 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 public interface RequestHandler {
   void handleRequest();
 
-  boolean getIsBlockingRequest();
+  boolean isBlockingRequest();
 }
