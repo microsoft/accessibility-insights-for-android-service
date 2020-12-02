@@ -58,6 +58,7 @@ dependencies {
 configurations.all {
     resolutionStrategy {
         force 'commons-codec:commons-codec:1.15'
+        force 'junit:junit:4.13.1'
     }
 }
 
