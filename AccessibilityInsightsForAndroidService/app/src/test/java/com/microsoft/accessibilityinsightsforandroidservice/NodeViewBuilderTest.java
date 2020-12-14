@@ -93,6 +93,17 @@ public class NodeViewBuilderTest {
     Assert.assertSame(viewLabeledBy, labeledBy);
   }
 
+  @Test
+  public void nodeViewHasNullClassName() {
+    AxeView labeledBy = mock(AxeView.class);
+    when(node.getClassName()).thenReturn(null);
+
+    testSubject = new NodeViewBuilder(node, children, labeledBy, rectProvider);
+    AxeView axeView = testSubject.build();
+
+    Assert.assertNotNull(axeView.className);
+  }
+
   private void setupBoundingRect() {
     doAnswer(
             AdditionalAnswers.answerVoid(
