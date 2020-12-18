@@ -20,7 +20,10 @@ public class NodeViewBuilder implements AxeView.Builder {
   }
 
   public String className() {
-    return safeToString(accessibilityNode.getClassName());
+    String rawClassName = safeToString(accessibilityNode.getClassName());
+    return (rawClassName == null)
+        ? "Class Name Not Specified--Inserted by Accessibility Insights"
+        : rawClassName;
   }
 
   public String contentDescription() {
