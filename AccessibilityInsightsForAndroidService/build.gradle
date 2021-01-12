@@ -6,7 +6,18 @@
 buildscript {
     repositories {
         jcenter()
-        google()
+        exclusiveContent {
+            forRepository {
+                google()
+            }
+            filter {
+                includeGroupByRegex("^androidx(\$|\\..*)")
+                includeGroupByRegex("^com\\.android(\$|\\..*)")
+                // Note: not all com.google.* cases come from google(), several are published
+                // to jcenter/mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
+                includeGroup("com.google.test.platform")
+            }
+        }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.1'
@@ -23,7 +34,18 @@ plugins {
 allprojects {
     repositories {
         jcenter()
-        google()
+        exclusiveContent {
+            forRepository {
+                google()
+            }
+            filter {
+                includeGroupByRegex("^androidx(\$|\\..*)")
+                includeGroupByRegex("^com\\.android(\$|\\..*)")
+                // Note: not all com.google.* cases come from google(), several are published
+                // to jcenter/mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
+                includeGroup("com.google.test.platform")
+            }
+        }
     }
 }
 
