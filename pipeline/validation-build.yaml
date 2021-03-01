@@ -2,7 +2,7 @@
 # Licensed under the MIT License.
 
 trigger:
-  - master
+  - main
 
 jobs:
   - job: 'gradlew_build'

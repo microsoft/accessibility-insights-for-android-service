@@ -5,7 +5,7 @@ Licensed under the MIT License.
 
 ## Accessibility Insights for Android<sup>TM</sup> Service
 
-[![Build Status](https://dev.azure.com/accessibility-insights/accessibility-insights-for-android-service/_apis/build/status/Accessibility%20Insights%20for%20Android%20Service%20CI?branchName=master)](https://dev.azure.com/accessibility-insights/accessibility-insights-for-android-service/_build/latest?definitionId=35&branchName=master)
+[![Build Status](https://dev.azure.com/accessibility-insights/accessibility-insights-for-android-service/_apis/build/status/Accessibility%20Insights%20for%20Android%20Service%20CI?branchName=main)](https://dev.azure.com/accessibility-insights/accessibility-insights-for-android-service/_build/latest?definitionId=35&branchName=main)
 
 Accessibility Insights for Android Service is a service for Android that helps in assessing the accessibility of Android applications.
 
