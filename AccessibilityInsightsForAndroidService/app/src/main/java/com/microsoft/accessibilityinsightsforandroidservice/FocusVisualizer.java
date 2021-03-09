@@ -32,8 +32,7 @@ public class FocusVisualizer {
     private WindowManager.LayoutParams layoutParams;
 
     public FocusVisualizer(Context context) {
-        //TODO: create FocusVisualizer to keep list of AccessibilityNodeInfo objects, handle redraw/reset
-        // subscribe FocusVisualizer to AccessibilityEventDispatcher
+        //TODO: subscribe FocusVisualizer to AccessibilityEventDispatcher
         this.context = context;
         this.focusElementHighlights = new ArrayList<>();
         this.focusElementLines = new ArrayList<>();
@@ -45,7 +44,6 @@ public class FocusVisualizer {
         this.currentLinePaints = styles.getCurrentLinePaints();
         this.nonCurrentLinePaints = styles.getNonCurrentLinePaints();
         this.layoutParams = getLayoutParams(this.windowManager);
-
     }
 
     public void HandleAccessibilityRedrawEvent(AccessibilityEvent event){
@@ -54,10 +52,7 @@ public class FocusVisualizer {
 
     public void HandleAccessibilityFocusEvent(AccessibilityEvent event){
         tabStopCount++;
-        if(tabStopCount > 20){
-            resetVisualizations();
-            return;
-        }
+
         AccessibilityNodeInfo eventSource = event.getSource();
         AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
 
@@ -89,8 +84,6 @@ public class FocusVisualizer {
     }
 
     private void createNonCurrentFocusElementHighlight(FocusElementHighlight previousElement){
-
-
         FocusElementHighlight newNonCurrentHighlight = new FocusElementHighlight(context, previousElement.eventSource, currentElementPaints, nonCurrentElementPaints, styles.focusElementHighlightRadius, previousElement.tabStopCount, false);
         this.windowManager.addView(newNonCurrentHighlight, this.layoutParams);
         focusElementHighlights.set(focusElementHighlights.size() - 2, newNonCurrentHighlight);
@@ -146,5 +139,4 @@ public class FocusVisualizer {
                         WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT);
     }
-
 }
