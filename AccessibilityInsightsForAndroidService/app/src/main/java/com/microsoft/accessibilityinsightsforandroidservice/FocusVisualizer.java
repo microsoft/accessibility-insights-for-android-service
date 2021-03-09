@@ -3,6 +3,8 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import static android.content.Context.WINDOW_SERVICE;
+
 import android.content.Context;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
@@ -15,128 +17,144 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import static android.content.Context.WINDOW_SERVICE;
-
 public class FocusVisualizer {
-    private static final String TAG = "FocusVisualizer";
-    private ArrayList<FocusElementHighlight> focusElementHighlights;
-    private ArrayList<FocusElementLine> focusElementLines;
-    private int tabStopCount;
-    private Context context;
-    private WindowManager windowManager;
-    private FocusVisualizerStyles styles;
-    private HashMap<String, Paint> currentElementPaints;
-    private HashMap<String, Paint> nonCurrentElementPaints;
-    private HashMap<String, Paint> currentLinePaints;
-    private HashMap<String, Paint> nonCurrentLinePaints;
-    private WindowManager.LayoutParams layoutParams;
+  private static final String TAG = "FocusVisualizer";
+  private ArrayList<FocusElementHighlight> focusElementHighlights;
+  private ArrayList<FocusElementLine> focusElementLines;
+  private int tabStopCount;
+  private Context context;
+  private WindowManager windowManager;
+  private FocusVisualizerStyles styles;
+  private HashMap<String, Paint> currentElementPaints;
+  private HashMap<String, Paint> nonCurrentElementPaints;
+  private HashMap<String, Paint> currentLinePaints;
+  private HashMap<String, Paint> nonCurrentLinePaints;
+  private WindowManager.LayoutParams layoutParams;
 
-    public FocusVisualizer(Context context) {
-        //TODO: subscribe FocusVisualizer to AccessibilityEventDispatcher
-        this.context = context;
-        this.focusElementHighlights = new ArrayList<>();
-        this.focusElementLines = new ArrayList<>();
-        this.tabStopCount = 0;
-        this.windowManager = getWindowManager();
-        this.styles = new FocusVisualizerStyles();
-        this.currentElementPaints = styles.getCurrentElementPaints();
-        this.nonCurrentElementPaints = styles.getNonCurrentElementPaints();
-        this.currentLinePaints = styles.getCurrentLinePaints();
-        this.nonCurrentLinePaints = styles.getNonCurrentLinePaints();
-        this.layoutParams = getLayoutParams(this.windowManager);
+  public FocusVisualizer(Context context) {
+    // TODO: subscribe FocusVisualizer to AccessibilityEventDispatcher
+    this.context = context;
+    this.focusElementHighlights = new ArrayList<>();
+    this.focusElementLines = new ArrayList<>();
+    this.tabStopCount = 0;
+    this.windowManager = getWindowManager();
+    this.styles = new FocusVisualizerStyles();
+    this.currentElementPaints = styles.getCurrentElementPaints();
+    this.nonCurrentElementPaints = styles.getNonCurrentElementPaints();
+    this.currentLinePaints = styles.getCurrentLinePaints();
+    this.nonCurrentLinePaints = styles.getNonCurrentLinePaints();
+    this.layoutParams = getLayoutParams(this.windowManager);
+  }
+
+  public void HandleAccessibilityRedrawEvent(AccessibilityEvent event) {
+    Log.v("Redraw Event!", event.toString());
+  }
+
+  public void HandleAccessibilityFocusEvent(AccessibilityEvent event) {
+    tabStopCount++;
+
+    AccessibilityNodeInfo eventSource = event.getSource();
+    AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
+
+    if (focusElementLines.size() > 0) {
+      focusElementLines.get(focusElementLines.size() - 1).setNonCurrent();
     }
 
-    public void HandleAccessibilityRedrawEvent(AccessibilityEvent event){
-        Log.v("Redraw Event!",event.toString());
+    if (focusElementHighlights.size() > 0) {
+      this.createFocusElementLine(eventSource, previousEventSource);
+      this.createCurrentFocusElementHighlight(eventSource);
+
+      FocusElementHighlight previousElement = getPreviousFocusElementHighlight();
+      this.createNonCurrentFocusElementHighlight(previousElement);
+
+      return;
     }
 
-    public void HandleAccessibilityFocusEvent(AccessibilityEvent event){
-        tabStopCount++;
+    this.createCurrentFocusElementHighlight(eventSource);
+  }
 
-        AccessibilityNodeInfo eventSource = event.getSource();
-        AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
+  private FocusElementHighlight getPreviousFocusElementHighlight() {
+    return focusElementHighlights.get(focusElementHighlights.size() - 2);
+  }
 
-        if(focusElementLines.size() > 0){
-            focusElementLines.get(focusElementLines.size() - 1).setNonCurrent();
-        }
+  private void createFocusElementLine(
+      AccessibilityNodeInfo eventSource, AccessibilityNodeInfo previousEventSource) {
+    FocusElementLine focusElementLine =
+        new FocusElementLine(
+            context, eventSource, previousEventSource, currentLinePaints, nonCurrentLinePaints);
+    this.windowManager.addView(focusElementLine, this.layoutParams);
+    focusElementLines.add(focusElementLine);
+  }
 
-        if(focusElementHighlights.size() > 0){
-            this.createFocusElementLine(eventSource, previousEventSource);
-            this.createCurrentFocusElementHighlight(eventSource);
+  private void createNonCurrentFocusElementHighlight(FocusElementHighlight previousElement) {
+    FocusElementHighlight newNonCurrentHighlight =
+        new FocusElementHighlight(
+            context,
+            previousElement.eventSource,
+            currentElementPaints,
+            nonCurrentElementPaints,
+            styles.focusElementHighlightRadius,
+            previousElement.tabStopCount,
+            false);
+    this.windowManager.addView(newNonCurrentHighlight, this.layoutParams);
+    focusElementHighlights.set(focusElementHighlights.size() - 2, newNonCurrentHighlight);
+    previousElement.reset();
+  }
 
-            FocusElementHighlight previousElement = getPreviousFocusElementHighlight();
-            this.createNonCurrentFocusElementHighlight(previousElement);
+  private void createCurrentFocusElementHighlight(AccessibilityNodeInfo eventSource) {
+    FocusElementHighlight focusElementHighlight =
+        new FocusElementHighlight(
+            context,
+            eventSource,
+            currentElementPaints,
+            nonCurrentElementPaints,
+            styles.focusElementHighlightRadius,
+            tabStopCount,
+            true);
+    this.windowManager.addView(focusElementHighlight, this.layoutParams);
+    focusElementHighlights.add(focusElementHighlight);
+  }
 
-            return;
-        }
-
-        this.createCurrentFocusElementHighlight(eventSource);
+  public WindowManager getWindowManager() {
+    if (windowManager != null) {
+      return windowManager;
     }
 
-    private FocusElementHighlight getPreviousFocusElementHighlight(){
-        return focusElementHighlights.get(focusElementHighlights.size() - 2);
+    return (WindowManager) this.context.getSystemService(WINDOW_SERVICE);
+  }
+
+  private AccessibilityNodeInfo getPreviousEventSource() {
+    if (focusElementHighlights.size() == 0) {
+      return null;
     }
+    return focusElementHighlights.get(focusElementHighlights.size() - 1).eventSource;
+  }
 
-    private void createFocusElementLine(AccessibilityNodeInfo eventSource, AccessibilityNodeInfo previousEventSource){
-        FocusElementLine focusElementLine = new FocusElementLine(context, eventSource, previousEventSource, currentLinePaints, nonCurrentLinePaints);
-        this.windowManager.addView(focusElementLine, this.layoutParams);
-        focusElementLines.add(focusElementLine);
+  private void resetVisualizations() {
+    tabStopCount = 0;
+
+    for (int i = 0; i < focusElementHighlights.size(); i++) {
+      focusElementHighlights.get(i).reset();
     }
-
-    private void createNonCurrentFocusElementHighlight(FocusElementHighlight previousElement){
-        FocusElementHighlight newNonCurrentHighlight = new FocusElementHighlight(context, previousElement.eventSource, currentElementPaints, nonCurrentElementPaints, styles.focusElementHighlightRadius, previousElement.tabStopCount, false);
-        this.windowManager.addView(newNonCurrentHighlight, this.layoutParams);
-        focusElementHighlights.set(focusElementHighlights.size() - 2, newNonCurrentHighlight);
-        previousElement.reset();
+    for (int i = 0; i < focusElementLines.size(); i++) {
+      focusElementLines.get(i).reset();
     }
+    focusElementHighlights = new ArrayList<>();
+    focusElementLines = new ArrayList<>();
+  }
 
-    private void createCurrentFocusElementHighlight(AccessibilityNodeInfo eventSource){
-        FocusElementHighlight focusElementHighlight = new FocusElementHighlight(context, eventSource, currentElementPaints, nonCurrentElementPaints, styles.focusElementHighlightRadius, tabStopCount, true);
-        this.windowManager.addView(focusElementHighlight, this.layoutParams);
-        focusElementHighlights.add(focusElementHighlight);
-    }
-
-    public WindowManager getWindowManager(){
-        if(windowManager != null){
-            return windowManager;
-        }
-
-        return (WindowManager) this.context.getSystemService(WINDOW_SERVICE);
-
-    }
-
-    private AccessibilityNodeInfo getPreviousEventSource(){
-        if(focusElementHighlights.size() == 0){
-            return null;
-        }
-        return focusElementHighlights.get(focusElementHighlights.size() - 1).eventSource;
-    }
-
-    private void resetVisualizations(){
-        tabStopCount = 0;
-
-        for(int i = 0; i < focusElementHighlights.size(); i++){
-            focusElementHighlights.get(i).reset();
-        }
-        for(int i = 0; i < focusElementLines.size(); i++){
-            focusElementLines.get(i).reset();
-        }
-        focusElementHighlights = new ArrayList<>();
-        focusElementLines = new ArrayList<>();
-    }
-
-    private WindowManager.LayoutParams getLayoutParams(WindowManager windowManager){
-        Display display = windowManager.getDefaultDisplay();
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        display.getRealMetrics(displayMetrics);
-        return new WindowManager.LayoutParams(
-                displayMetrics.widthPixels,
-                displayMetrics.heightPixels,
-                WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE |
-                        WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE |
-                        WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
-                        WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
-                PixelFormat.TRANSLUCENT);
-    }
+  private WindowManager.LayoutParams getLayoutParams(WindowManager windowManager) {
+    Display display = windowManager.getDefaultDisplay();
+    DisplayMetrics displayMetrics = new DisplayMetrics();
+    display.getRealMetrics(displayMetrics);
+    return new WindowManager.LayoutParams(
+        displayMetrics.widthPixels,
+        displayMetrics.heightPixels,
+        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+            | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE
+            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+            | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
+        PixelFormat.TRANSLUCENT);
+  }
 }
