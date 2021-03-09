@@ -3,7 +3,8 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import java.util.HashMap;
 
 public class FocusVisualizerStyles {
@@ -13,11 +14,14 @@ public class FocusVisualizerStyles {
     private Paint nonCurrentOuterCirclePaint;
     private Paint innerCirclePaint;
     private Paint numberPaint;
+    private Paint transparentPaint;
 
     private HashMap<String, Paint> currentElementPaints;
     private HashMap<String, Paint> nonCurrentElementPaints;
     private HashMap<String, Paint> currentLinePaints;
     private HashMap<String, Paint> nonCurrentLinePaints;
+
+    public int focusElementHighlightRadius = 50;
 
     public FocusVisualizerStyles(){
         setCurrentOuterCirclePaint();
@@ -26,7 +30,8 @@ public class FocusVisualizerStyles {
         setNumberPaint();
         setCurrentLinePaint();
         setNonCurrentOuterCirclePaint();
-        
+        setTransparentPaint();
+
         setCurrentElementPaints();
         setNonCurrentElementPaints();
         setCurrentLinePaints();
@@ -49,6 +54,7 @@ public class FocusVisualizerStyles {
         this.nonCurrentElementPaints.put("outerCircle", this.nonCurrentOuterCirclePaint);
         this.nonCurrentElementPaints.put("innerCircle", this.innerCirclePaint);
         this.nonCurrentElementPaints.put("number", this.numberPaint);
+        this.nonCurrentElementPaints.put("transparent", this.transparentPaint);
     }
 
     public HashMap<String, Paint> getNonCurrentElementPaints() {
@@ -67,6 +73,7 @@ public class FocusVisualizerStyles {
     private void setNonCurrentLinePaints(){
         this.nonCurrentLinePaints = new HashMap<>();
         this.nonCurrentLinePaints.put("line", this.nonCurrentLinePaint);
+        this.nonCurrentLinePaints.put("transparent", this.transparentPaint);
     }
 
     public HashMap<String, Paint> getNonCurrentLinePaints(){
@@ -107,6 +114,7 @@ public class FocusVisualizerStyles {
     private void setNumberPaint(){
         this.numberPaint = new Paint();
         this.numberPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+        this.numberPaint.setTextAlign(Paint.Align.CENTER);
         this.numberPaint.setColor(Color.BLACK);
         this.numberPaint.setStrokeWidth(3);
         this.numberPaint.setTextSize(45);
@@ -121,5 +129,11 @@ public class FocusVisualizerStyles {
         this.currentLinePaint.setPathEffect(new DashPathEffect(new float[]{25,15},0));
     }
 
-    
+    private void setTransparentPaint(){
+        this.transparentPaint = new Paint();
+        this.transparentPaint.setStyle(Paint.Style.FILL);
+        this.transparentPaint.setColor(Color.TRANSPARENT);
+        this.transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
+    }
+
 }

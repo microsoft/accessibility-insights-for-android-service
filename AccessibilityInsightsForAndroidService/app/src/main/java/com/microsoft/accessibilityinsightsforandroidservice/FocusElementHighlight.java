@@ -6,54 +6,68 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
-
-import androidx.annotation.Nullable;
-
 import java.util.HashMap;
-import java.util.Hashtable;
 
 public class FocusElementHighlight extends View {
     private static final String TAG = "FocusElementHighlight";
-    private AccessibilityNodeInfo eventSource;
-    private AccessibilityNodeInfo previousEventSource;
+    public AccessibilityNodeInfo eventSource;
     private int yOffset;
-    private int tabStopCount;
-    HashMap<String, Paint> paints;
+    public int tabStopCount;
+    public boolean isCurrent;
+    public boolean isReset;
+    public int radius;
+    public int xCoordinate;
+    public int yCoordinate;
+    HashMap<String, Paint> currentPaints;
+    HashMap<String, Paint> nonCurrentPaints;
 
-    public FocusElementHighlight(Context context, AccessibilityNodeInfo eventSource, @Nullable AccessibilityNodeInfo previousEventSource, HashMap<String, Paint> paints, int tabStopCount) {
+    public FocusElementHighlight(Context context, AccessibilityNodeInfo eventSource, HashMap<String, Paint> currentPaints, HashMap<String, Paint> nonCurrentPaints, int radius, int tabStopCount, boolean isCurrent) {
         super(context);
         this.eventSource = eventSource;
-        this.previousEventSource = previousEventSource;
         this.yOffset = getYOffset();
         this.tabStopCount = tabStopCount;
-        this.paints = paints;
+        this.currentPaints = currentPaints;
+        this.nonCurrentPaints = nonCurrentPaints;
+        this.radius = radius;
+        this.isCurrent = isCurrent;
+        this.isReset = false;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        boolean refreshWorked = eventSource.refresh();
-        if (!refreshWorked) {
+        if(eventSource == null){
             return;
         }
 
         Rect rect = new Rect();
         eventSource.getBoundsInScreen(rect);
-        rect.offset(0, yOffset/2);
+        rect.offset(0, yOffset);
 
-        int radius = 50;
+        this.xCoordinate = rect.centerX();
+        this.yCoordinate = rect.centerY();
 
-        int xCoordinate = rect.centerX();
-        int yCoordinate = rect.centerY();
+        if(isReset){
+            this.drawInnerCircle(xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("transparent"), canvas);
+            this.drawNumberInCircle(xCoordinate, yCoordinate, tabStopCount, (Paint) nonCurrentPaints.get("transparent"), canvas);
+            this.drawOuterCircle(xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("transparent"), canvas);
+            return;
+        }
 
-        this.drawInnerCircle(xCoordinate, yCoordinate, radius, (Paint) paints.get("innerCircle"), canvas);
-        this.drawNumberInCircle(xCoordinate, yCoordinate, tabStopCount, (Paint) paints.get("number"),  canvas);
-        this.drawOuterCircleCurrent(xCoordinate, yCoordinate, radius, (Paint) paints.get("outerCircle"), canvas);
+        if(!isCurrent){
+            this.drawInnerCircle(xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("innerCircle"), canvas);
+            this.drawNumberInCircle(xCoordinate, yCoordinate, tabStopCount, (Paint) nonCurrentPaints.get("number"), canvas);
+            this.drawOuterCircle(xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("outerCircle"), canvas);
+            return;
+        }
+
+        this.drawInnerCircle(xCoordinate, yCoordinate, radius, (Paint) currentPaints.get("innerCircle"), canvas);
+        this.drawNumberInCircle(xCoordinate, yCoordinate, tabStopCount, (Paint) currentPaints.get("number"),  canvas);
+        this.drawOuterCircle(xCoordinate, yCoordinate, radius, (Paint) currentPaints.get("outerCircle"), canvas);
     }
 
     public int getYOffset(){
@@ -62,6 +76,8 @@ public class FocusElementHighlight extends View {
         if(resourceId > 0){
             offset = getResources().getDimensionPixelSize(resourceId);
         }
+        //divide by 2 to center
+        offset = offset/2;
         return offset;
     }
 
@@ -69,12 +85,22 @@ public class FocusElementHighlight extends View {
         canvas.drawCircle(xCoordinate, yCoordinate, radius, paint);
     }
 
-    public void drawOuterCircleCurrent(int xCoordinate, int yCoordinate, int radius, Paint paint, Canvas canvas){
+    public void drawOuterCircle(int xCoordinate, int yCoordinate, int radius, Paint paint, Canvas canvas){
         canvas.drawCircle(xCoordinate, yCoordinate, radius+3, paint);
     }
 
     public void drawNumberInCircle(int xCoordinate, int yCoordinate, int tabStopCount, Paint paint, Canvas canvas){
-        canvas.drawText(Integer.toString(tabStopCount),xCoordinate - (paint.getTextSize()/3), yCoordinate + (paint.getTextSize()/3), paint);
+        canvas.drawText(Integer.toString(tabStopCount),xCoordinate, yCoordinate - ((paint.descent() + paint.ascent())/2), paint);
+    }
+
+    public void setNonCurrent(){
+        this.isCurrent = false;
+        this.invalidate();
+    }
+
+    public void reset(){
+        this.isReset = true;
+        this.invalidate();
     }
 
 }

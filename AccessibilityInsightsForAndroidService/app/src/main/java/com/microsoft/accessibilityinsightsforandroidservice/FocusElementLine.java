@@ -6,48 +6,46 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Path;
 import android.graphics.Rect;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
-
-import androidx.annotation.Nullable;
-
 import java.util.HashMap;
-import java.util.Hashtable;
 
 public class FocusElementLine extends View {
     private static final String TAG = "FocusElementLine";
     private AccessibilityNodeInfo eventSource;
     private AccessibilityNodeInfo previousEventSource;
     private int yOffset;
-    private Paint currentPaint;
-    private Paint nonCurrentPaint;
-    private HashMap<String, Paint> paints;
+    private HashMap<String, Paint> currentPaints;
+    private HashMap<String, Paint> nonCurrentPaints;
+    private boolean isCurrent;
+    private boolean isReset;
 
-    public FocusElementLine(Context context, AccessibilityNodeInfo eventSource, @Nullable AccessibilityNodeInfo previousEventSource, HashMap<String, Paint> paints) {
+    public FocusElementLine(Context context, AccessibilityNodeInfo eventSource, AccessibilityNodeInfo previousEventSource, HashMap<String, Paint> currentPaints, HashMap<String, Paint> nonCurrentPaints) {
         super(context);
         this.eventSource = eventSource;
         this.previousEventSource = previousEventSource;
         this.yOffset = getYOffset();
+        this.currentPaints = currentPaints;
+        this.nonCurrentPaints = nonCurrentPaints;
+        this.isCurrent = true;
+        this.isReset = false;
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        boolean refreshWorked = eventSource.refresh();
-        boolean previousRefreshWorked = previousEventSource.refresh();
-        if (!refreshWorked || !previousRefreshWorked) {
+        if(eventSource == null || previousEventSource == null){
             return;
         }
 
         Rect currentRect = new Rect();
-        eventSource.getBoundsInScreen(currentRect);
+        this.eventSource.getBoundsInScreen(currentRect);
         currentRect.offset(0, this.yOffset);
 
         Rect prevRect = new Rect();
-        eventSource.getBoundsInScreen(prevRect);
+        this.previousEventSource.getBoundsInScreen(prevRect);
         prevRect.offset(0, this.yOffset);
 
         int x1Coordinate = currentRect.centerX();
@@ -55,7 +53,17 @@ public class FocusElementLine extends View {
         int x2Coordinate = prevRect.centerX();
         int y2Coordinate = prevRect.centerY();
 
-        this.drawConnectingLine(canvas, (Paint) this.paints.get("line"), x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate);
+        if(isReset){
+            this.drawConnectingLine(canvas, (Paint) this.nonCurrentPaints.get("transparent"), x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate);
+            return;
+        }
+
+        if(!isCurrent){
+            this.drawConnectingLine(canvas, (Paint) this.nonCurrentPaints.get("line"), x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate);
+            return;
+        }
+
+        this.drawConnectingLine(canvas, (Paint) this.currentPaints.get("line"), x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate);
 
     }
 
@@ -71,6 +79,16 @@ public class FocusElementLine extends View {
 
     public void drawConnectingLine(Canvas canvas, Paint paint, int x1Coordinate, int y1Coordinate, int x2Coordinate, int y2Coordinate){
         canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
+    }
+
+    public void setNonCurrent(){
+        this.isCurrent = false;
+        this.invalidate();
+    }
+
+    public void reset(){
+        this.isReset = true;
+        this.invalidate();
     }
 
 }
