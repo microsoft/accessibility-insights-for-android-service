@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
@@ -20,6 +21,18 @@ public class FocusElementLine extends View {
   private HashMap<String, Paint> nonCurrentPaints;
   private boolean isCurrent;
   private boolean isReset;
+  private Rect currentRect;
+  private Rect prevRect;
+
+  public FocusElementLine(Context context){
+    super(context);
+  }
+  public FocusElementLine(Context context, AttributeSet attrs){
+    super(context, attrs);
+  }
+  public FocusElementLine(Context context, AttributeSet attrs, int toolInt){
+    super(context, attrs, toolInt);
+  }
 
   public FocusElementLine(
       Context context,
@@ -35,6 +48,8 @@ public class FocusElementLine extends View {
     this.nonCurrentPaints = nonCurrentPaints;
     this.isCurrent = true;
     this.isReset = false;
+    this.currentRect = new Rect();
+    this.prevRect = new Rect();
   }
 
   @Override
@@ -45,11 +60,9 @@ public class FocusElementLine extends View {
       return;
     }
 
-    Rect currentRect = new Rect();
     this.eventSource.getBoundsInScreen(currentRect);
     currentRect.offset(0, this.yOffset);
 
-    Rect prevRect = new Rect();
     this.previousEventSource.getBoundsInScreen(prevRect);
     prevRect.offset(0, this.yOffset);
 
@@ -61,7 +74,7 @@ public class FocusElementLine extends View {
     if (isReset) {
       this.drawConnectingLine(
           canvas,
-          (Paint) this.nonCurrentPaints.get("transparent"),
+          this.nonCurrentPaints.get("transparent"),
           x1Coordinate,
           y1Coordinate,
           x2Coordinate,
@@ -72,7 +85,7 @@ public class FocusElementLine extends View {
     if (!isCurrent) {
       this.drawConnectingLine(
           canvas,
-          (Paint) this.nonCurrentPaints.get("line"),
+          this.nonCurrentPaints.get("line"),
           x1Coordinate,
           y1Coordinate,
           x2Coordinate,
@@ -82,7 +95,7 @@ public class FocusElementLine extends View {
 
     this.drawConnectingLine(
         canvas,
-        (Paint) this.currentPaints.get("line"),
+        this.currentPaints.get("line"),
         x1Coordinate,
         y1Coordinate,
         x2Coordinate,

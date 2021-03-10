@@ -7,23 +7,35 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
+import android.util.AttributeSet;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
 
 public class FocusElementHighlight extends View {
   private static final String TAG = "FocusElementHighlight";
-  public AccessibilityNodeInfo eventSource;
+  private AccessibilityNodeInfo eventSource;
   private int yOffset;
-  public int tabStopCount;
-  public boolean isCurrent;
-  public boolean isReset;
-  public int radius;
-  public int xCoordinate;
-  public int yCoordinate;
-  HashMap<String, Paint> currentPaints;
-  HashMap<String, Paint> nonCurrentPaints;
+  private int tabStopCount;
+  private boolean isCurrent;
+  private boolean isReset;
+  private int radius;
+  private int xCoordinate;
+  private int yCoordinate;
+  // performance based variables
+  private HashMap<String, Paint> currentPaints;
+  private HashMap<String, Paint> nonCurrentPaints;
+  private Rect rect;
 
+  public FocusElementHighlight(Context context){
+    super(context);
+  }
+  public FocusElementHighlight(Context context, AttributeSet attrs){
+    super(context, attrs);
+  }
+  public FocusElementHighlight(Context context, AttributeSet attrs, int toolInt){
+    super(context, attrs, toolInt);
+  }
   public FocusElementHighlight(
       Context context,
       AccessibilityNodeInfo eventSource,
@@ -41,6 +53,7 @@ public class FocusElementHighlight extends View {
     this.radius = radius;
     this.isCurrent = isCurrent;
     this.isReset = false;
+    this.rect = new Rect();
   }
 
   @Override
@@ -51,7 +64,6 @@ public class FocusElementHighlight extends View {
       return;
     }
 
-    Rect rect = new Rect();
     eventSource.getBoundsInScreen(rect);
     rect.offset(0, yOffset);
 
@@ -60,34 +72,34 @@ public class FocusElementHighlight extends View {
 
     if (isReset) {
       this.drawInnerCircle(
-          xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("transparent"), canvas);
+          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("transparent"), canvas);
       this.drawNumberInCircle(
           xCoordinate,
           yCoordinate,
           tabStopCount,
-          (Paint) nonCurrentPaints.get("transparent"),
+          nonCurrentPaints.get("transparent"),
           canvas);
       this.drawOuterCircle(
-          xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("transparent"), canvas);
+          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("transparent"), canvas);
       return;
     }
 
     if (!isCurrent) {
       this.drawInnerCircle(
-          xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("innerCircle"), canvas);
+          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("innerCircle"), canvas);
       this.drawNumberInCircle(
-          xCoordinate, yCoordinate, tabStopCount, (Paint) nonCurrentPaints.get("number"), canvas);
+          xCoordinate, yCoordinate, tabStopCount, nonCurrentPaints.get("number"), canvas);
       this.drawOuterCircle(
-          xCoordinate, yCoordinate, radius, (Paint) nonCurrentPaints.get("outerCircle"), canvas);
+          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("outerCircle"), canvas);
       return;
     }
 
     this.drawInnerCircle(
-        xCoordinate, yCoordinate, radius, (Paint) currentPaints.get("innerCircle"), canvas);
+        xCoordinate, yCoordinate, radius, currentPaints.get("innerCircle"), canvas);
     this.drawNumberInCircle(
-        xCoordinate, yCoordinate, tabStopCount, (Paint) currentPaints.get("number"), canvas);
+        xCoordinate, yCoordinate, tabStopCount, currentPaints.get("number"), canvas);
     this.drawOuterCircle(
-        xCoordinate, yCoordinate, radius, (Paint) currentPaints.get("outerCircle"), canvas);
+        xCoordinate, yCoordinate, radius, currentPaints.get("outerCircle"), canvas);
   }
 
   public int getYOffset() {
@@ -128,5 +140,13 @@ public class FocusElementHighlight extends View {
   public void reset() {
     this.isReset = true;
     this.invalidate();
+  }
+
+  public int getTabStopCount(){
+    return this.tabStopCount;
+  }
+
+  public AccessibilityNodeInfo getEventSource(){
+    return this.eventSource;
   }
 }

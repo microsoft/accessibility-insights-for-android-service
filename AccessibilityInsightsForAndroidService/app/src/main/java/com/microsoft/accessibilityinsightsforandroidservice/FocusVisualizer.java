@@ -90,11 +90,11 @@ public class FocusVisualizer {
     FocusElementHighlight newNonCurrentHighlight =
         new FocusElementHighlight(
             context,
-            previousElement.eventSource,
+            previousElement.getEventSource(),
             currentElementPaints,
             nonCurrentElementPaints,
             styles.focusElementHighlightRadius,
-            previousElement.tabStopCount,
+            previousElement.getTabStopCount(),
             false);
     this.windowManager.addView(newNonCurrentHighlight, this.layoutParams);
     focusElementHighlights.set(focusElementHighlights.size() - 2, newNonCurrentHighlight);
@@ -127,7 +127,7 @@ public class FocusVisualizer {
     if (focusElementHighlights.size() == 0) {
       return null;
     }
-    return focusElementHighlights.get(focusElementHighlights.size() - 1).eventSource;
+    return focusElementHighlights.get(focusElementHighlights.size() - 1).getEventSource();
   }
 
   private void resetVisualizations() {
