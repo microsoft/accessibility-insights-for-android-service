@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class AccessibilityEventDispatcher {
-  private static final String TAG = "AccessibilityEventDispa";
+  private static final String TAG = "AccessibilityEventDispatcher";
   private CharSequence previousPackageName;
 
   private ArrayList<Consumer<AccessibilityNodeInfo>> onAppChangedListeners;
