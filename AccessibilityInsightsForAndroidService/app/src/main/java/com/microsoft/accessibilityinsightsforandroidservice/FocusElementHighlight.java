@@ -17,14 +17,11 @@ public class FocusElementHighlight extends View {
   private AccessibilityNodeInfo eventSource;
   private int yOffset;
   private int tabStopCount;
-  private boolean isCurrent;
-  private boolean isReset;
   private int radius;
   private int xCoordinate;
   private int yCoordinate;
   // performance based variables
-  private HashMap<String, Paint> currentPaints;
-  private HashMap<String, Paint> nonCurrentPaints;
+  private HashMap<String, Paint> paints;
   private Rect rect;
 
   public FocusElementHighlight(Context context){
@@ -40,19 +37,14 @@ public class FocusElementHighlight extends View {
       Context context,
       AccessibilityNodeInfo eventSource,
       HashMap<String, Paint> currentPaints,
-      HashMap<String, Paint> nonCurrentPaints,
       int radius,
-      int tabStopCount,
-      boolean isCurrent) {
+      int tabStopCount) {
     super(context);
     this.eventSource = eventSource;
     this.yOffset = getYOffset();
     this.tabStopCount = tabStopCount;
-    this.currentPaints = currentPaints;
-    this.nonCurrentPaints = nonCurrentPaints;
+    this.paints = currentPaints;
     this.radius = radius;
-    this.isCurrent = isCurrent;
-    this.isReset = false;
     this.rect = new Rect();
   }
 
@@ -70,36 +62,12 @@ public class FocusElementHighlight extends View {
     this.xCoordinate = rect.centerX();
     this.yCoordinate = rect.centerY();
 
-    if (isReset) {
-      this.drawInnerCircle(
-          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("transparent"), canvas);
-      this.drawNumberInCircle(
-          xCoordinate,
-          yCoordinate,
-          tabStopCount,
-          nonCurrentPaints.get("transparent"),
-          canvas);
-      this.drawOuterCircle(
-          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("transparent"), canvas);
-      return;
-    }
-
-    if (!isCurrent) {
-      this.drawInnerCircle(
-          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("innerCircle"), canvas);
-      this.drawNumberInCircle(
-          xCoordinate, yCoordinate, tabStopCount, nonCurrentPaints.get("number"), canvas);
-      this.drawOuterCircle(
-          xCoordinate, yCoordinate, radius, nonCurrentPaints.get("outerCircle"), canvas);
-      return;
-    }
-
     this.drawInnerCircle(
-        xCoordinate, yCoordinate, radius, currentPaints.get("innerCircle"), canvas);
+        xCoordinate, yCoordinate, radius, paints.get("innerCircle"), canvas);
     this.drawNumberInCircle(
-        xCoordinate, yCoordinate, tabStopCount, currentPaints.get("number"), canvas);
+        xCoordinate, yCoordinate, tabStopCount, paints.get("number"), canvas);
     this.drawOuterCircle(
-        xCoordinate, yCoordinate, radius, currentPaints.get("outerCircle"), canvas);
+        xCoordinate, yCoordinate, radius, paints.get("outerCircle"), canvas);
   }
 
   public int getYOffset() {
@@ -132,13 +100,10 @@ public class FocusElementHighlight extends View {
         paint);
   }
 
-  public void setNonCurrent() {
-    this.isCurrent = false;
-    this.invalidate();
-  }
+  //layout params being called in constructor, try rotating device and see if it still works properly.
 
-  public void reset() {
-    this.isReset = true;
+  public void setPaint(HashMap<String, Paint> paints) {
+    this.paints = paints;
     this.invalidate();
   }
 

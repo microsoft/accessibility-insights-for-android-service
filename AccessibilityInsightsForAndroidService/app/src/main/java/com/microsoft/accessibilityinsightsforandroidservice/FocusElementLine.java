@@ -17,10 +17,7 @@ public class FocusElementLine extends View {
   private AccessibilityNodeInfo eventSource;
   private AccessibilityNodeInfo previousEventSource;
   private int yOffset;
-  private HashMap<String, Paint> currentPaints;
-  private HashMap<String, Paint> nonCurrentPaints;
-  private boolean isCurrent;
-  private boolean isReset;
+  private HashMap<String, Paint> paints;
   private Rect currentRect;
   private Rect prevRect;
 
@@ -38,16 +35,12 @@ public class FocusElementLine extends View {
       Context context,
       AccessibilityNodeInfo eventSource,
       AccessibilityNodeInfo previousEventSource,
-      HashMap<String, Paint> currentPaints,
-      HashMap<String, Paint> nonCurrentPaints) {
+      HashMap<String, Paint> Paints) {
     super(context);
     this.eventSource = eventSource;
     this.previousEventSource = previousEventSource;
     this.yOffset = getYOffset();
-    this.currentPaints = currentPaints;
-    this.nonCurrentPaints = nonCurrentPaints;
-    this.isCurrent = true;
-    this.isReset = false;
+    this.paints = Paints;
     this.currentRect = new Rect();
     this.prevRect = new Rect();
   }
@@ -71,31 +64,9 @@ public class FocusElementLine extends View {
     int x2Coordinate = prevRect.centerX();
     int y2Coordinate = prevRect.centerY();
 
-    if (isReset) {
-      this.drawConnectingLine(
-          canvas,
-          this.nonCurrentPaints.get("transparent"),
-          x1Coordinate,
-          y1Coordinate,
-          x2Coordinate,
-          y2Coordinate);
-      return;
-    }
-
-    if (!isCurrent) {
-      this.drawConnectingLine(
-          canvas,
-          this.nonCurrentPaints.get("line"),
-          x1Coordinate,
-          y1Coordinate,
-          x2Coordinate,
-          y2Coordinate);
-      return;
-    }
-
     this.drawConnectingLine(
         canvas,
-        this.currentPaints.get("line"),
+        this.paints.get("line"),
         x1Coordinate,
         y1Coordinate,
         x2Coordinate,
@@ -121,13 +92,9 @@ public class FocusElementLine extends View {
     canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
   }
 
-  public void setNonCurrent() {
-    this.isCurrent = false;
+  public void setPaint(HashMap<String, Paint> paints){
+    this.paints = paints;
     this.invalidate();
   }
 
-  public void reset() {
-    this.isReset = true;
-    this.invalidate();
-  }
 }

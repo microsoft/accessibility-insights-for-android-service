@@ -23,6 +23,8 @@ public class FocusVisualizerStyles {
   private HashMap<String, Paint> nonCurrentElementPaints;
   private HashMap<String, Paint> currentLinePaints;
   private HashMap<String, Paint> nonCurrentLinePaints;
+  private HashMap<String, Paint> transparentElementPaints;
+  private HashMap<String, Paint> transparentLinePaints;
 
   public int focusElementHighlightRadius = 50;
 
@@ -39,6 +41,8 @@ public class FocusVisualizerStyles {
     setNonCurrentElementPaints();
     setCurrentLinePaints();
     setNonCurrentLinePaints();
+    setTransparentElementPaints();
+    setTransparentLinePaints();
   }
 
   private void setCurrentElementPaints() {
@@ -51,6 +55,15 @@ public class FocusVisualizerStyles {
   public HashMap<String, Paint> getCurrentElementPaints() {
     return currentElementPaints;
   }
+
+  private void setTransparentElementPaints() {
+    this.transparentElementPaints = new HashMap<>();
+    this.transparentElementPaints.put("outerCircle", this.transparentPaint);
+    this.transparentElementPaints.put("innerCircle", this.transparentPaint);
+    this.transparentElementPaints.put("number", this.transparentPaint);
+  }
+
+  public HashMap<String, Paint> getTransparentElementPaints() { return transparentElementPaints; }
 
   private void setNonCurrentElementPaints() {
     this.nonCurrentElementPaints = new HashMap<>();
@@ -76,12 +89,18 @@ public class FocusVisualizerStyles {
   private void setNonCurrentLinePaints() {
     this.nonCurrentLinePaints = new HashMap<>();
     this.nonCurrentLinePaints.put("line", this.nonCurrentLinePaint);
-    this.nonCurrentLinePaints.put("transparent", this.transparentPaint);
   }
 
   public HashMap<String, Paint> getNonCurrentLinePaints() {
     return nonCurrentLinePaints;
   }
+
+  private void setTransparentLinePaints(){
+    this.transparentLinePaints = new HashMap<>();
+    this.transparentLinePaints.put("line", this.transparentPaint);
+  }
+
+  public HashMap<String, Paint> getTransparentLinePaints() { return transparentLinePaints; }
 
   private void setNonCurrentLinePaint() {
     this.nonCurrentLinePaint = new Paint();

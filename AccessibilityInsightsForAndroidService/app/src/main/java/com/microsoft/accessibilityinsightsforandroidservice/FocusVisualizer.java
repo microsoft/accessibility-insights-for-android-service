@@ -6,7 +6,6 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import static android.content.Context.WINDOW_SERVICE;
 
 import android.content.Context;
-import android.graphics.Paint;
 import android.graphics.PixelFormat;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -15,7 +14,6 @@ import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class FocusVisualizer {
   private static final String TAG = "FocusVisualizer";
@@ -25,10 +23,6 @@ public class FocusVisualizer {
   private Context context;
   private WindowManager windowManager;
   private FocusVisualizerStyles styles;
-  private HashMap<String, Paint> currentElementPaints;
-  private HashMap<String, Paint> nonCurrentElementPaints;
-  private HashMap<String, Paint> currentLinePaints;
-  private HashMap<String, Paint> nonCurrentLinePaints;
   private WindowManager.LayoutParams layoutParams;
 
   public FocusVisualizer(Context context) {
@@ -39,11 +33,8 @@ public class FocusVisualizer {
     this.tabStopCount = 0;
     this.windowManager = getWindowManager();
     this.styles = new FocusVisualizerStyles();
-    this.currentElementPaints = styles.getCurrentElementPaints();
-    this.nonCurrentElementPaints = styles.getNonCurrentElementPaints();
-    this.currentLinePaints = styles.getCurrentLinePaints();
-    this.nonCurrentLinePaints = styles.getNonCurrentLinePaints();
     this.layoutParams = getLayoutParams(this.windowManager);
+    //TODO: Check rotation of device here. Does it still work or do we need to move this out of the constructor?
   }
 
   public void HandleAccessibilityRedrawEvent(AccessibilityEvent event) {
@@ -57,7 +48,7 @@ public class FocusVisualizer {
     AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
 
     if (focusElementLines.size() > 0) {
-      focusElementLines.get(focusElementLines.size() - 1).setNonCurrent();
+      this.setLineNonCurrent(focusElementLines.get(focusElementLines.size() - 1));
     }
 
     if (focusElementHighlights.size() > 0) {
@@ -73,6 +64,14 @@ public class FocusVisualizer {
     this.createCurrentFocusElementHighlight(eventSource);
   }
 
+  private void setLineNonCurrent(FocusElementLine line){
+    line.setPaint(this.styles.getNonCurrentLinePaints());
+  }
+
+  private void removeLine(FocusElementLine line){
+    line.setPaint(this.styles.getTransparentLinePaints());
+  }
+
   private FocusElementHighlight getPreviousFocusElementHighlight() {
     return focusElementHighlights.get(focusElementHighlights.size() - 2);
   }
@@ -81,7 +80,7 @@ public class FocusVisualizer {
       AccessibilityNodeInfo eventSource, AccessibilityNodeInfo previousEventSource) {
     FocusElementLine focusElementLine =
         new FocusElementLine(
-            context, eventSource, previousEventSource, currentLinePaints, nonCurrentLinePaints);
+            context, eventSource, previousEventSource, this.styles.getCurrentLinePaints());
     this.windowManager.addView(focusElementLine, this.layoutParams);
     focusElementLines.add(focusElementLine);
   }
@@ -91,14 +90,12 @@ public class FocusVisualizer {
         new FocusElementHighlight(
             context,
             previousElement.getEventSource(),
-            currentElementPaints,
-            nonCurrentElementPaints,
+            this.styles.getNonCurrentElementPaints(),
             styles.focusElementHighlightRadius,
-            previousElement.getTabStopCount(),
-            false);
+            previousElement.getTabStopCount());
     this.windowManager.addView(newNonCurrentHighlight, this.layoutParams);
     focusElementHighlights.set(focusElementHighlights.size() - 2, newNonCurrentHighlight);
-    previousElement.reset();
+    this.removeFocusElementHighlight(previousElement);
   }
 
   private void createCurrentFocusElementHighlight(AccessibilityNodeInfo eventSource) {
@@ -106,13 +103,15 @@ public class FocusVisualizer {
         new FocusElementHighlight(
             context,
             eventSource,
-            currentElementPaints,
-            nonCurrentElementPaints,
+            this.styles.getCurrentElementPaints(),
             styles.focusElementHighlightRadius,
-            tabStopCount,
-            true);
+            tabStopCount);
     this.windowManager.addView(focusElementHighlight, this.layoutParams);
     focusElementHighlights.add(focusElementHighlight);
+  }
+
+  private void removeFocusElementHighlight(FocusElementHighlight highlight){
+    highlight.setPaint(this.styles.getTransparentElementPaints());
   }
 
   public WindowManager getWindowManager() {
@@ -134,10 +133,10 @@ public class FocusVisualizer {
     tabStopCount = 0;
 
     for (int i = 0; i < focusElementHighlights.size(); i++) {
-      focusElementHighlights.get(i).reset();
+      this.removeFocusElementHighlight(focusElementHighlights.get(i));
     }
     for (int i = 0; i < focusElementLines.size(); i++) {
-      focusElementLines.get(i).reset();
+      this.removeLine(focusElementLines.get(i));
     }
     focusElementHighlights = new ArrayList<>();
     focusElementLines = new ArrayList<>();
