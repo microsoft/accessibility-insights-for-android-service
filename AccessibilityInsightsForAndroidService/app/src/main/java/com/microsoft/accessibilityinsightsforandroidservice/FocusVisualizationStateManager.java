@@ -1,39 +1,36 @@
-// Copyright (c) Microsoft Corporation.
-// Licensed under the MIT License.
-
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class FocusVisualizationStateManager {
-  private boolean enabled = false;
-  private ArrayList<Command> onChangedListeners;
+    private boolean enabled = false;
+    private ArrayList<Consumer<Boolean>> onChangedListeners;
 
-  public FocusVisualizationStateManager() {
-    onChangedListeners = new ArrayList<Command>();
-  }
-
-  public void subscribe(Command listener) {
-    onChangedListeners.add(listener);
-  }
-
-  public void setState(boolean enabled) {
-    if (this.enabled == enabled) {
-      return;
+    public FocusVisualizationStateManager() {
+        onChangedListeners = new ArrayList<Consumer<Boolean>>();
     }
 
-    this.enabled = enabled;
-    this.emitChanged();
-  }
+    public void subscribe(Consumer<Boolean> listener) {
+        onChangedListeners.add(listener);
+    }
 
-  public boolean getState() {
-    return this.enabled;
-  }
+    public void setState(boolean enabled) {
+        if (this.enabled == enabled) {
+            return;
+        }
 
-  private void emitChanged() {
-    onChangedListeners.forEach(
-        listener -> {
-          listener.execute();
+        this.enabled = enabled;
+        this.emitChanged(enabled);
+    }
+
+    public boolean getState() {
+        return this.enabled;
+    }
+
+    private void emitChanged(boolean enabled) {
+        onChangedListeners.forEach(listener -> {
+            listener.accept(enabled);
         });
-  }
+    }
 }
