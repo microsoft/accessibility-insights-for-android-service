@@ -7,7 +7,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
@@ -17,19 +16,13 @@ public class FocusElementLine extends View {
   private AccessibilityNodeInfo eventSource;
   private AccessibilityNodeInfo previousEventSource;
   private int yOffset;
+  private int x1Coordinate;
+  private int y1Coordinate;
+  private int x2Coordinate;
+  private int y2Coordinate;
   private HashMap<String, Paint> paints;
   private Rect currentRect;
   private Rect prevRect;
-
-  public FocusElementLine(Context context){
-    super(context);
-  }
-  public FocusElementLine(Context context, AttributeSet attrs){
-    super(context, attrs);
-  }
-  public FocusElementLine(Context context, AttributeSet attrs, int toolInt){
-    super(context, attrs, toolInt);
-  }
 
   public FocusElementLine(
       Context context,
@@ -39,16 +32,26 @@ public class FocusElementLine extends View {
     super(context);
     this.eventSource = eventSource;
     this.previousEventSource = previousEventSource;
-    this.yOffset = getYOffset();
+    this.yOffset = setYOffset();
     this.paints = Paints;
     this.currentRect = new Rect();
     this.prevRect = new Rect();
+    this.setCoordinates();
   }
 
-  @Override
-  protected void onDraw(Canvas canvas) {
-    super.onDraw(canvas);
 
+  public void drawLine(Canvas canvas) {
+    
+    this.drawConnectingLine(
+        this.x1Coordinate,
+        this.y1Coordinate,
+        this.x2Coordinate,
+        this.y2Coordinate,
+        this.paints.get("line"),
+        canvas);
+  }
+
+  private void setCoordinates(){
     if (eventSource == null || previousEventSource == null) {
       return;
     }
@@ -59,42 +62,35 @@ public class FocusElementLine extends View {
     this.previousEventSource.getBoundsInScreen(prevRect);
     prevRect.offset(0, this.yOffset);
 
-    int x1Coordinate = currentRect.centerX();
-    int y1Coordinate = currentRect.centerY();
-    int x2Coordinate = prevRect.centerX();
-    int y2Coordinate = prevRect.centerY();
-
-    this.drawConnectingLine(
-        canvas,
-        this.paints.get("line"),
-        x1Coordinate,
-        y1Coordinate,
-        x2Coordinate,
-        y2Coordinate);
+    this.x1Coordinate = currentRect.centerX();
+    this.y1Coordinate = currentRect.centerY();
+    this.x2Coordinate = prevRect.centerX();
+    this.y2Coordinate = prevRect.centerY();
   }
 
-  public int getYOffset() {
+  private int setYOffset(){
     int offset = 0;
     int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {
-      offset = getResources().getDimensionPixelSize(resourceId) / 2;
+      offset = getResources().getDimensionPixelSize(resourceId);
     }
+    // divide by 2 to center
+    offset = offset / 2;
     return offset;
   }
 
   public void drawConnectingLine(
-      Canvas canvas,
-      Paint paint,
       int x1Coordinate,
       int y1Coordinate,
       int x2Coordinate,
-      int y2Coordinate) {
+      int y2Coordinate,
+      Paint paint,
+      Canvas canvas) {
     canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
   }
 
   public void setPaint(HashMap<String, Paint> paints){
     this.paints = paints;
-    this.invalidate();
   }
 
 }
