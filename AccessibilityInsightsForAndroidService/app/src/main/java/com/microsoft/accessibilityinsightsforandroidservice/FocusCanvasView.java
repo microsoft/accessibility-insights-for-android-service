@@ -19,16 +19,6 @@ public class FocusCanvasView extends View {
     this.focusElementHighlights = new ArrayList<>();
     this.focusElementLines = new ArrayList<>();
   }
-  public FocusCanvasView(Context context, AttributeSet attrs){
-    super(context, attrs);
-    this.focusElementHighlights = new ArrayList<>();
-    this.focusElementLines = new ArrayList<>();
-  }
-  public FocusCanvasView(Context context, AttributeSet attrs, int toolInt){
-    super(context, attrs, toolInt);
-    this.focusElementHighlights = new ArrayList<>();
-    this.focusElementLines = new ArrayList<>();
-  }
 
 
   @Override
@@ -41,7 +31,6 @@ public class FocusCanvasView extends View {
         this.focusElementHighlights.get(i-1).drawElementHighlight(canvas);
       }
       this.focusElementHighlights.get(i).drawElementHighlight(canvas);
-
     }
 
   }

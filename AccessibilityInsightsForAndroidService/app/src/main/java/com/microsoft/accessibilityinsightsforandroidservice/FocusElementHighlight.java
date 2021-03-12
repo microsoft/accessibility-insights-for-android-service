@@ -42,6 +42,9 @@ public class FocusElementHighlight extends View {
   }
 
   public void setCoordinates(){
+    if (eventSource == null) {
+      return;
+    }
     this.eventSource.getBoundsInScreen(this.rect);
     rect.offset(0, this.yOffset);
     this.xCoordinate = rect.centerX();
@@ -86,9 +89,6 @@ public class FocusElementHighlight extends View {
             yCoordinate - ((paint.descent() + paint.ascent()) / 2),
             paint);
   }
-
-
-  //layout params being called in constructor, try rotating device and see if it still works properly.
 
   public void setPaints(HashMap<String, Paint> paints) {
     this.paints = paints;

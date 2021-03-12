@@ -59,22 +59,6 @@ public class FocusVisualizer {
       this.setPreviousLineNonCurrent(focusElementLines.get(focusElementLines.size() - 2));
     }
 
-//    if (focusElementLines.size() > 0) {
-//      this.setLineNonCurrent(focusElementLines.get(focusElementLines.size() - 1));
-//    }
-//
-//    if (focusElementHighlights.size() > 0) {
-//      this.createFocusElementLine(eventSource, previousEventSource);
-//      this.createCurrentFocusElementHighlight(eventSource);
-//
-//      FocusElementHighlight previousElement = getPreviousFocusElementHighlight();
-//      this.createNonCurrentFocusElementHighlight(previousElement);
-//
-//      return;
-//    }
-//
-//    this.createCurrentFocusElementHighlight(eventSource);
-
     this.focusCanvasView.setFocusElementHighlights(this.focusElementHighlights);
     this.focusCanvasView.setFocusElementLines(this.focusElementLines);
 

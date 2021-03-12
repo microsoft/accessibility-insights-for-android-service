@@ -41,7 +41,6 @@ public class FocusElementLine extends View {
 
 
   public void drawLine(Canvas canvas) {
-    
     this.drawConnectingLine(
         this.x1Coordinate,
         this.y1Coordinate,
