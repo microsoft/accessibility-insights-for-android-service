@@ -39,7 +39,6 @@ public class FocusElementLine {
     this.setCoordinates();
   }
 
-
   public void drawLine(Canvas canvas) {
     this.drawConnectingLine(
         this.x1Coordinate,
@@ -50,16 +49,16 @@ public class FocusElementLine {
         canvas);
   }
 
-  private void setCoordinates(){
-    if (eventSource == null || previousEventSource == null) {
+  private void setCoordinates() {
+    if (this.eventSource == null || this.previousEventSource == null) {
       return;
     }
 
-    this.eventSource.getBoundsInScreen(currentRect);
-    currentRect.offset(0, this.yOffset);
+    this.eventSource.getBoundsInScreen(this.currentRect);
+    this.currentRect.offset(0, this.yOffset);
 
-    this.previousEventSource.getBoundsInScreen(prevRect);
-    prevRect.offset(0, this.yOffset);
+    this.previousEventSource.getBoundsInScreen(this.prevRect);
+    this.prevRect.offset(0, this.yOffset);
 
     this.x1Coordinate = currentRect.centerX();
     this.y1Coordinate = currentRect.centerY();
@@ -67,9 +66,10 @@ public class FocusElementLine {
     this.y2Coordinate = prevRect.centerY();
   }
 
-  private int setYOffset(){
+  private int setYOffset() {
     int offset = 0;
-    int resourceId = this.view.getResources().getIdentifier("status_bar_height", "dimen", "android");
+    int resourceId =
+        this.view.getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {
       offset = this.view.getResources().getDimensionPixelSize(resourceId);
     }
@@ -85,16 +85,15 @@ public class FocusElementLine {
       int y2Coordinate,
       Paint paint,
       Canvas canvas) {
-      canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
+    canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
   }
 
-  public void setPaint(HashMap<String, Paint> paints){
+  public void setPaint(HashMap<String, Paint> paints) {
     this.paints = paints;
   }
 
-  public void updateWithNewCoordinates(){
+  public void updateWithNewCoordinates() {
     this.setYOffset();
     this.setCoordinates();
   }
-
 }
