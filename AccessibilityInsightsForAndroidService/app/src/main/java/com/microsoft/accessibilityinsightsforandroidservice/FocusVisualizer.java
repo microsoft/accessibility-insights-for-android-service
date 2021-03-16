@@ -4,12 +4,17 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static android.content.Context.WINDOW_SERVICE;
+import static android.view.accessibility.AccessibilityEvent.TYPE_WINDOWS_CHANGED;
 
 import android.content.Context;
 import android.graphics.PixelFormat;
+import android.hardware.SensorManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
+import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -24,7 +29,6 @@ public class FocusVisualizer {
   private WindowManager windowManager;
   private FocusVisualizerStyles styles;
   private FocusCanvasView focusCanvasView;
-  private WindowManager.LayoutParams layoutParams;
 
   public FocusVisualizer(Context context) {
     // TODO: subscribe FocusVisualizer to AccessibilityEventDispatcher
@@ -34,7 +38,6 @@ public class FocusVisualizer {
     this.tabStopCount = 0;
     this.windowManager = getWindowManager();
     this.styles = new FocusVisualizerStyles();
-    this.layoutParams = getLayoutParams(this.windowManager);
     this.focusCanvasView = this.createFocusCanvasView();
     //TODO: Check rotation of device here. Does it still work or do we need to move this out of the constructor?
   }
@@ -44,6 +47,7 @@ public class FocusVisualizer {
   }
 
   public void HandleAccessibilityFocusEvent(AccessibilityEvent event) {
+    Log.v("Focus Event!", event.toString());
     tabStopCount++;
 
     AccessibilityNodeInfo eventSource = event.getSource();
@@ -77,14 +81,14 @@ public class FocusVisualizer {
   private void createFocusElementLine(
       AccessibilityNodeInfo eventSource, AccessibilityNodeInfo previousEventSource) {
     FocusElementLine focusElementLine =
-        new FocusElementLine(
-            context, eventSource, previousEventSource, this.styles.getCurrentLinePaints());
+        new FocusElementLine(eventSource, previousEventSource, this.styles.getCurrentLinePaints(), focusCanvasView);
     focusElementLines.add(focusElementLine);
   }
 
   private FocusCanvasView createFocusCanvasView(){
     FocusCanvasView focusCanvasView = new FocusCanvasView(context);
-    this.windowManager.addView(focusCanvasView, this.layoutParams);
+    WindowManager.LayoutParams layoutParams = this.getLayoutParams(this.windowManager);
+    this.windowManager.addView(focusCanvasView, layoutParams);
     return focusCanvasView;
   }
 
@@ -92,11 +96,11 @@ public class FocusVisualizer {
   private void createFocusElementHighlight(AccessibilityNodeInfo eventSource) {
     FocusElementHighlight focusElementHighlight =
         new FocusElementHighlight(
-            context,
             eventSource,
             this.styles.getCurrentElementPaints(),
             styles.focusElementHighlightRadius,
-            tabStopCount);
+            tabStopCount,
+            focusCanvasView);
     focusElementHighlights.add(focusElementHighlight);
   }
 
@@ -120,7 +124,7 @@ public class FocusVisualizer {
     tabStopCount = 0;
     focusElementHighlights = new ArrayList<>();
     focusElementLines = new ArrayList<>();
-    focusCanvasView.invalidate();
+    focusCanvasView.redraw();
   }
 
   private WindowManager.LayoutParams getLayoutParams(WindowManager windowManager) {
@@ -136,5 +140,27 @@ public class FocusVisualizer {
             | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
             | WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
         PixelFormat.TRANSLUCENT);
+  }
+
+  private void updateLayoutParams(){
+    WindowManager.LayoutParams layoutParams = getLayoutParams(this.windowManager);
+    this.windowManager.updateViewLayout(this.focusCanvasView, layoutParams);
+  }
+
+  private void updateDrawingsWithNewCoordinates(){
+    for(int i = 0; i < focusElementHighlights.size(); i++){
+      focusElementHighlights.get(i).updateWithNewCoordinates();
+    }
+    for(int i = 0; i < focusElementLines.size(); i++){
+      focusElementLines.get(i).updateWithNewCoordinates();
+    }
+    this.focusCanvasView.redraw();
+  }
+
+  public void orientationChangedHandler() {
+    Log.v("Orientation changed", "");
+    this.updateLayoutParams();
+//    this.updateDrawingsWithNewCoordinates();
+    this.resetVisualizations();
   }
 }

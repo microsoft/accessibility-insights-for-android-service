@@ -6,8 +6,6 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import java.util.HashMap;
 
 public class FocusVisualizerStyles {
@@ -17,14 +15,11 @@ public class FocusVisualizerStyles {
   private Paint nonCurrentOuterCirclePaint;
   private Paint innerCirclePaint;
   private Paint numberPaint;
-  private Paint transparentPaint;
 
   private HashMap<String, Paint> currentElementPaints;
   private HashMap<String, Paint> nonCurrentElementPaints;
   private HashMap<String, Paint> currentLinePaints;
   private HashMap<String, Paint> nonCurrentLinePaints;
-  private HashMap<String, Paint> transparentElementPaints;
-  private HashMap<String, Paint> transparentLinePaints;
 
   public int focusElementHighlightRadius = 50;
 
@@ -35,14 +30,11 @@ public class FocusVisualizerStyles {
     setNumberPaint();
     setCurrentLinePaint();
     setNonCurrentOuterCirclePaint();
-    setTransparentPaint();
 
     setCurrentElementPaints();
     setNonCurrentElementPaints();
     setCurrentLinePaints();
     setNonCurrentLinePaints();
-    setTransparentElementPaints();
-    setTransparentLinePaints();
   }
 
   private void setCurrentElementPaints() {
@@ -56,21 +48,11 @@ public class FocusVisualizerStyles {
     return currentElementPaints;
   }
 
-  private void setTransparentElementPaints() {
-    this.transparentElementPaints = new HashMap<>();
-    this.transparentElementPaints.put("outerCircle", this.transparentPaint);
-    this.transparentElementPaints.put("innerCircle", this.transparentPaint);
-    this.transparentElementPaints.put("number", this.transparentPaint);
-  }
-
-  public HashMap<String, Paint> getTransparentElementPaints() { return transparentElementPaints; }
-
   private void setNonCurrentElementPaints() {
     this.nonCurrentElementPaints = new HashMap<>();
     this.nonCurrentElementPaints.put("outerCircle", this.nonCurrentOuterCirclePaint);
     this.nonCurrentElementPaints.put("innerCircle", this.innerCirclePaint);
     this.nonCurrentElementPaints.put("number", this.numberPaint);
-    this.nonCurrentElementPaints.put("transparent", this.transparentPaint);
   }
 
   public HashMap<String, Paint> getNonCurrentElementPaints() {
@@ -94,13 +76,6 @@ public class FocusVisualizerStyles {
   public HashMap<String, Paint> getNonCurrentLinePaints() {
     return nonCurrentLinePaints;
   }
-
-  private void setTransparentLinePaints(){
-    this.transparentLinePaints = new HashMap<>();
-    this.transparentLinePaints.put("line", this.transparentPaint);
-  }
-
-  public HashMap<String, Paint> getTransparentLinePaints() { return transparentLinePaints; }
 
   private void setNonCurrentLinePaint() {
     this.nonCurrentLinePaint = new Paint();
@@ -144,12 +119,5 @@ public class FocusVisualizerStyles {
     this.currentLinePaint.setColor(Color.parseColor("#B4009E"));
     this.currentLinePaint.setStrokeWidth(10);
     this.currentLinePaint.setPathEffect(new DashPathEffect(new float[] {25, 15}, 0));
-  }
-
-  private void setTransparentPaint() {
-    this.transparentPaint = new Paint();
-    this.transparentPaint.setStyle(Paint.Style.FILL);
-    this.transparentPaint.setColor(Color.TRANSPARENT);
-    this.transparentPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
   }
 }

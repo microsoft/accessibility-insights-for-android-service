@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
 
-public class FocusElementHighlight extends View {
+public class FocusElementHighlight {
   private static final String TAG = "FocusElementHighlight";
   private AccessibilityNodeInfo eventSource;
   private int yOffset;
@@ -23,15 +23,16 @@ public class FocusElementHighlight extends View {
   private int yCoordinate;
   private HashMap<String, Paint> paints;
   private Rect rect;
+  private View view;
 
 
   public FocusElementHighlight(
-      Context context,
       AccessibilityNodeInfo eventSource,
       HashMap<String, Paint> currentPaints,
       int radius,
-      int tabStopCount) {
-    super(context);
+      int tabStopCount,
+      View view) {
+    this.view = view;
     this.eventSource = eventSource;
     this.yOffset = setYOffset();
     this.tabStopCount = tabStopCount;
@@ -39,6 +40,7 @@ public class FocusElementHighlight extends View {
     this.rect = new Rect();
     this.setCoordinates();
     this.paints = currentPaints;
+
   }
 
   public void setCoordinates(){
@@ -53,9 +55,9 @@ public class FocusElementHighlight extends View {
 
   private int setYOffset(){
     int offset = 0;
-    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+    int resourceId = this.view.getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {
-      offset = getResources().getDimensionPixelSize(resourceId);
+      offset = this.view.getResources().getDimensionPixelSize(resourceId);
     }
     // divide by 2 to center
     offset = offset / 2;
@@ -96,6 +98,11 @@ public class FocusElementHighlight extends View {
 
   public AccessibilityNodeInfo getEventSource(){
     return this.eventSource;
+  }
+
+  public void updateWithNewCoordinates(){
+    this.setYOffset();
+    this.setCoordinates();
   }
 
 }

@@ -3,7 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -11,7 +10,7 @@ import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
 
-public class FocusElementLine extends View {
+public class FocusElementLine {
   private static final String TAG = "FocusElementLine";
   private AccessibilityNodeInfo eventSource;
   private AccessibilityNodeInfo previousEventSource;
@@ -23,13 +22,14 @@ public class FocusElementLine extends View {
   private HashMap<String, Paint> paints;
   private Rect currentRect;
   private Rect prevRect;
+  private View view;
 
   public FocusElementLine(
-      Context context,
       AccessibilityNodeInfo eventSource,
       AccessibilityNodeInfo previousEventSource,
-      HashMap<String, Paint> Paints) {
-    super(context);
+      HashMap<String, Paint> Paints,
+      View view) {
+    this.view = view;
     this.eventSource = eventSource;
     this.previousEventSource = previousEventSource;
     this.yOffset = setYOffset();
@@ -69,27 +69,32 @@ public class FocusElementLine extends View {
 
   private int setYOffset(){
     int offset = 0;
-    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+    int resourceId = this.view.getResources().getIdentifier("status_bar_height", "dimen", "android");
     if (resourceId > 0) {
-      offset = getResources().getDimensionPixelSize(resourceId);
+      offset = this.view.getResources().getDimensionPixelSize(resourceId);
     }
     // divide by 2 to center
     offset = offset / 2;
     return offset;
   }
 
-  public void drawConnectingLine(
+  private void drawConnectingLine(
       int x1Coordinate,
       int y1Coordinate,
       int x2Coordinate,
       int y2Coordinate,
       Paint paint,
       Canvas canvas) {
-    canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
+      canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
   }
 
   public void setPaint(HashMap<String, Paint> paints){
     this.paints = paints;
+  }
+
+  public void updateWithNewCoordinates(){
+    this.setYOffset();
+    this.setCoordinates();
   }
 
 }
