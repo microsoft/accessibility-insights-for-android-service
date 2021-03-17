@@ -9,8 +9,10 @@ import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import android.content.res.Resources;
@@ -25,12 +27,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.internal.verification.VerificationModeFactory;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({FocusElementLine.class})
+@PrepareForTest({FocusElementLine.class, OffsetHelper.class})
 public class FocusElementLineTest {
 
   FocusElementLine testSubject;
@@ -63,9 +66,13 @@ public class FocusElementLineTest {
 
   @Test
   public void followsCorrectStepsToUpdateCoordinates() throws Exception {
+    mockStatic(OffsetHelper.class);
     FocusElementLine lineSpy = spy(testSubject);
     lineSpy.updateWithNewCoordinates();
-    verifyPrivate(lineSpy, times(1)).invoke("setYOffset");
+
+    verifyStatic(OffsetHelper.class, VerificationModeFactory.times(1));
+    OffsetHelper.getYOffset(any(View.class));
+
     verifyPrivate(lineSpy, times(1)).invoke("setCoordinates");
   }
 

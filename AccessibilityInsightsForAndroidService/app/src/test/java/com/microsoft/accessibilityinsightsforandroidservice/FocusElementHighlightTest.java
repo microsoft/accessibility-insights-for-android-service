@@ -8,8 +8,10 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
@@ -30,7 +32,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({FocusElementHighlight.class})
+@PrepareForTest({FocusElementHighlight.class, OffsetHelper.class})
 public class FocusElementHighlightTest {
   FocusElementHighlight testSubject;
 
@@ -63,9 +65,14 @@ public class FocusElementHighlightTest {
 
   @Test
   public void followsCorrectStepsToUpdateCoordinates() throws Exception {
+    mockStatic(OffsetHelper.class);
+
     FocusElementHighlight elementSpy = spy(testSubject);
     elementSpy.updateWithNewCoordinates();
-    verifyPrivate(elementSpy, times(1)).invoke("setYOffset");
+
+    verifyStatic(OffsetHelper.class, times(1));
+    OffsetHelper.getYOffset(any(View.class));
+
     verifyPrivate(elementSpy, times(1)).invoke("setCoordinates");
   }
 

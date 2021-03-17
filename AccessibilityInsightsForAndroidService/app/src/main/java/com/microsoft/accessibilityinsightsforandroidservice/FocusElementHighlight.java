@@ -46,18 +46,6 @@ public class FocusElementHighlight {
     this.yCoordinate = rect.centerY();
   }
 
-  private int setYOffset() {
-    int offset = 0;
-    int resourceId =
-        this.view.getResources().getIdentifier("status_bar_height", "dimen", "android");
-    if (resourceId > 0) {
-      offset = this.view.getResources().getDimensionPixelSize(resourceId);
-    }
-    // divide by 2 to center
-    offset = offset / 2;
-    return offset;
-  }
-
   public void drawElementHighlight(Canvas canvas) {
     this.drawInnerCircle(
         this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
@@ -95,7 +83,7 @@ public class FocusElementHighlight {
   }
 
   public void updateWithNewCoordinates() {
-    this.yOffset = this.setYOffset();
+    this.yOffset = OffsetHelper.getYOffset(this.view);
     this.setCoordinates();
   }
 }

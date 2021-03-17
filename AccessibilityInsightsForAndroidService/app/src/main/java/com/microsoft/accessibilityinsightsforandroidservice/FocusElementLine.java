@@ -39,12 +39,7 @@ public class FocusElementLine {
 
   public void drawLine(Canvas canvas) {
     this.drawConnectingLine(
-        this.xStart,
-        this.yStart,
-        this.xEnd,
-        this.yEnd,
-        this.paints.get("line"),
-        canvas);
+        this.xStart, this.yStart, this.xEnd, this.yEnd, this.paints.get("line"), canvas);
   }
 
   private void setCoordinates() {
@@ -64,25 +59,8 @@ public class FocusElementLine {
     this.yEnd = prevRect.centerY();
   }
 
-  private int setYOffset() {
-    int offset = 0;
-    int resourceId =
-        this.view.getResources().getIdentifier("status_bar_height", "dimen", "android");
-    if (resourceId > 0) {
-      offset = this.view.getResources().getDimensionPixelSize(resourceId);
-    }
-    // divide by 2 to center
-    offset = offset / 2;
-    return offset;
-  }
-
   private void drawConnectingLine(
-      int xStart,
-      int yStart,
-      int xEnd,
-      int yEnd,
-      Paint paint,
-      Canvas canvas) {
+      int xStart, int yStart, int xEnd, int yEnd, Paint paint, Canvas canvas) {
     canvas.drawLine(xStart, yStart, xEnd, yEnd, paint);
   }
 
@@ -91,7 +69,7 @@ public class FocusElementLine {
   }
 
   public void updateWithNewCoordinates() {
-    this.yOffset = this.setYOffset();
+    this.yOffset = OffsetHelper.getYOffset(this.view);
     this.setCoordinates();
   }
 }
