@@ -108,11 +108,4 @@ public class FocusVisualizerTest {
     Assert.assertEquals(resultingLineList.size(), 0);
     Assert.assertEquals(resultingTabStopCount, 0);
   }
-
-  @Test
-  public void orientationChangedHandlerUpdatesDrawings() throws Exception {
-    FocusVisualizer testSubjectSpy = spy(testSubject);
-    testSubjectSpy.orientationChangedHandler();
-    verifyPrivate(testSubjectSpy, times(1)).invoke("updateDrawingsWithNewCoordinates");
-  }
 }

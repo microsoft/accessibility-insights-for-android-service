@@ -127,8 +127,4 @@ public class FocusVisualizer {
     }
     this.focusVisualizationCanvas.redraw();
   }
-
-  public void orientationChangedHandler() {
-    this.updateDrawingsWithNewCoordinates();
-  }
 }
