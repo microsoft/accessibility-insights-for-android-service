@@ -37,12 +37,14 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   private HandlerThread screenshotHandlerThread = null;
   private ScreenshotController screenshotController = null;
   private int activeWindowId = -1; // Set initial state to an invalid ID
+  private FocusVisualizationStateManager focusVisualizationStateManager;
 
   public AccessibilityInsightsForAndroidService() {
     deviceConfigFactory = new DeviceConfigFactory();
     axeScanner =
         AxeScannerFactory.createAxeScanner(deviceConfigFactory, this::getRealDisplayMetrics);
     eventHelper = new EventHelper(new ThreadSafeSwapper<>());
+    focusVisualizationStateManager = new FocusVisualizationStateManager();
   }
 
   private DisplayMetrics getRealDisplayMetrics() {
@@ -105,7 +107,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
 
     ResponseThreadFactory responseThreadFactory =
         new ResponseThreadFactory(
-            screenshotController, eventHelper, axeScanner, deviceConfigFactory);
+            screenshotController, eventHelper, axeScanner, deviceConfigFactory, focusVisualizationStateManager);
     ServerThread = new ServerThread(new ServerSocketFactory(), responseThreadFactory);
     ServerThread.start();
   }
