@@ -14,7 +14,8 @@ public class ResponseThreadFactory {
       ScreenshotController screenshotController,
       EventHelper eventHelper,
       AxeScanner axeScanner,
-      DeviceConfigFactory deviceConfigFactory) {
+      DeviceConfigFactory deviceConfigFactory,
+      FocusVisualizationStateManager focusVisualizationStateManager) {
     responseWriterFactory = new ResponseWriterFactory();
     requestReaderFactory = new RequestReaderFactory();
     requestHandlerFactory =
@@ -24,7 +25,8 @@ public class ResponseThreadFactory {
             eventHelper,
             axeScanner,
             deviceConfigFactory,
-            new RequestHandlerImplFactory());
+            new RequestHandlerImplFactory(),
+            focusVisualizationStateManager);
   }
 
   public ResponseThread createResponseThread(Socket socket) {
