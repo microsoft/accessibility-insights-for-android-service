@@ -11,14 +11,13 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
 
 public class FocusElementLine {
-  private static final String TAG = "FocusElementLine";
   private AccessibilityNodeInfo eventSource;
   private AccessibilityNodeInfo previousEventSource;
   private int yOffset;
-  private int x1Coordinate;
-  private int y1Coordinate;
-  private int x2Coordinate;
-  private int y2Coordinate;
+  private int xStart;
+  private int yStart;
+  private int xEnd;
+  private int yEnd;
   private HashMap<String, Paint> paints;
   private Rect currentRect;
   private Rect prevRect;
@@ -32,19 +31,18 @@ public class FocusElementLine {
     this.view = view;
     this.eventSource = eventSource;
     this.previousEventSource = previousEventSource;
-    this.yOffset = setYOffset();
     this.paints = Paints;
     this.currentRect = new Rect();
     this.prevRect = new Rect();
-    this.setCoordinates();
+    this.updateWithNewCoordinates();
   }
 
   public void drawLine(Canvas canvas) {
     this.drawConnectingLine(
-        this.x1Coordinate,
-        this.y1Coordinate,
-        this.x2Coordinate,
-        this.y2Coordinate,
+        this.xStart,
+        this.yStart,
+        this.xEnd,
+        this.yEnd,
         this.paints.get("line"),
         canvas);
   }
@@ -60,10 +58,10 @@ public class FocusElementLine {
     this.previousEventSource.getBoundsInScreen(this.prevRect);
     this.prevRect.offset(0, this.yOffset);
 
-    this.x1Coordinate = currentRect.centerX();
-    this.y1Coordinate = currentRect.centerY();
-    this.x2Coordinate = prevRect.centerX();
-    this.y2Coordinate = prevRect.centerY();
+    this.xStart = currentRect.centerX();
+    this.yStart = currentRect.centerY();
+    this.xEnd = prevRect.centerX();
+    this.yEnd = prevRect.centerY();
   }
 
   private int setYOffset() {
@@ -79,13 +77,13 @@ public class FocusElementLine {
   }
 
   private void drawConnectingLine(
-      int x1Coordinate,
-      int y1Coordinate,
-      int x2Coordinate,
-      int y2Coordinate,
+      int xStart,
+      int yStart,
+      int xEnd,
+      int yEnd,
       Paint paint,
       Canvas canvas) {
-    canvas.drawLine(x1Coordinate, y1Coordinate, x2Coordinate, y2Coordinate, paint);
+    canvas.drawLine(xStart, yStart, xEnd, yEnd, paint);
   }
 
   public void setPaint(HashMap<String, Paint> paints) {
@@ -93,7 +91,7 @@ public class FocusElementLine {
   }
 
   public void updateWithNewCoordinates() {
-    this.setYOffset();
+    this.yOffset = this.setYOffset();
     this.setCoordinates();
   }
 }

@@ -11,7 +11,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
 
 public class FocusElementHighlight {
-  private static final String TAG = "FocusElementHighlight";
   private AccessibilityNodeInfo eventSource;
   private int yOffset;
   private int tabStopCount;
@@ -30,12 +29,11 @@ public class FocusElementHighlight {
       View view) {
     this.view = view;
     this.eventSource = eventSource;
-    this.yOffset = setYOffset();
     this.tabStopCount = tabStopCount;
     this.radius = radius;
     this.rect = new Rect();
-    this.setCoordinates();
     this.paints = currentPaints;
+    this.updateWithNewCoordinates();
   }
 
   private void setCoordinates() {
@@ -97,7 +95,7 @@ public class FocusElementHighlight {
   }
 
   public void updateWithNewCoordinates() {
-    this.setYOffset();
+    this.yOffset = this.setYOffset();
     this.setCoordinates();
   }
 }

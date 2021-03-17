@@ -9,7 +9,6 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 
 public class FocusVisualizer {
-  private static final String TAG = "FocusVisualizer";
   private ArrayList<FocusElementHighlight> focusElementHighlights;
   private ArrayList<FocusElementLine> focusElementLines;
   private int tabStopCount;
