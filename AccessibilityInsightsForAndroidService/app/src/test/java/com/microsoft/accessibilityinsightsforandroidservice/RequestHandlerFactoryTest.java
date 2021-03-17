@@ -26,6 +26,7 @@ public class RequestHandlerFactoryTest {
   @Mock Socket socket;
   @Mock ResponseWriter responseWriter;
   @Mock RequestHandlerImplFactory requestHandlerImplFactory;
+  @Mock FocusVisualizationStateManager focusVisualizationStateManager;
 
   RequestHandlerFactory testSubject;
 
@@ -38,7 +39,8 @@ public class RequestHandlerFactoryTest {
             eventHelper,
             axeScanner,
             deviceConfigFactory,
-            requestHandlerImplFactory);
+            requestHandlerImplFactory,
+            focusVisualizationStateManager);
   }
 
   @Test
@@ -61,6 +63,39 @@ public class RequestHandlerFactoryTest {
             any(ConfigRequestFulfiller.class),
             eq("processConfigRequest"),
             eq("*** About to process config request"));
+  }
+
+  @Test
+  public void createEnableFocusTrackingRequestHandler() {
+    tryCreateRequestHandler("GET /AccessibilityInsights/FocusTracking/Enable something else");
+    verify(requestHandlerImplFactory)
+        .createRequestHandler(
+            any(SocketHolder.class),
+            any(TabStopsRequestFulfiller.class),
+            eq("processFocusTrackingEnableRequest"),
+            eq("*** About to process focus tracking enable request"));
+  }
+
+  @Test
+  public void createDisableFocusTrackingRequestHandler() {
+    tryCreateRequestHandler("GET /AccessibilityInsights/FocusTracking/Disable something else");
+    verify(requestHandlerImplFactory)
+        .createRequestHandler(
+            any(SocketHolder.class),
+            any(TabStopsRequestFulfiller.class),
+            eq("processFocusTrackingDisableRequest"),
+            eq("*** About to process focus tracking disable request"));
+  }
+
+  @Test
+  public void createResetFocusTrackingRequestHandler() {
+    tryCreateRequestHandler("GET /AccessibilityInsights/FocusTracking/Reset something else");
+    verify(requestHandlerImplFactory)
+        .createRequestHandler(
+            any(SocketHolder.class),
+            any(TabStopsRequestFulfiller.class),
+            eq("processFocusTrackingResetRequest"),
+            eq("*** About to process focus tracking reset request"));
   }
 
   @Test

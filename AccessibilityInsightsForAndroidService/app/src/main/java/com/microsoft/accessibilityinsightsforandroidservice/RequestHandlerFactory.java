@@ -13,6 +13,7 @@ public class RequestHandlerFactory {
   private final EventHelper eventHelper;
   private final DeviceConfigFactory deviceConfigFactory;
   private final RequestHandlerImplFactory requestHandlerImplFactory;
+  private final FocusVisualizationStateManager focusVisualizationStateManager;
 
   public RequestHandlerFactory(
       ScreenshotController screenshotController,
@@ -20,13 +21,15 @@ public class RequestHandlerFactory {
       EventHelper eventHelper,
       AxeScanner axeScanner,
       DeviceConfigFactory deviceConfigFactory,
-      RequestHandlerImplFactory requestHandlerImplFactory) {
+      RequestHandlerImplFactory requestHandlerImplFactory,
+      FocusVisualizationStateManager focusVisualizationStateManager) {
     this.screenshotController = screenshotController;
     this.axeScanner = axeScanner;
     this.rootNodeFinder = rootNodeFinder;
     this.eventHelper = eventHelper;
     this.deviceConfigFactory = deviceConfigFactory;
     this.requestHandlerImplFactory = requestHandlerImplFactory;
+    this.focusVisualizationStateManager = focusVisualizationStateManager;
   }
 
   public RequestHandler createHandlerForRequest(
@@ -52,6 +55,33 @@ public class RequestHandlerFactory {
             configRequestFulfiller,
             "processConfigRequest",
             "*** About to process config request");
+      }
+      if (requestString.startsWith("GET /AccessibilityInsights/FocusTracking/Enable ")) {
+        TabStopsRequestFulfiller tabStopsRequestFulfiller =
+            new TabStopsRequestFulfiller(responseWriter, focusVisualizationStateManager, true);
+        return requestHandlerImplFactory.createRequestHandler(
+            socketHolder,
+            tabStopsRequestFulfiller,
+            "processFocusTrackingEnableRequest",
+            "*** About to process focus tracking enable request");
+      }
+      if (requestString.startsWith("GET /AccessibilityInsights/FocusTracking/Disable ")) {
+        TabStopsRequestFulfiller tabStopsRequestFulfiller =
+            new TabStopsRequestFulfiller(responseWriter, focusVisualizationStateManager, false);
+        return requestHandlerImplFactory.createRequestHandler(
+            socketHolder,
+            tabStopsRequestFulfiller,
+            "processFocusTrackingDisableRequest",
+            "*** About to process focus tracking disable request");
+      }
+      if (requestString.startsWith("GET /AccessibilityInsights/FocusTracking/Reset ")) {
+        TabStopsRequestFulfiller tabStopsRequestFulfiller =
+            new TabStopsRequestFulfiller(responseWriter, focusVisualizationStateManager, false);
+        return requestHandlerImplFactory.createRequestHandler(
+            socketHolder,
+            tabStopsRequestFulfiller,
+            "processFocusTrackingResetRequest",
+            "*** About to process focus tracking reset request");
       }
     }
     UnrecognizedRequestFulfiller unrecognizedRequestFulfiller =
