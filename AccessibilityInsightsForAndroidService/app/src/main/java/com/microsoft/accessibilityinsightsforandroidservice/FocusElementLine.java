@@ -38,7 +38,8 @@ public class FocusElementLine {
   }
 
   public void drawLine(Canvas canvas) {
-    this.drawConnectingLine(this.xStart, this.yStart, this.xEnd, this.yEnd, this.paints.get("backgroundLine"), canvas);
+    this.drawConnectingLine(
+        this.xStart, this.yStart, this.xEnd, this.yEnd, this.paints.get("backgroundLine"), canvas);
     this.drawConnectingLine(
         this.xStart, this.yStart, this.xEnd, this.yEnd, this.paints.get("foregroundLine"), canvas);
   }

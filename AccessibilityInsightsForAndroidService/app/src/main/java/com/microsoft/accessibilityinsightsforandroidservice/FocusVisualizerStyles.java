@@ -135,7 +135,7 @@ public class FocusVisualizerStyles {
     this.currentBackgroundLinePaint.setPathEffect(new DashPathEffect(new float[] {24, 1}, 2));
   }
 
-  private void setNonCurrentBackgroundLinePaint(){
+  private void setNonCurrentBackgroundLinePaint() {
     this.nonCurrentBackgroundLinePaint = new Paint();
     this.nonCurrentBackgroundLinePaint.setStyle(Paint.Style.STROKE);
     this.nonCurrentBackgroundLinePaint.setColor(Color.WHITE);

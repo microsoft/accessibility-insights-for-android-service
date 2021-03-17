@@ -49,6 +49,7 @@ public class FocusElementLineTest {
   public void prepare() throws Exception {
     HashMap<String, Paint> paintsStub = new HashMap<>();
     paintsStub.put("foregroundLine", paintMock);
+    paintsStub.put("backgroundLine", paintMock);
 
     when(viewMock.getResources()).thenReturn(resourcesMock);
     whenNew(Rect.class).withNoArguments().thenReturn(rectMock);
@@ -80,7 +81,7 @@ public class FocusElementLineTest {
   public void drawLineCallsCorrectPrivateMethod() throws Exception {
     FocusElementLine lineSpy = spy(testSubject);
     lineSpy.drawLine(canvasMock);
-    verifyPrivate(lineSpy, times(1))
+    verifyPrivate(lineSpy, times(2))
         .invoke(
             "drawConnectingLine",
             anyInt(),
@@ -100,5 +101,6 @@ public class FocusElementLineTest {
     HashMap<String, Paint> resultingPaintHashMap = Whitebox.getInternalState(testSubject, "paints");
     Assert.assertEquals(resultingPaintHashMap.get("test"), paintMock);
     Assert.assertNull(resultingPaintHashMap.get("foregroundLine"));
+    Assert.assertNull(resultingPaintHashMap.get("backgroundLine"));
   }
 }
