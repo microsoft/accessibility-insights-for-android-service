@@ -3,7 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import android.content.Context;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
@@ -12,23 +11,38 @@ public class FocusVisualizer {
   private ArrayList<FocusElementHighlight> focusElementHighlights;
   private ArrayList<FocusElementLine> focusElementLines;
   private int tabStopCount;
-  private Context context;
   private FocusVisualizerStyles styles;
-  private FocusCanvasView focusCanvasView;
+  private FocusVisualizationCanvas focusVisualizationCanvas;
 
   public FocusVisualizer(
-      Context context,
       FocusVisualizerStyles focusVisualizerStyles,
-      FocusCanvasView focusCanvasView) {
-    this.context = context;
+      FocusVisualizationCanvas focusVisualizationCanvas) {
     this.focusElementHighlights = new ArrayList<>();
     this.focusElementLines = new ArrayList<>();
     this.tabStopCount = 0;
     this.styles = focusVisualizerStyles;
-    this.focusCanvasView = focusCanvasView;
+    this.focusVisualizationCanvas = focusVisualizationCanvas;
   }
 
-  public void HandleAccessibilityRedrawEvent(AccessibilityEvent event) {}
+  public void HandleAccessibilityRedrawEvent(AccessibilityEvent event) {
+    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+      return;
+    }
+
+    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
+      this.resetVisualizations();
+      return;
+    }
+
+    if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
+      this.updateDrawingsWithNewCoordinates();
+      return;
+    }
+    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
+      this.resetVisualizations();
+      return;
+    }
+  }
 
   public void HandleAccessibilityFocusEvent(AccessibilityEvent event) {
     tabStopCount++;
@@ -47,10 +61,12 @@ public class FocusVisualizer {
       this.setPreviousLineNonCurrent(this.focusElementLines.get(this.focusElementLines.size() - 2));
     }
 
-    this.focusCanvasView.setFocusElementHighlights(this.focusElementHighlights);
-    this.focusCanvasView.setFocusElementLines(this.focusElementLines);
+    this.setDrawItemsAndRedraw();
+  }
 
-    this.focusCanvasView.redraw();
+  public void setFocusVisualizationCanvas(FocusVisualizationCanvas view) {
+    this.focusVisualizationCanvas = view;
+    this.setDrawItemsAndRedraw();
   }
 
   private void setPreviousLineNonCurrent(FocusElementLine line) {
@@ -68,7 +84,7 @@ public class FocusVisualizer {
             eventSource,
             previousEventSource,
             this.styles.getCurrentLinePaints(),
-            this.focusCanvasView);
+            this.focusVisualizationCanvas);
     this.focusElementLines.add(focusElementLine);
   }
 
@@ -79,7 +95,7 @@ public class FocusVisualizer {
             this.styles.getCurrentElementPaints(),
             this.styles.focusElementHighlightRadius,
             this.tabStopCount,
-            this.focusCanvasView);
+            this.focusVisualizationCanvas);
     this.focusElementHighlights.add(focusElementHighlight);
   }
 
@@ -92,9 +108,14 @@ public class FocusVisualizer {
 
   public void resetVisualizations() {
     this.tabStopCount = 0;
-    this.focusElementHighlights = new ArrayList<>();
-    this.focusElementLines = new ArrayList<>();
-    this.focusCanvasView.redraw();
+    this.focusElementHighlights.clear();
+    this.focusElementLines.clear();
+    this.setDrawItemsAndRedraw();
+  }
+
+  private void setDrawItemsAndRedraw() {
+    this.focusVisualizationCanvas.setDrawItems(this.focusElementHighlights, this.focusElementLines);
+    this.focusVisualizationCanvas.redraw();
   }
 
   private void updateDrawingsWithNewCoordinates() {
@@ -104,7 +125,7 @@ public class FocusVisualizer {
     for (int i = 0; i < this.focusElementLines.size(); i++) {
       this.focusElementLines.get(i).updateWithNewCoordinates();
     }
-    this.focusCanvasView.redraw();
+    this.focusVisualizationCanvas.redraw();
   }
 
   public void orientationChangedHandler() {

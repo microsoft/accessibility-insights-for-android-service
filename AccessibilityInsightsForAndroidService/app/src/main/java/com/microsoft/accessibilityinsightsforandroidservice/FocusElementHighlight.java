@@ -40,6 +40,9 @@ public class FocusElementHighlight {
     if (this.eventSource == null) {
       return;
     }
+    if (!this.eventSource.refresh()) {
+      return;
+    }
     this.eventSource.getBoundsInScreen(this.rect);
     this.rect.offset(0, this.yOffset);
     this.xCoordinate = rect.centerX();

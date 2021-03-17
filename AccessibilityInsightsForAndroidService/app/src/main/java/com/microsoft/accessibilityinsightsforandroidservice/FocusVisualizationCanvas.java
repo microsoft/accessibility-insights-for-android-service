@@ -8,11 +8,11 @@ import android.graphics.Canvas;
 import android.view.View;
 import java.util.ArrayList;
 
-public class FocusCanvasView extends View {
+public class FocusVisualizationCanvas extends View {
   private ArrayList<FocusElementHighlight> focusElementHighlights;
   private ArrayList<FocusElementLine> focusElementLines;
 
-  public FocusCanvasView(Context context) {
+  public FocusVisualizationCanvas(Context context) {
     super(context);
   }
 
@@ -27,20 +27,23 @@ public class FocusCanvasView extends View {
       return;
     }
 
-    for (int i = 0; i < this.focusElementHighlights.size(); i++) {
-      if (this.focusElementHighlights.size() > 1 && i > 0) {
-        this.focusElementLines.get(i).drawLine(canvas);
-        this.focusElementHighlights.get(i - 1).drawElementHighlight(canvas);
+    for (int elementIndex = 0; elementIndex < this.focusElementHighlights.size(); elementIndex++) {
+      if (elementIndex != 0) {
+        this.drawTrailingHighlights(elementIndex, canvas);
       }
-      this.focusElementHighlights.get(i).drawElementHighlight(canvas);
+
+      this.focusElementHighlights.get(elementIndex).drawElementHighlight(canvas);
     }
   }
 
-  public void setFocusElementHighlights(ArrayList<FocusElementHighlight> highlights) {
-    this.focusElementHighlights = highlights;
+  private void drawTrailingHighlights(int elementIndex, Canvas canvas) {
+    this.focusElementLines.get(elementIndex).drawLine(canvas);
+    this.focusElementHighlights.get(elementIndex - 1).drawElementHighlight(canvas);
   }
 
-  public void setFocusElementLines(ArrayList<FocusElementLine> lines) {
+  public void setDrawItems(
+      ArrayList<FocusElementHighlight> highlights, ArrayList<FocusElementLine> lines) {
+    this.focusElementHighlights = highlights;
     this.focusElementLines = lines;
   }
 

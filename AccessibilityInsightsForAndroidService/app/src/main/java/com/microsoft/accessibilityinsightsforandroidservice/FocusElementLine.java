@@ -48,6 +48,9 @@ public class FocusElementLine {
     if (this.eventSource == null || this.previousEventSource == null) {
       return;
     }
+    if (!this.eventSource.refresh() || !this.previousEventSource.refresh()) {
+      return;
+    }
 
     this.eventSource.getBoundsInScreen(this.currentRect);
     this.currentRect.offset(0, this.yOffset);

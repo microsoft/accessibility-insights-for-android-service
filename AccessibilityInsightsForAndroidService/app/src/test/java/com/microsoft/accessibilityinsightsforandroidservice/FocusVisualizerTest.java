@@ -9,7 +9,6 @@ import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
-import android.content.Context;
 import android.view.accessibility.AccessibilityEvent;
 import java.util.ArrayList;
 import org.junit.Assert;
@@ -26,9 +25,8 @@ import org.powermock.reflect.Whitebox;
 public class FocusVisualizerTest {
   FocusVisualizer testSubject;
 
-  @Mock Context contextMock;
   @Mock FocusVisualizerStyles focusVisualizerStylesMock;
-  @Mock FocusCanvasView focusCanvasViewMock;
+  @Mock FocusVisualizationCanvas focusVisualizationCanvasMock;
   @Mock AccessibilityEvent accessibilityEventMock;
   @Mock FocusElementHighlight focusElementHighlightMock;
   @Mock FocusElementLine focusElementLineMock;
@@ -39,7 +37,7 @@ public class FocusVisualizerTest {
     whenNew(FocusElementHighlight.class).withAnyArguments().thenReturn(focusElementHighlightMock);
     whenNew(FocusElementLine.class).withAnyArguments().thenReturn(focusElementLineMock);
 
-    testSubject = new FocusVisualizer(contextMock, focusVisualizerStylesMock, focusCanvasViewMock);
+    testSubject = new FocusVisualizer(focusVisualizerStylesMock, focusVisualizationCanvasMock);
   }
 
   @Test
