@@ -48,7 +48,7 @@ public class FocusElementLineTest {
   @Before
   public void prepare() throws Exception {
     HashMap<String, Paint> paintsStub = new HashMap<>();
-    paintsStub.put("line", paintMock);
+    paintsStub.put("foregroundLine", paintMock);
 
     when(viewMock.getResources()).thenReturn(resourcesMock);
     whenNew(Rect.class).withNoArguments().thenReturn(rectMock);
@@ -99,6 +99,6 @@ public class FocusElementLineTest {
 
     HashMap<String, Paint> resultingPaintHashMap = Whitebox.getInternalState(testSubject, "paints");
     Assert.assertEquals(resultingPaintHashMap.get("test"), paintMock);
-    Assert.assertNull(resultingPaintHashMap.get("line"));
+    Assert.assertNull(resultingPaintHashMap.get("foregroundLine"));
   }
 }

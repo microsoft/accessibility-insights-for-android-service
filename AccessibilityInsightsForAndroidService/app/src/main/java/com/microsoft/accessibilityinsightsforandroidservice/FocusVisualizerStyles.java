@@ -15,6 +15,8 @@ public class FocusVisualizerStyles {
   private Paint nonCurrentOuterCirclePaint;
   private Paint innerCirclePaint;
   private Paint numberPaint;
+  private Paint currentBackgroundLinePaint;
+  private Paint nonCurrentBackgroundLinePaint;
 
   private HashMap<String, Paint> currentElementPaints;
   private HashMap<String, Paint> nonCurrentElementPaints;
@@ -24,17 +26,19 @@ public class FocusVisualizerStyles {
   public int focusElementHighlightRadius = 50;
 
   public FocusVisualizerStyles() {
-    setCurrentOuterCirclePaint();
-    setInnerCirclePaint();
-    setNonCurrentLinePaint();
-    setNumberPaint();
-    setCurrentLinePaint();
-    setNonCurrentOuterCirclePaint();
+    this.setCurrentOuterCirclePaint();
+    this.setInnerCirclePaint();
+    this.setNonCurrentLinePaint();
+    this.setNumberPaint();
+    this.setCurrentLinePaint();
+    this.setNonCurrentOuterCirclePaint();
+    this.setCurrentBackgroundLinePaint();
+    this.setNonCurrentBackgroundLinePaint();
 
-    setCurrentElementPaints();
-    setNonCurrentElementPaints();
-    setCurrentLinePaints();
-    setNonCurrentLinePaints();
+    this.setCurrentElementPaints();
+    this.setNonCurrentElementPaints();
+    this.setCurrentLinePaints();
+    this.setNonCurrentLinePaints();
   }
 
   private void setCurrentElementPaints() {
@@ -61,7 +65,8 @@ public class FocusVisualizerStyles {
 
   private void setCurrentLinePaints() {
     this.currentLinePaints = new HashMap<>();
-    this.currentLinePaints.put("line", this.currentLinePaint);
+    this.currentLinePaints.put("foregroundLine", this.currentLinePaint);
+    this.currentLinePaints.put("backgroundLine", this.currentBackgroundLinePaint);
   }
 
   public HashMap<String, Paint> getCurrentLinePaints() {
@@ -70,7 +75,8 @@ public class FocusVisualizerStyles {
 
   private void setNonCurrentLinePaints() {
     this.nonCurrentLinePaints = new HashMap<>();
-    this.nonCurrentLinePaints.put("line", this.nonCurrentLinePaint);
+    this.nonCurrentLinePaints.put("foregroundLine", this.nonCurrentLinePaint);
+    this.nonCurrentLinePaints.put("backgroundLine", this.nonCurrentBackgroundLinePaint);
   }
 
   public HashMap<String, Paint> getNonCurrentLinePaints() {
@@ -80,22 +86,22 @@ public class FocusVisualizerStyles {
   private void setNonCurrentLinePaint() {
     this.nonCurrentLinePaint = new Paint();
     this.nonCurrentLinePaint.setStyle(Paint.Style.STROKE);
-    this.nonCurrentLinePaint.setColor(Color.BLACK);
-    this.nonCurrentLinePaint.setStrokeWidth(3);
+    this.nonCurrentLinePaint.setColor(Color.GRAY);
+    this.nonCurrentLinePaint.setStrokeWidth(5);
   }
 
   private void setNonCurrentOuterCirclePaint() {
     this.nonCurrentOuterCirclePaint = new Paint();
     this.nonCurrentOuterCirclePaint.setStyle(Paint.Style.STROKE);
-    this.nonCurrentOuterCirclePaint.setColor(Color.BLACK);
-    this.nonCurrentOuterCirclePaint.setStrokeWidth(3);
+    this.nonCurrentOuterCirclePaint.setColor(Color.GRAY);
+    this.nonCurrentOuterCirclePaint.setStrokeWidth(7);
   }
 
   private void setCurrentOuterCirclePaint() {
     this.currentOuterCirclePaint = new Paint();
     this.currentOuterCirclePaint.setStyle(Paint.Style.STROKE);
     this.currentOuterCirclePaint.setColor(Color.parseColor("#B4009E"));
-    this.currentOuterCirclePaint.setStrokeWidth(3);
+    this.currentOuterCirclePaint.setStrokeWidth(7);
   }
 
   private void setInnerCirclePaint() {
@@ -109,7 +115,7 @@ public class FocusVisualizerStyles {
     this.numberPaint.setStyle(Paint.Style.FILL_AND_STROKE);
     this.numberPaint.setTextAlign(Paint.Align.CENTER);
     this.numberPaint.setColor(Color.BLACK);
-    this.numberPaint.setStrokeWidth(3);
+    this.numberPaint.setStrokeWidth(2);
     this.numberPaint.setTextSize(45);
   }
 
@@ -117,7 +123,22 @@ public class FocusVisualizerStyles {
     this.currentLinePaint = new Paint();
     this.currentLinePaint.setStyle(Paint.Style.STROKE);
     this.currentLinePaint.setColor(Color.parseColor("#B4009E"));
-    this.currentLinePaint.setStrokeWidth(10);
-    this.currentLinePaint.setPathEffect(new DashPathEffect(new float[] {25, 15}, 0));
+    this.currentLinePaint.setStrokeWidth(7);
+    this.currentLinePaint.setPathEffect(new DashPathEffect(new float[] {20, 5}, 0));
+  }
+
+  private void setCurrentBackgroundLinePaint() {
+    this.currentBackgroundLinePaint = new Paint();
+    this.currentBackgroundLinePaint.setStyle(Paint.Style.STROKE);
+    this.currentBackgroundLinePaint.setColor(Color.WHITE);
+    this.currentBackgroundLinePaint.setStrokeWidth(12);
+    this.currentBackgroundLinePaint.setPathEffect(new DashPathEffect(new float[] {24, 1}, 2));
+  }
+
+  private void setNonCurrentBackgroundLinePaint(){
+    this.nonCurrentBackgroundLinePaint = new Paint();
+    this.nonCurrentBackgroundLinePaint.setStyle(Paint.Style.STROKE);
+    this.nonCurrentBackgroundLinePaint.setColor(Color.WHITE);
+    this.nonCurrentBackgroundLinePaint.setStrokeWidth(12);
   }
 }

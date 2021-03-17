@@ -49,12 +49,12 @@ public class FocusVisualizerStylesTest {
   @Test
   public void getNonCurrentLinePaintsReturnsAllRelevantPaints() {
     HashMap<String, Paint> paints = testSubject.getNonCurrentLinePaints();
-    Assert.assertNotNull(paints.get("line"));
+    Assert.assertNotNull(paints.get("foregroundLine"));
   }
 
   @Test
   public void getCurrentLinePaintsReturnsAllRelevantPaints() {
     HashMap<String, Paint> paints = testSubject.getCurrentLinePaints();
-    Assert.assertNotNull(paints.get("line"));
+    Assert.assertNotNull(paints.get("foregroundLine"));
   }
 }
