@@ -50,16 +50,16 @@ public class FocusVisualizer {
     AccessibilityNodeInfo eventSource = event.getSource();
     AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
 
+    if (this.focusElementHighlights.size() > 0) {
+      this.setPreviousElementHighlightNonCurrent(
+          this.focusElementHighlights.get(this.focusElementHighlights.size() - 1));
+    }
+    if (focusElementLines.size() > 0) {
+      this.setPreviousLineNonCurrent(this.focusElementLines.get(this.focusElementLines.size() - 1));
+    }
+
     this.createFocusElementHighlight(eventSource);
     this.createFocusElementLine(eventSource, previousEventSource);
-
-    if (this.focusElementHighlights.size() > 1) {
-      this.setPreviousElementHighlightNonCurrent(
-          this.focusElementHighlights.get(this.focusElementHighlights.size() - 2));
-    }
-    if (focusElementLines.size() > 1) {
-      this.setPreviousLineNonCurrent(this.focusElementLines.get(this.focusElementLines.size() - 2));
-    }
 
     this.setDrawItemsAndRedraw();
   }
