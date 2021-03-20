@@ -44,7 +44,7 @@ public class FocusVisualizerController {
 
     private void onFocusVisualizationStateChange(boolean newState) {
         if (newState) {
-            focusVisualizer.HandleAccessibilityFocusEvent(lastEvent);
+//            focusVisualizer.HandleAccessibilityFocusEvent(lastEvent);
         }
         else {
             focusVisualizer.resetVisualizations();
