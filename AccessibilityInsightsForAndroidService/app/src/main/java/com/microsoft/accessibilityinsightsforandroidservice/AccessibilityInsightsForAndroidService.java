@@ -20,9 +20,11 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Intent;
+import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.DisplayMetrics;
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
 public class AccessibilityInsightsForAndroidService extends AccessibilityService {
@@ -38,13 +40,20 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   private ScreenshotController screenshotController = null;
   private int activeWindowId = -1; // Set initial state to an invalid ID
   private FocusVisualizationStateManager focusVisualizationStateManager;
+  private AccessibilityEventDispatcher accessibilityEventDispatcher;
+  private FocusVisualizer focusVisualizer;
+  private FocusVisualizerController focusVisualizerController;
 
   public AccessibilityInsightsForAndroidService() {
     deviceConfigFactory = new DeviceConfigFactory();
     axeScanner =
         AxeScannerFactory.createAxeScanner(deviceConfigFactory, this::getRealDisplayMetrics);
     eventHelper = new EventHelper(new ThreadSafeSwapper<>());
-    focusVisualizationStateManager = new FocusVisualizationStateManager();
+  }
+
+  private void setupAccessbilityEventDispatcher() {
+    accessibilityEventDispatcher.addOnRedrawEventListener(focusVisualizerController::onRedrawEvent);
+    accessibilityEventDispatcher.addOnFocusEventListener(focusVisualizerController::onFocusEvent);
   }
 
   private DisplayMetrics getRealDisplayMetrics() {
@@ -104,10 +113,20 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
             MediaProjectionHolder::get);
 
     StopServerThread();
+    WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+    focusVisualizationStateManager = new FocusVisualizationStateManager();
+    accessibilityEventDispatcher = new AccessibilityEventDispatcher();
+    FocusVisualizationCanvas focusVisualizationCanvas = new FocusVisualizationCanvas(this);
+    focusVisualizer = new FocusVisualizer(new FocusVisualizerStyles(), focusVisualizationCanvas);
+    LayoutParamGenerator layoutParamGenerator = new LayoutParamGenerator(this::getRealDisplayMetrics);
+    focusVisualizerController = new FocusVisualizerController(focusVisualizer, focusVisualizationStateManager, windowManager, layoutParamGenerator::get, focusVisualizationCanvas);
+
+    windowManager.addView(focusVisualizationCanvas, layoutParamGenerator.get());
+    setupAccessbilityEventDispatcher();
 
     ResponseThreadFactory responseThreadFactory =
-        new ResponseThreadFactory(
-            screenshotController, eventHelper, axeScanner, deviceConfigFactory, focusVisualizationStateManager);
+            new ResponseThreadFactory(
+                    screenshotController, eventHelper, axeScanner, deviceConfigFactory, focusVisualizationStateManager);
     ServerThread = new ServerThread(new ServerSocketFactory(), responseThreadFactory);
     ServerThread.start();
   }
@@ -136,6 +155,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     }
 
     if (activeWindowId == windowId) {
+      accessibilityEventDispatcher.onAccessibilityEvent(event, getRootInActiveWindow());
       eventHelper.recordEvent(getRootInActiveWindow());
     }
   }

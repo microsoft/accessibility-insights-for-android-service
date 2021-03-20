@@ -3,11 +3,13 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 
 public class FocusVisualizer {
+  private static final String TAG = "FocusVisualizer";
   private ArrayList<FocusElementHighlight> focusElementHighlights;
   private ArrayList<FocusElementLine> focusElementLines;
   private int tabStopCount;
@@ -110,7 +112,7 @@ public class FocusVisualizer {
     this.tabStopCount = 0;
     this.focusElementHighlights.clear();
     this.focusElementLines.clear();
-    this.setDrawItemsAndRedraw();
+//    this.setDrawItemsAndRedraw();
   }
 
   private void setDrawItemsAndRedraw() {

@@ -3,7 +3,10 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.util.Log;
+
 public class TabStopsRequestFulfiller implements RequestFulfiller {
+  private static final String TAG = "TabStopsRequestFulfiller";
   private ResponseWriter responseWriter;
   private FocusVisualizationStateManager focusVisualizationStateManager;
   private boolean requestValue;
@@ -19,7 +22,9 @@ public class TabStopsRequestFulfiller implements RequestFulfiller {
 
   @Override
   public void fulfillRequest(RunnableFunction onRequestFulfilled) {
+    Log.v(TAG, "about to set state");
     focusVisualizationStateManager.setState(requestValue);
+    Log.v(TAG, "about to write successful response");
     responseWriter.writeSuccessfulResponse("");
     onRequestFulfilled.run();
   }

@@ -3,10 +3,13 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
 public class FocusVisualizationStateManager {
+  private static final String TAG = "FocusVisualizationState";
   private boolean enabled = false;
   private ArrayList<Consumer<Boolean>> onChangedListeners;
 
@@ -18,12 +21,13 @@ public class FocusVisualizationStateManager {
     onChangedListeners.add(listener);
   }
 
-  public void setState(boolean enabled) {
-    if (this.enabled == enabled) {
+  public void setState(boolean newState) {
+    if (this.enabled == newState) {
       return;
     }
 
-    this.enabled = enabled;
+    this.enabled = newState;
+    Log.v(TAG, "state updated");
     this.emitChanged(enabled);
   }
 
