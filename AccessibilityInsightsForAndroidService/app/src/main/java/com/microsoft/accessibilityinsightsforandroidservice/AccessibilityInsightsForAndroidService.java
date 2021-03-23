@@ -20,6 +20,7 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.DisplayMetrics;
@@ -38,6 +39,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   private ScreenshotController screenshotController = null;
   private int activeWindowId = -1; // Set initial state to an invalid ID
   private FocusVisualizationStateManager focusVisualizationStateManager;
+  private DeviceOrientationHandler deviceOrientationHandler;
 
   public AccessibilityInsightsForAndroidService() {
     deviceConfigFactory = new DeviceConfigFactory();
@@ -45,6 +47,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
         AxeScannerFactory.createAxeScanner(deviceConfigFactory, this::getRealDisplayMetrics);
     eventHelper = new EventHelper(new ThreadSafeSwapper<>());
     focusVisualizationStateManager = new FocusVisualizationStateManager();
+    deviceOrientationHandler = new DeviceOrientationHandler(getResources().getConfiguration().orientation);
   }
 
   private DisplayMetrics getRealDisplayMetrics() {
@@ -138,6 +141,16 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     if (activeWindowId == windowId) {
       eventHelper.recordEvent(getRootInActiveWindow());
     }
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    if(newConfig.orientation == this.deviceOrientationHandler.getOrientation()){
+      return;
+    }
+
+    this.deviceOrientationHandler.setOrientation(newConfig.orientation);
   }
 
   @Override
