@@ -6,14 +6,12 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doAnswer;
 
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.function.Consumer;
@@ -33,14 +31,11 @@ public class FocusVisualizerControllerTest {
   @Mock FocusVisualizationStateManager focusVisualizationStateManagerMock;
   @Mock AccessibilityEvent accessibilityEventMock;
   @Mock UIThreadRunner uiThreadRunner;
-  @Mock
-  WindowManager windowManager;
+  @Mock WindowManager windowManager;
   @Mock LayoutParamGenerator layoutParamGenerator;
   @Mock FocusVisualizationCanvas focusVisualizationCanvas;
-  @Mock
-  WindowManager.LayoutParams layoutParams;
-  @Mock
-  AccessibilityNodeInfo accessibilityNodeInfo;
+  @Mock WindowManager.LayoutParams layoutParams;
+  @Mock AccessibilityNodeInfo accessibilityNodeInfo;
 
   FocusVisualizerController testSubject;
 
@@ -48,9 +43,15 @@ public class FocusVisualizerControllerTest {
   public void prepare() {
     when(layoutParamGenerator.get()).thenReturn(layoutParams);
     testSubject =
-            new FocusVisualizerController(
-                    focusVisualizerMock, focusVisualizationStateManagerMock, uiThreadRunner, windowManager, layoutParamGenerator, focusVisualizationCanvas);
+        new FocusVisualizerController(
+            focusVisualizerMock,
+            focusVisualizationStateManagerMock,
+            uiThreadRunner,
+            windowManager,
+            layoutParamGenerator,
+            focusVisualizationCanvas);
   }
+
   @Test
   public void exists() {
     Assert.assertNotNull(testSubject);
@@ -131,12 +132,17 @@ public class FocusVisualizerControllerTest {
               runnable.run();
               return null;
             })
-            .when(uiThreadRunner)
-            .run(any());
+        .when(uiThreadRunner)
+        .run(any());
 
     testSubject =
-            new FocusVisualizerController(
-                    focusVisualizerMock, focusVisualizationStateManagerMock, uiThreadRunner, windowManager, layoutParamGenerator, focusVisualizationCanvas);
+        new FocusVisualizerController(
+            focusVisualizerMock,
+            focusVisualizationStateManagerMock,
+            uiThreadRunner,
+            windowManager,
+            layoutParamGenerator,
+            focusVisualizationCanvas);
 
     verify(windowManager).addView(focusVisualizationCanvas, layoutParams);
   }
@@ -162,8 +168,13 @@ public class FocusVisualizerControllerTest {
         .run(any());
 
     testSubject =
-            new FocusVisualizerController(
-                    focusVisualizerMock, focusVisualizationStateManagerMock, uiThreadRunner, windowManager, layoutParamGenerator, focusVisualizationCanvas);
+        new FocusVisualizerController(
+            focusVisualizerMock,
+            focusVisualizationStateManagerMock,
+            uiThreadRunner,
+            windowManager,
+            layoutParamGenerator,
+            focusVisualizationCanvas);
 
     verify(focusVisualizerMock).resetVisualizations();
   }
