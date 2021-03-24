@@ -24,27 +24,11 @@ public class FocusVisualizer {
     this.focusVisualizationCanvas = focusVisualizationCanvas;
   }
 
-  public void HandleAccessibilityRedrawEvent(AccessibilityEvent event) {
-    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-      return;
-    }
-
-    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-      this.resetVisualizations();
-      return;
-    }
-
-    if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-      this.updateDrawingsWithNewCoordinates();
-      return;
-    }
-    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-      this.resetVisualizations();
-      return;
-    }
+  public void refreshHighlights() {
+    this.updateDrawingsWithNewCoordinates();
   }
 
-  public void HandleAccessibilityFocusEvent(AccessibilityEvent event) {
+  public void addNewFocusedElement(AccessibilityEvent event) {
     tabStopCount++;
 
     AccessibilityNodeInfo eventSource = event.getSource();
@@ -64,8 +48,10 @@ public class FocusVisualizer {
     this.setDrawItemsAndRedraw();
   }
 
-  public void setFocusVisualizationCanvas(FocusVisualizationCanvas view) {
-    this.focusVisualizationCanvas = view;
+  public void resetVisualizations() {
+    this.tabStopCount = 0;
+    this.focusElementHighlights.clear();
+    this.focusElementLines.clear();
     this.setDrawItemsAndRedraw();
   }
 
@@ -104,13 +90,6 @@ public class FocusVisualizer {
       return null;
     }
     return this.focusElementHighlights.get(this.focusElementHighlights.size() - 1).getEventSource();
-  }
-
-  public void resetVisualizations() {
-    this.tabStopCount = 0;
-    this.focusElementHighlights.clear();
-    this.focusElementLines.clear();
-    this.setDrawItemsAndRedraw();
   }
 
   private void setDrawItemsAndRedraw() {

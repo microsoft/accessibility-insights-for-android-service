@@ -48,8 +48,7 @@ public class FocusVisualizerControllerTest {
             focusVisualizerMock, focusVisualizationStateManagerMock, uiThreadRunner);
     when(focusVisualizationStateManagerMock.getState()).thenReturn(false);
     testSubject.onFocusEvent(accessibilityEventMock);
-    verify(focusVisualizerMock, times(0))
-        .HandleAccessibilityFocusEvent(any(AccessibilityEvent.class));
+    verify(focusVisualizerMock, times(0)).addNewFocusedElement(any(AccessibilityEvent.class));
   }
 
   @Test
@@ -59,8 +58,7 @@ public class FocusVisualizerControllerTest {
             focusVisualizerMock, focusVisualizationStateManagerMock, uiThreadRunner);
     when(focusVisualizationStateManagerMock.getState()).thenReturn(true);
     testSubject.onFocusEvent(accessibilityEventMock);
-    verify(focusVisualizerMock, times(1))
-        .HandleAccessibilityFocusEvent(any(AccessibilityEvent.class));
+    verify(focusVisualizerMock, times(1)).addNewFocusedElement(any(AccessibilityEvent.class));
   }
 
   @Test
@@ -70,8 +68,7 @@ public class FocusVisualizerControllerTest {
             focusVisualizerMock, focusVisualizationStateManagerMock, uiThreadRunner);
     when(focusVisualizationStateManagerMock.getState()).thenReturn(false);
     testSubject.onRedrawEvent(accessibilityEventMock);
-    verify(focusVisualizerMock, times(0))
-        .HandleAccessibilityRedrawEvent(any(AccessibilityEvent.class));
+    verify(focusVisualizerMock, times(0)).refreshHighlights();
   }
 
   @Test
@@ -81,8 +78,7 @@ public class FocusVisualizerControllerTest {
             focusVisualizerMock, focusVisualizationStateManagerMock, uiThreadRunner);
     when(focusVisualizationStateManagerMock.getState()).thenReturn(true);
     testSubject.onRedrawEvent(accessibilityEventMock);
-    verify(focusVisualizerMock, times(1))
-        .HandleAccessibilityRedrawEvent(any(AccessibilityEvent.class));
+    verify(focusVisualizerMock, times(1)).refreshHighlights();
   }
 
   @Test
