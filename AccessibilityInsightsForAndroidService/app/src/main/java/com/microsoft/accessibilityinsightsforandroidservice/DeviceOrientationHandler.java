@@ -28,10 +28,6 @@ public class DeviceOrientationHandler {
     this.emitChanged(orientation);
   }
 
-  public int getOrientation() {
-    return this.orientation;
-  }
-
   private void emitChanged(int orientation) {
     this.onOrientationChangedListeners.forEach(
         listener -> {

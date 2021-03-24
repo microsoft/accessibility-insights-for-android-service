@@ -35,21 +35,18 @@ public class DeviceOrientationHandlerTest {
   }
 
   @Test
-  public void getOrientationReturnsInitialValueByDefault() {
-    Assert.assertEquals(testSubject.getOrientation(), initialValue);
-  }
-
-  @Test
   public void setOrientationUpdatesOrientation() {
     testSubject.setOrientation(0);
-    Assert.assertEquals(testSubject.getOrientation(), 0);
+    int orientation = Whitebox.getInternalState(testSubject, "orientation");
+    Assert.assertEquals(orientation, 0);
   }
 
   @Test
   public void setOrientationDoesNotCallOnChangeListenersIfOrientationDoesNotChange() {
     testSubject.subscribe(onChangeMock);
     testSubject.setOrientation(1);
-    Assert.assertEquals(testSubject.getOrientation(), 1);
+    int orientation = Whitebox.getInternalState(testSubject, "orientation");
+    Assert.assertEquals(orientation, 1);
     verify(onChangeMock, times(0)).accept(2);
   }
 
@@ -57,7 +54,8 @@ public class DeviceOrientationHandlerTest {
   public void setOrientationCallsOnChangeListenersOnOrientationchange() {
     testSubject.subscribe(onChangeMock);
     testSubject.setOrientation(2);
-    Assert.assertEquals(testSubject.getOrientation(), 2);
+    int orientation = Whitebox.getInternalState(testSubject, "orientation");
+    Assert.assertEquals(orientation, 2);
     verify(onChangeMock, times(1)).accept(2);
   }
 
