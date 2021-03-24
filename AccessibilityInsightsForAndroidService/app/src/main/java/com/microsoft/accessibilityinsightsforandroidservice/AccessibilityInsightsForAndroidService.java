@@ -24,7 +24,6 @@ import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
@@ -121,7 +120,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     accessibilityEventDispatcher = new AccessibilityEventDispatcher();
     deviceOrientationHandler = new DeviceOrientationHandler(getResources().getConfiguration().orientation);
 
-    setupAccessibilityEventDispatcher();
+    setupFocusVisualizationListeners();
 
     ResponseThreadFactory responseThreadFactory =
         new ResponseThreadFactory(
@@ -130,7 +129,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     ServerThread.start();
   }
 
-  private void setupAccessibilityEventDispatcher() {
+  private void setupFocusVisualizationListeners() {
     accessibilityEventDispatcher.addOnRedrawEventListener(focusVisualizerController::onRedrawEvent);
     accessibilityEventDispatcher.addOnFocusEventListener(focusVisualizerController::onFocusEvent);
     accessibilityEventDispatcher.addOnAppChangedListener(focusVisualizerController::onAppChanged);

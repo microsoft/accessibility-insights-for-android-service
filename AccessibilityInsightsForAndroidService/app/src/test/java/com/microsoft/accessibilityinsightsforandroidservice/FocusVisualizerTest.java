@@ -46,7 +46,7 @@ public class FocusVisualizerTest {
   }
 
   @Test
-  public void handleAccessibilityFocusEventCreatesElementOnFirstCall() {
+  public void addNewFocusedElementCreatesElementOnFirstCall() {
     testSubject.addNewFocusedElement(accessibilityEventMock);
     ArrayList<FocusElementHighlight> resultingHighlightList =
         Whitebox.getInternalState(testSubject, "focusElementHighlights");
@@ -54,7 +54,7 @@ public class FocusVisualizerTest {
   }
 
   @Test
-  public void handleAccessibilityFocusEventCreatesLineOnFirstCall() {
+  public void addNewFocusedElementCreatesLineOnFirstCall() {
     testSubject.addNewFocusedElement(accessibilityEventMock);
     ArrayList<FocusElementLine> resultingLineList =
         Whitebox.getInternalState(testSubject, "focusElementLines");
