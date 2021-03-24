@@ -26,8 +26,8 @@ public class AccessibilityEventDispatcher {
 
   public static List<Integer> redrawEventTypes =
       Arrays.asList(
+          AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
           AccessibilityEvent.TYPE_VIEW_SCROLLED,
-          AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
           AccessibilityEvent.TYPE_WINDOWS_CHANGED);
 
   public void onAccessibilityEvent(AccessibilityEvent event, AccessibilityNodeInfo rootNode) {
