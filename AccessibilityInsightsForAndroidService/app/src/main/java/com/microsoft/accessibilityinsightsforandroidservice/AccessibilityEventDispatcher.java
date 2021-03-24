@@ -34,7 +34,9 @@ public class AccessibilityEventDispatcher {
   public void onAccessibilityEvent(AccessibilityEvent event, AccessibilityNodeInfo rootNode) {
     int eventType = event.getEventType();
 
-    if (previousPackageName == null || !previousPackageName.equals(rootNode.getPackageName())) {
+    if (rootNode != null
+        && (previousPackageName == null
+            || !previousPackageName.equals(rootNode.getPackageName()))) {
       previousPackageName = rootNode.getPackageName();
       this.callListeners(onAppChangedListeners, rootNode);
     }
