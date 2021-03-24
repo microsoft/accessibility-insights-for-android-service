@@ -1,53 +1,46 @@
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
-import java.util.function.Supplier;
-
 public class FocusVisualizerController {
-    private FocusVisualizer focusVisualizer;
-    private FocusVisualizationStateManager focusVisualizationStateManager;
-    private AccessibilityEvent lastEvent;
-    private WindowManager windowManager;
-    private Supplier<WindowManager.LayoutParams>  layoutParamGenerator;
-    private FocusVisualizationCanvas focusVisualizationCanvas;
+  private FocusVisualizer focusVisualizer;
+  private FocusVisualizationStateManager focusVisualizationStateManager;
+  private UIThreadRunner uiThreadRunner;
 
-    public FocusVisualizerController(FocusVisualizer focusVisualizer, FocusVisualizationStateManager focusVisualizationStateManager, WindowManager windowManager, Supplier<WindowManager.LayoutParams> layoutParamGenerator, FocusVisualizationCanvas focusVisualizationCanvas) {
-        this.focusVisualizer = focusVisualizer;
-        this.focusVisualizationStateManager = focusVisualizationStateManager;
-        this.windowManager = windowManager;
-        this.layoutParamGenerator = layoutParamGenerator;
-        this.focusVisualizationCanvas = focusVisualizationCanvas;
-        this.focusVisualizationStateManager.subscribe(this::onFocusVisualizationStateChange);
+  public FocusVisualizerController(
+      FocusVisualizer focusVisualizer,
+      FocusVisualizationStateManager focusVisualizationStateManager,
+      UIThreadRunner uiThreadRunner) {
+    this.focusVisualizer = focusVisualizer;
+    this.focusVisualizationStateManager = focusVisualizationStateManager;
+    this.uiThreadRunner = uiThreadRunner;
+    this.focusVisualizationStateManager.subscribe(this::onFocusVisualizationStateChange);
+  }
+
+  public void onFocusEvent(AccessibilityEvent event) {
+    if (focusVisualizationStateManager.getState() == false) {
+      return;
     }
 
-    public void onFocusEvent(AccessibilityEvent event) {
-        lastEvent = event;
+    focusVisualizer.HandleAccessibilityFocusEvent(event);
+  }
 
-        if (focusVisualizationStateManager.getState() == false) {
-            return;
-        }
-
-        focusVisualizer.HandleAccessibilityFocusEvent(event);
+  public void onRedrawEvent(AccessibilityEvent event) {
+    if (focusVisualizationStateManager.getState() == false) {
+      return;
     }
 
-    public void onRedrawEvent(AccessibilityEvent event) {
-        lastEvent = event;
+    focusVisualizer.HandleAccessibilityRedrawEvent(event);
+  }
 
-        if (focusVisualizationStateManager.getState() == false) {
-            return;
-        }
-
-        focusVisualizer.HandleAccessibilityRedrawEvent(event);
+  private void onFocusVisualizationStateChange(boolean newState) {
+    if (newState) {
+      return;
     }
 
-    private void onFocusVisualizationStateChange(boolean newState) {
-        if (newState) {
-//            focusVisualizer.HandleAccessibilityFocusEvent(lastEvent);
-        }
-        else {
-            focusVisualizer.resetVisualizations();
-        }
-    }
+    uiThreadRunner.run(focusVisualizer::resetVisualizations);
+  }
 }
