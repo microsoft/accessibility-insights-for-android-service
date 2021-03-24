@@ -46,16 +46,16 @@ public class FocusVisualizerTest {
   }
 
   @Test
-  public void handleAccessibilityFocusEventCreatesElementOnFirstCall() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+  public void addNewFocusedElementCreatesElementOnFirstCall() {
+    testSubject.addNewFocusedElement(accessibilityEventMock);
     ArrayList<FocusElementHighlight> resultingHighlightList =
         Whitebox.getInternalState(testSubject, "focusElementHighlights");
     Assert.assertEquals(resultingHighlightList.size(), 1);
   }
 
   @Test
-  public void handleAccessibilityFocusEventCreatesLineOnFirstCall() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+  public void addNewFocusedElementCreatesLineOnFirstCall() {
+    testSubject.addNewFocusedElement(accessibilityEventMock);
     ArrayList<FocusElementLine> resultingLineList =
         Whitebox.getInternalState(testSubject, "focusElementLines");
     Assert.assertEquals(resultingLineList.size(), 1);
@@ -64,8 +64,8 @@ public class FocusVisualizerTest {
   @Test
   public void secondAccessibilityEventSetsPreviousElementNonCurrent() throws Exception {
     FocusVisualizer testSubjectSpy = spy(testSubject);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
 
     verifyPrivate(testSubjectSpy, times(1))
         .invoke("setPreviousElementHighlightNonCurrent", any(FocusElementHighlight.class));
@@ -74,8 +74,8 @@ public class FocusVisualizerTest {
   @Test
   public void secondAccessibilityEventSetsPreviousLineNonCurrent() throws Exception {
     FocusVisualizer testSubjectSpy = spy(testSubject);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
 
     verifyPrivate(testSubjectSpy, times(1))
         .invoke("setPreviousLineNonCurrent", any(FocusElementLine.class));
@@ -83,9 +83,9 @@ public class FocusVisualizerTest {
 
   @Test
   public void tabStopCountIncrementsAsExpected() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
 
     int resultingTabStopCount = Whitebox.getInternalState(testSubject, "tabStopCount");
 
@@ -94,8 +94,8 @@ public class FocusVisualizerTest {
 
   @Test
   public void resetVisualizationsDoesTheJob() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
 
     testSubject.resetVisualizations();
     ArrayList<FocusElementLine> resultingLineList =

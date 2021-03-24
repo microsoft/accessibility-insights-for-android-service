@@ -20,6 +20,7 @@
     package="com.microsoft.accessibilityinsightsforandroidservice">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <application
         android:allowBackup="false"
         android:icon="@mipmap/blue_launcher"

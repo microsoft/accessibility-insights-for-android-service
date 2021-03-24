@@ -3,20 +3,31 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 
 public class FocusVisualizerController {
   private FocusVisualizer focusVisualizer;
   private FocusVisualizationStateManager focusVisualizationStateManager;
   private UIThreadRunner uiThreadRunner;
+  private WindowManager windowManager;
+  private LayoutParamGenerator layoutParamGenerator;
+  private FocusVisualizationCanvas focusVisualizationCanvas;
 
   public FocusVisualizerController(
       FocusVisualizer focusVisualizer,
       FocusVisualizationStateManager focusVisualizationStateManager,
-      UIThreadRunner uiThreadRunner) {
+      UIThreadRunner uiThreadRunner,
+      WindowManager windowManager,
+      LayoutParamGenerator layoutParamGenerator,
+      FocusVisualizationCanvas focusVisualizationCanvas) {
     this.focusVisualizer = focusVisualizer;
     this.focusVisualizationStateManager = focusVisualizationStateManager;
     this.uiThreadRunner = uiThreadRunner;
+    this.windowManager = windowManager;
+    this.layoutParamGenerator = layoutParamGenerator;
+    this.focusVisualizationCanvas = focusVisualizationCanvas;
     this.focusVisualizationStateManager.subscribe(this::onFocusVisualizationStateChange);
   }
 
@@ -25,7 +36,7 @@ public class FocusVisualizerController {
       return;
     }
 
-    focusVisualizer.HandleAccessibilityFocusEvent(event);
+    focusVisualizer.addNewFocusedElement(event);
   }
 
   public void onRedrawEvent(AccessibilityEvent event) {
@@ -33,14 +44,40 @@ public class FocusVisualizerController {
       return;
     }
 
-    focusVisualizer.HandleAccessibilityRedrawEvent(event);
+    focusVisualizer.refreshHighlights();
   }
 
-  private void onFocusVisualizationStateChange(boolean newState) {
-    if (newState) {
+  public void onAppChanged(AccessibilityNodeInfo nodeInfo) {
+    if (focusVisualizationStateManager.getState() == false) {
       return;
     }
 
-    uiThreadRunner.run(focusVisualizer::resetVisualizations);
+    focusVisualizer.resetVisualizations();
+  }
+
+  public void onOrientationChanged(Integer orientation) {
+    if (focusVisualizationStateManager.getState() == false) {
+      return;
+    }
+
+    windowManager.updateViewLayout(focusVisualizationCanvas, layoutParamGenerator.get());
+    focusVisualizer.resetVisualizations();
+  }
+
+  private void onFocusVisualizationStateChange(boolean enabled) {
+    if (enabled) {
+      uiThreadRunner.run(this::addFocusVisualizationToScreen);
+    } else {
+      uiThreadRunner.run(this::removeFocusVisualizationToScreen);
+    }
+  }
+
+  private void addFocusVisualizationToScreen() {
+    windowManager.addView(focusVisualizationCanvas, layoutParamGenerator.get());
+  }
+
+  private void removeFocusVisualizationToScreen() {
+    focusVisualizer.resetVisualizations();
+    windowManager.removeView(focusVisualizationCanvas);
   }
 }

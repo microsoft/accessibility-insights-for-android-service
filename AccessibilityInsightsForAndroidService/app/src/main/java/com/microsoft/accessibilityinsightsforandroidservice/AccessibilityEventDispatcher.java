@@ -26,7 +26,6 @@ public class AccessibilityEventDispatcher {
 
   public static List<Integer> redrawEventTypes =
       Arrays.asList(
-          AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
           AccessibilityEvent.TYPE_VIEW_SCROLLED,
           AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
           AccessibilityEvent.TYPE_WINDOWS_CHANGED);
@@ -34,7 +33,9 @@ public class AccessibilityEventDispatcher {
   public void onAccessibilityEvent(AccessibilityEvent event, AccessibilityNodeInfo rootNode) {
     int eventType = event.getEventType();
 
-    if (previousPackageName == null || !previousPackageName.equals(rootNode.getPackageName())) {
+    if (rootNode != null
+        && (previousPackageName == null
+            || !previousPackageName.equals(rootNode.getPackageName()))) {
       previousPackageName = rootNode.getPackageName();
       this.callListeners(onAppChangedListeners, rootNode);
     }
