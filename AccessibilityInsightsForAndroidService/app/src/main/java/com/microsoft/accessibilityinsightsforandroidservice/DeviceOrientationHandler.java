@@ -20,10 +20,12 @@ public class DeviceOrientationHandler {
   }
 
   public void setOrientation(int orientation) {
-    if (this.orientation != orientation) {
-      this.orientation = orientation;
-      this.emitChanged(orientation);
+    if (this.orientation == orientation) {
+      return;
     }
+
+    this.orientation = orientation;
+    this.emitChanged(orientation);
   }
 
   public int getOrientation() {

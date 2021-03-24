@@ -146,10 +146,6 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   @Override
   public void onConfigurationChanged(Configuration newConfig) {
     super.onConfigurationChanged(newConfig);
-    if(newConfig.orientation == this.deviceOrientationHandler.getOrientation()){
-      return;
-    }
-
     this.deviceOrientationHandler.setOrientation(newConfig.orientation);
   }
 
