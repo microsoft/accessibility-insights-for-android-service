@@ -20,6 +20,7 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.util.DisplayMetrics;
@@ -43,12 +44,14 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   private FocusVisualizerController focusVisualizerController;
   private FocusVisualizationCanvas focusVisualizationCanvas;
   private AccessibilityEventDispatcher accessibilityEventDispatcher;
+  private DeviceOrientationHandler deviceOrientationHandler;
 
   public AccessibilityInsightsForAndroidService() {
     deviceConfigFactory = new DeviceConfigFactory();
     axeScanner =
         AxeScannerFactory.createAxeScanner(deviceConfigFactory, this::getRealDisplayMetrics);
     eventHelper = new EventHelper(new ThreadSafeSwapper<>());
+    deviceOrientationHandler = new DeviceOrientationHandler(getResources().getConfiguration().orientation);
   }
 
   private DisplayMetrics getRealDisplayMetrics() {
@@ -160,6 +163,12 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
       accessibilityEventDispatcher.onAccessibilityEvent(event, getRootInActiveWindow());
       eventHelper.recordEvent(getRootInActiveWindow());
     }
+  }
+
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    this.deviceOrientationHandler.setOrientation(newConfig.orientation);
   }
 
   @Override
