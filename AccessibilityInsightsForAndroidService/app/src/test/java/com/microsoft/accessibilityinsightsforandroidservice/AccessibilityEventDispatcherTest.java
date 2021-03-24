@@ -114,7 +114,7 @@ public class AccessibilityEventDispatcherTest {
           reset(eventMock);
         });
 
-    verify(onRedrawEventListenerMock, times(4)).accept(eventMock);
+    verify(onRedrawEventListenerMock, times(3)).accept(eventMock);
   }
 
   @Test
