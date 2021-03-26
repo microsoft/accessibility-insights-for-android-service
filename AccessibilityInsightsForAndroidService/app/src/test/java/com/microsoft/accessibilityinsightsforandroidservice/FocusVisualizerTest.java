@@ -4,6 +4,7 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
@@ -107,5 +108,11 @@ public class FocusVisualizerTest {
     Assert.assertEquals(resultingHighlightList.size(), 0);
     Assert.assertEquals(resultingLineList.size(), 0);
     Assert.assertEquals(resultingTabStopCount, 0);
+  }
+
+  @Test
+  public void refreshHighlightsCallsRedraw() {
+    testSubject.refreshHighlights();
+    verify(focusVisualizationCanvasMock).redraw();
   }
 }

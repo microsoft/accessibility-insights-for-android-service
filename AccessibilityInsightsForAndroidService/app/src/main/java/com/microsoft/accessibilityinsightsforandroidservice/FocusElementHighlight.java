@@ -20,6 +20,7 @@ public class FocusElementHighlight {
   private HashMap<String, Paint> paints;
   private Rect rect;
   private View view;
+  private static final String TAG = "FocusElementHighlight";
 
   public FocusElementHighlight(
       AccessibilityNodeInfo eventSource,
@@ -33,16 +34,9 @@ public class FocusElementHighlight {
     this.radius = radius;
     this.rect = new Rect();
     this.paints = currentPaints;
-    this.updateWithNewCoordinates();
   }
 
   private void setCoordinates() {
-    if (this.eventSource == null) {
-      return;
-    }
-    if (!this.eventSource.refresh()) {
-      return;
-    }
     this.eventSource.getBoundsInScreen(this.rect);
     this.rect.offset(0, this.yOffset);
     this.xCoordinate = rect.centerX();
@@ -50,6 +44,16 @@ public class FocusElementHighlight {
   }
 
   public void drawElementHighlight(Canvas canvas) {
+    if (this.eventSource == null) {
+      return;
+    }
+
+    if (!this.eventSource.refresh()) {
+      return;
+    }
+
+    this.updateWithNewCoordinates();
+
     this.drawInnerCircle(
         this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
     this.drawNumberInCircle(
@@ -85,7 +89,7 @@ public class FocusElementHighlight {
     return this.eventSource;
   }
 
-  public void updateWithNewCoordinates() {
+  private void updateWithNewCoordinates() {
     this.yOffset = OffsetHelper.getYOffset(this.view);
     this.setCoordinates();
   }
