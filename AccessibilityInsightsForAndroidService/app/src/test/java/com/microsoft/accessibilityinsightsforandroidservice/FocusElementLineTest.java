@@ -7,12 +7,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isA;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import android.content.res.Resources;
@@ -27,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.internal.verification.VerificationModeFactory;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
@@ -38,16 +36,18 @@ public class FocusElementLineTest {
 
   FocusElementLine testSubject;
 
-  @Mock AccessibilityNodeInfo accessibilityNodeInfoMock;
+  @Mock AccessibilityNodeInfo eventSourceMock;
+  @Mock AccessibilityNodeInfo previousEventSourceMock;
   @Mock Paint paintMock;
   @Mock View viewMock;
   @Mock Resources resourcesMock;
   @Mock Rect rectMock;
   @Mock Canvas canvasMock;
+  HashMap<String, Paint> paintsStub;
 
   @Before
   public void prepare() throws Exception {
-    HashMap<String, Paint> paintsStub = new HashMap<>();
+    paintsStub = new HashMap<>();
     paintsStub.put("foregroundLine", paintMock);
     paintsStub.put("backgroundLine", paintMock);
 
@@ -56,8 +56,7 @@ public class FocusElementLineTest {
     doNothing().when(rectMock).offset(isA(Integer.class), isA(Integer.class));
 
     testSubject =
-        new FocusElementLine(
-            accessibilityNodeInfoMock, accessibilityNodeInfoMock, paintsStub, viewMock);
+        new FocusElementLine(eventSourceMock, previousEventSourceMock, paintsStub, viewMock);
   }
 
   @Test
@@ -66,19 +65,10 @@ public class FocusElementLineTest {
   }
 
   @Test
-  public void followsCorrectStepsToUpdateCoordinates() throws Exception {
-    mockStatic(OffsetHelper.class);
-    FocusElementLine lineSpy = spy(testSubject);
-    lineSpy.updateWithNewCoordinates();
-
-    verifyStatic(OffsetHelper.class, VerificationModeFactory.times(1));
-    OffsetHelper.getYOffset(any(View.class));
-
-    verifyPrivate(lineSpy, times(1)).invoke("setCoordinates");
-  }
-
-  @Test
   public void drawLineCallsCorrectPrivateMethod() throws Exception {
+    when(eventSourceMock.refresh()).thenReturn(true);
+    when(previousEventSourceMock.refresh()).thenReturn(true);
+
     FocusElementLine lineSpy = spy(testSubject);
     lineSpy.drawLine(canvasMock);
     verifyPrivate(lineSpy, times(2))
@@ -90,6 +80,34 @@ public class FocusElementLineTest {
             anyInt(),
             any(Paint.class),
             any(Canvas.class));
+  }
+
+  @Test
+  public void drawLineDoesNothingWhenEventSourceIsNull() {
+    testSubject = new FocusElementLine(null, previousEventSourceMock, paintsStub, viewMock);
+    testSubject.drawLine(canvasMock);
+    verifyNoInteractions(canvasMock);
+  }
+
+  @Test
+  public void drawLineDoesNothingWhenPreviousEventSourceIsNull() {
+    testSubject = new FocusElementLine(eventSourceMock, null, paintsStub, viewMock);
+    testSubject.drawLine(canvasMock);
+    verifyNoInteractions(canvasMock);
+  }
+
+  @Test
+  public void drawLineDoesNothingWhenPreviousEventSourceDoesNotRefresh() {
+    when(previousEventSourceMock.refresh()).thenReturn(false);
+    testSubject.drawLine(canvasMock);
+    verifyNoInteractions(canvasMock);
+  }
+
+  @Test
+  public void drawLineDoesNothingWhenEventSourceDoesNotRefresh() {
+    when(eventSourceMock.refresh()).thenReturn(false);
+    testSubject.drawLine(canvasMock);
+    verifyNoInteractions(canvasMock);
   }
 
   @Test

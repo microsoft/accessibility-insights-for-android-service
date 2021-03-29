@@ -25,7 +25,7 @@ public class FocusVisualizer {
   }
 
   public void refreshHighlights() {
-    this.updateDrawingsWithNewCoordinates();
+    this.focusVisualizationCanvas.redraw();
   }
 
   public void addNewFocusedElement(AccessibilityEvent event) {
@@ -94,16 +94,6 @@ public class FocusVisualizer {
 
   private void setDrawItemsAndRedraw() {
     this.focusVisualizationCanvas.setDrawItems(this.focusElementHighlights, this.focusElementLines);
-    this.focusVisualizationCanvas.redraw();
-  }
-
-  private void updateDrawingsWithNewCoordinates() {
-    for (int i = 0; i < this.focusElementHighlights.size(); i++) {
-      this.focusElementHighlights.get(i).updateWithNewCoordinates();
-    }
-    for (int i = 0; i < this.focusElementLines.size(); i++) {
-      this.focusElementLines.get(i).updateWithNewCoordinates();
-    }
     this.focusVisualizationCanvas.redraw();
   }
 }
