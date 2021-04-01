@@ -56,13 +56,6 @@ public class FocusElementHighlight {
 
     this.updateWithNewCoordinates();
 
-    if (!isCurrentElement) {
-      this.drawInnerCircle(
-          this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
-      this.drawNumberInCircle(
-          this.xCoordinate, this.yCoordinate, this.tabStopCount, this.paints.get("number"), canvas);
-    }
-
     if (isCurrentElement) {
       this.drawInnerCircle(
           this.xCoordinate,
@@ -70,6 +63,11 @@ public class FocusElementHighlight {
           this.radius,
           this.paints.get("transparentInnerCircle"),
           canvas);
+    } else {
+      this.drawInnerCircle(
+          this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
+      this.drawNumberInCircle(
+          this.xCoordinate, this.yCoordinate, this.tabStopCount, this.paints.get("number"), canvas);
     }
 
     this.drawOuterCircle(
