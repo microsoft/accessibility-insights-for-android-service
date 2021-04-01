@@ -3,7 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 
@@ -28,10 +27,9 @@ public class FocusVisualizer {
     this.focusVisualizationCanvas.redraw();
   }
 
-  public void addNewFocusedElement(AccessibilityEvent event) {
+  public void addNewFocusedElement(AccessibilityNodeInfo eventSource) {
     tabStopCount++;
 
-    AccessibilityNodeInfo eventSource = event.getSource();
     AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
 
     if (this.focusElementHighlights.size() > 0) {

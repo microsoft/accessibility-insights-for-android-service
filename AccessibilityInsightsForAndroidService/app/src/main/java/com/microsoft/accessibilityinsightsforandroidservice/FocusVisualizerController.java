@@ -14,6 +14,7 @@ public class FocusVisualizerController {
   private WindowManager windowManager;
   private LayoutParamGenerator layoutParamGenerator;
   private FocusVisualizationCanvas focusVisualizationCanvas;
+  private AccessibilityNodeInfo lastEventSource;
 
   public FocusVisualizerController(
       FocusVisualizer focusVisualizer,
@@ -32,11 +33,13 @@ public class FocusVisualizerController {
   }
 
   public void onFocusEvent(AccessibilityEvent event) {
+    lastEventSource = event.getSource();
+
     if (focusVisualizationStateManager.getState() == false) {
       return;
     }
 
-    focusVisualizer.addNewFocusedElement(event);
+    focusVisualizer.addNewFocusedElement(event.getSource());
   }
 
   public void onRedrawEvent(AccessibilityEvent event) {
@@ -73,6 +76,9 @@ public class FocusVisualizerController {
   }
 
   private void addFocusVisualizationToScreen() {
+    if (lastEventSource != null) {
+      focusVisualizer.addNewFocusedElement(lastEventSource);
+    }
     windowManager.addView(focusVisualizationCanvas, layoutParamGenerator.get());
   }
 
