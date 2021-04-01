@@ -28,10 +28,9 @@ public class FocusVisualizer {
     this.focusVisualizationCanvas.redraw();
   }
 
-  public void addNewFocusedElement(AccessibilityEvent event) {
+  public void addNewFocusedElement(AccessibilityNodeInfo eventSource) {
     tabStopCount++;
 
-    AccessibilityNodeInfo eventSource = event.getSource();
     AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
 
     if (this.focusElementHighlights.size() > 0) {

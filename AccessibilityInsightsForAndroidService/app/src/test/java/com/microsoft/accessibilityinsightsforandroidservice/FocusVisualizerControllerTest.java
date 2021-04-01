@@ -37,11 +37,13 @@ public class FocusVisualizerControllerTest {
   @Mock WindowManager.LayoutParams layoutParams;
   @Mock AccessibilityNodeInfo accessibilityNodeInfo;
 
+  Consumer<Boolean> listener;
   FocusVisualizerController testSubject;
 
   @Before
   public void prepare() {
     when(layoutParamGenerator.get()).thenReturn(layoutParams);
+    listener = null;
     testSubject =
         new FocusVisualizerController(
             focusVisualizerMock,
@@ -61,14 +63,15 @@ public class FocusVisualizerControllerTest {
   public void onFocusEventDoesNotCallVisualizerIfStateIsFalse() {
     when(focusVisualizationStateManagerMock.getState()).thenReturn(false);
     testSubject.onFocusEvent(accessibilityEventMock);
-    verify(focusVisualizerMock, times(0)).addNewFocusedElement(any(AccessibilityEvent.class));
+    verify(focusVisualizerMock, times(0)).addNewFocusedElement(accessibilityNodeInfo);
   }
 
   @Test
   public void onFocusEventCallsVisualizerIfStateIsTrue() {
     when(focusVisualizationStateManagerMock.getState()).thenReturn(true);
+    when(accessibilityEventMock.getSource()).thenReturn(accessibilityNodeInfo);
     testSubject.onFocusEvent(accessibilityEventMock);
-    verify(focusVisualizerMock, times(1)).addNewFocusedElement(any(AccessibilityEvent.class));
+    verify(focusVisualizerMock, times(1)).addNewFocusedElement(accessibilityNodeInfo);
   }
 
   @Test
@@ -116,15 +119,15 @@ public class FocusVisualizerControllerTest {
   }
 
   @Test
-  public void onFocusVisualizationStateChangeWithoutStateChangeDoesNothing() {
+  public void onFocusVisualizationStateChangeToEnabledAddsVisualization() {
     doAnswer(
             invocation -> {
-              Consumer<Boolean> listener = invocation.getArgument(0);
+              listener = invocation.getArgument(0);
               listener.accept(true);
               return null;
             })
-        .when(focusVisualizationStateManagerMock)
-        .subscribe(any());
+            .when(focusVisualizationStateManagerMock)
+            .subscribe(any());
 
     doAnswer(
             invocation -> {
@@ -132,26 +135,63 @@ public class FocusVisualizerControllerTest {
               runnable.run();
               return null;
             })
-        .when(uiThreadRunner)
-        .run(any());
+            .when(uiThreadRunner)
+            .run(any());
 
     testSubject =
-        new FocusVisualizerController(
-            focusVisualizerMock,
-            focusVisualizationStateManagerMock,
-            uiThreadRunner,
-            windowManager,
-            layoutParamGenerator,
-            focusVisualizationCanvas);
+            new FocusVisualizerController(
+                    focusVisualizerMock,
+                    focusVisualizationStateManagerMock,
+                    uiThreadRunner,
+                    windowManager,
+                    layoutParamGenerator,
+                    focusVisualizationCanvas);
 
     verify(windowManager).addView(focusVisualizationCanvas, layoutParams);
   }
 
   @Test
-  public void onFocusVisualizationStateChangeResetsVisualizationsOnUIThread() {
+  public void onFocusVisualizationStateChangeToEnabledAddsVisualizationWithLastEventSource() {
+    when(focusVisualizationStateManagerMock.getState()).thenReturn(false);
+    when(accessibilityEventMock.getSource()).thenReturn(accessibilityNodeInfo);
     doAnswer(
             invocation -> {
-              Consumer<Boolean> listener = invocation.getArgument(0);
+              listener = invocation.getArgument(0);
+              return null;
+            })
+            .when(focusVisualizationStateManagerMock)
+            .subscribe(any());
+
+    doAnswer(
+            invocation -> {
+              Runnable runnable = invocation.getArgument(0);
+              runnable.run();
+              return null;
+            })
+            .when(uiThreadRunner)
+            .run(any());
+
+    testSubject =
+            new FocusVisualizerController(
+                    focusVisualizerMock,
+                    focusVisualizationStateManagerMock,
+                    uiThreadRunner,
+                    windowManager,
+                    layoutParamGenerator,
+                    focusVisualizationCanvas);
+
+    testSubject.onFocusEvent(accessibilityEventMock);
+    listener.accept(true);
+
+    verify(windowManager).addView(focusVisualizationCanvas, layoutParams);
+    verify(focusVisualizerMock).addNewFocusedElement(accessibilityNodeInfo);
+  }
+
+  @Test
+  public void onFocusVisualizationStateChangToDisabledRemovesVisualizations() {
+    doAnswer(
+            invocation -> {
+              listener = invocation.getArgument(0);
               listener.accept(false);
               return null;
             })

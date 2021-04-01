@@ -11,6 +11,8 @@ import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
+
 import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Before;
@@ -28,7 +30,8 @@ public class FocusVisualizerTest {
 
   @Mock FocusVisualizerStyles focusVisualizerStylesMock;
   @Mock FocusVisualizationCanvas focusVisualizationCanvasMock;
-  @Mock AccessibilityEvent accessibilityEventMock;
+  @Mock
+  AccessibilityNodeInfo accessibilityEventMock;
   @Mock FocusElementHighlight focusElementHighlightMock;
   @Mock FocusElementLine focusElementLineMock;
 
