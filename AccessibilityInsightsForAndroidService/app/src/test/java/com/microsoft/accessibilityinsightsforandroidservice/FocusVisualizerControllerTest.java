@@ -126,8 +126,8 @@ public class FocusVisualizerControllerTest {
               listener.accept(true);
               return null;
             })
-            .when(focusVisualizationStateManagerMock)
-            .subscribe(any());
+        .when(focusVisualizationStateManagerMock)
+        .subscribe(any());
 
     doAnswer(
             invocation -> {
@@ -135,17 +135,17 @@ public class FocusVisualizerControllerTest {
               runnable.run();
               return null;
             })
-            .when(uiThreadRunner)
-            .run(any());
+        .when(uiThreadRunner)
+        .run(any());
 
     testSubject =
-            new FocusVisualizerController(
-                    focusVisualizerMock,
-                    focusVisualizationStateManagerMock,
-                    uiThreadRunner,
-                    windowManager,
-                    layoutParamGenerator,
-                    focusVisualizationCanvas);
+        new FocusVisualizerController(
+            focusVisualizerMock,
+            focusVisualizationStateManagerMock,
+            uiThreadRunner,
+            windowManager,
+            layoutParamGenerator,
+            focusVisualizationCanvas);
 
     verify(windowManager).addView(focusVisualizationCanvas, layoutParams);
   }
@@ -159,8 +159,8 @@ public class FocusVisualizerControllerTest {
               listener = invocation.getArgument(0);
               return null;
             })
-            .when(focusVisualizationStateManagerMock)
-            .subscribe(any());
+        .when(focusVisualizationStateManagerMock)
+        .subscribe(any());
 
     doAnswer(
             invocation -> {
@@ -168,17 +168,17 @@ public class FocusVisualizerControllerTest {
               runnable.run();
               return null;
             })
-            .when(uiThreadRunner)
-            .run(any());
+        .when(uiThreadRunner)
+        .run(any());
 
     testSubject =
-            new FocusVisualizerController(
-                    focusVisualizerMock,
-                    focusVisualizationStateManagerMock,
-                    uiThreadRunner,
-                    windowManager,
-                    layoutParamGenerator,
-                    focusVisualizationCanvas);
+        new FocusVisualizerController(
+            focusVisualizerMock,
+            focusVisualizationStateManagerMock,
+            uiThreadRunner,
+            windowManager,
+            layoutParamGenerator,
+            focusVisualizationCanvas);
 
     testSubject.onFocusEvent(accessibilityEventMock);
     listener.accept(true);
