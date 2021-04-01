@@ -49,6 +49,7 @@ public class FocusElementHighlightTest {
     paintsStub.put("innerCircle", paintMock);
     paintsStub.put("outerCircle", paintMock);
     paintsStub.put("number", paintMock);
+    paintsStub.put("transparentInnerCircle", paintMock);
 
     when(viewMock.getResources()).thenReturn(resourcesMock);
     whenNew(Rect.class).withNoArguments().thenReturn(rectMock);
@@ -90,7 +91,22 @@ public class FocusElementHighlightTest {
   }
 
   @Test
-  public void drawElementHighlightCallsAllRelevantDrawMethods() throws Exception {
+  public void drawElementHighlightCallsAllRelevantDrawMethodsForCurrentElement() throws Exception {
+    when(accessibilityNodeInfoMock.refresh()).thenReturn(true);
+    FocusElementHighlight elementSpy = spy(testSubject);
+    elementSpy.drawElementHighlight(canvasMock);
+    verifyPrivate(elementSpy, times(1))
+        .invoke(
+            "drawInnerCircle", anyInt(), anyInt(), anyInt(), any(Paint.class), any(Canvas.class));
+    verifyPrivate(elementSpy, times(1))
+        .invoke(
+            "drawOuterCircle", anyInt(), anyInt(), anyInt(), any(Paint.class), any(Canvas.class));
+  }
+
+  @Test
+  public void drawElementHighlightCallsAllRelevantDrawMethodsForNonCurrentElement()
+      throws Exception {
+    testSubject.setAsNonCurrentElement();
     when(accessibilityNodeInfoMock.refresh()).thenReturn(true);
     FocusElementHighlight elementSpy = spy(testSubject);
     elementSpy.drawElementHighlight(canvasMock);
@@ -113,5 +129,11 @@ public class FocusElementHighlightTest {
   @Test
   public void getEventSourceReturnsAccessibilityNodeInfo() {
     Assert.assertEquals(testSubject.getEventSource(), accessibilityNodeInfoMock);
+  }
+
+  @Test
+  public void setAsNonCurrentElementFunctionsAsExpected() {
+    testSubject.setAsNonCurrentElement();
+    Assert.assertEquals(Whitebox.getInternalState(testSubject, "isCurrentElement"), false);
   }
 }

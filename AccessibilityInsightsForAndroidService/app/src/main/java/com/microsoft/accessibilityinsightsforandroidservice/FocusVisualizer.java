@@ -58,6 +58,7 @@ public class FocusVisualizer {
   }
 
   private void setPreviousElementHighlightNonCurrent(FocusElementHighlight focusElementHighlight) {
+    focusElementHighlight.setAsNonCurrentElement();
     focusElementHighlight.setPaints(this.styles.getNonCurrentElementPaints());
   }
 
