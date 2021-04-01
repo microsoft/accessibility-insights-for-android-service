@@ -36,6 +36,7 @@ public class FocusVisualizerStylesTest {
     Assert.assertNotNull(paints.get("outerCircle"));
     Assert.assertNotNull(paints.get("innerCircle"));
     Assert.assertNotNull(paints.get("number"));
+    Assert.assertNotNull(paints.get("transparentInnerCircle"));
   }
 
   @Test

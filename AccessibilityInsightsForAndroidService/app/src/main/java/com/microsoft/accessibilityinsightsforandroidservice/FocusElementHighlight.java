@@ -20,6 +20,7 @@ public class FocusElementHighlight {
   private HashMap<String, Paint> paints;
   private Rect rect;
   private View view;
+  private boolean isCurrentElement;
   private static final String TAG = "FocusElementHighlight";
 
   public FocusElementHighlight(
@@ -34,6 +35,7 @@ public class FocusElementHighlight {
     this.radius = radius;
     this.rect = new Rect();
     this.paints = currentPaints;
+    this.isCurrentElement = true;
   }
 
   private void setCoordinates() {
@@ -54,10 +56,22 @@ public class FocusElementHighlight {
 
     this.updateWithNewCoordinates();
 
-    this.drawInnerCircle(
-        this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
-    this.drawNumberInCircle(
-        this.xCoordinate, this.yCoordinate, this.tabStopCount, this.paints.get("number"), canvas);
+    if (!isCurrentElement) {
+      this.drawInnerCircle(
+          this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
+      this.drawNumberInCircle(
+          this.xCoordinate, this.yCoordinate, this.tabStopCount, this.paints.get("number"), canvas);
+    }
+
+    if (isCurrentElement) {
+      this.drawInnerCircle(
+          this.xCoordinate,
+          this.yCoordinate,
+          this.radius,
+          this.paints.get("transparentInnerCircle"),
+          canvas);
+    }
+
     this.drawOuterCircle(
         this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("outerCircle"), canvas);
   }
@@ -83,6 +97,10 @@ public class FocusElementHighlight {
 
   public void setPaints(HashMap<String, Paint> paints) {
     this.paints = paints;
+  }
+
+  public void setAsNonCurrentElement() {
+    this.isCurrentElement = false;
   }
 
   public AccessibilityNodeInfo getEventSource() {
