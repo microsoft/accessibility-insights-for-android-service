@@ -69,7 +69,7 @@ public class FocusVisualizerController {
     if (focusVisualizationStateManager.getState() == false) {
       return;
     }
-    lastOrientationChange = new Date();
+    lastOrientationChange = dateProvider.get();
     windowManager.updateViewLayout(focusVisualizationCanvas, layoutParamGenerator.get());
     focusVisualizer.resetVisualizations();
   }
