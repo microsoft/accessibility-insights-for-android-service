@@ -4,6 +4,7 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -12,8 +13,7 @@ import static org.powermock.api.mockito.PowerMockito.doAnswer;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.Date;
 import java.util.function.Consumer;
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,8 +25,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 public class FocusVisualizerControllerTest {
 
-  private static final ScheduledExecutorService mainThread =
-      Executors.newSingleThreadScheduledExecutor();
   @Mock FocusVisualizer focusVisualizerMock;
   @Mock FocusVisualizationStateManager focusVisualizationStateManagerMock;
   @Mock AccessibilityEvent accessibilityEventMock;
@@ -36,6 +34,9 @@ public class FocusVisualizerControllerTest {
   @Mock FocusVisualizationCanvas focusVisualizationCanvas;
   @Mock WindowManager.LayoutParams layoutParams;
   @Mock AccessibilityNodeInfo accessibilityNodeInfo;
+  @Mock DateProvider dateProvider;
+  @Mock Date oldDateMock;
+  @Mock Date newDateMock;
 
   Consumer<Boolean> listener;
   FocusVisualizerController testSubject;
@@ -44,6 +45,7 @@ public class FocusVisualizerControllerTest {
   public void prepare() {
     when(layoutParamGenerator.get()).thenReturn(layoutParams);
     listener = null;
+    when(dateProvider.get()).thenReturn(oldDateMock);
     testSubject =
         new FocusVisualizerController(
             focusVisualizerMock,
@@ -51,7 +53,8 @@ public class FocusVisualizerControllerTest {
             uiThreadRunner,
             windowManager,
             layoutParamGenerator,
-            focusVisualizationCanvas);
+            focusVisualizationCanvas,
+            dateProvider);
   }
 
   @Test
@@ -67,9 +70,25 @@ public class FocusVisualizerControllerTest {
   }
 
   @Test
-  public void onFocusEventCallsVisualizerIfStateIsTrue() {
+  public void onFocusEventDoesNotCallVisualizerIfOrientationChangedRecently() {
+    reset(dateProvider);
+    when(dateProvider.get()).thenReturn(newDateMock);
+    when(focusVisualizationStateManagerMock.getState()).thenReturn(true);
+    when(oldDateMock.getTime()).thenReturn((long) 500);
+    when(newDateMock.getTime()).thenReturn((long) 501);
+    testSubject.onFocusEvent(accessibilityEventMock);
+    verify(focusVisualizerMock, times(0)).addNewFocusedElement(accessibilityNodeInfo);
+  }
+
+  @Test
+  public void onFocusEventCallsVisualizerIfStateIsTrueAndOrientationHasNotChangedRecently()
+      throws Exception {
+    reset(dateProvider);
+    when(dateProvider.get()).thenReturn(newDateMock);
     when(focusVisualizationStateManagerMock.getState()).thenReturn(true);
     when(accessibilityEventMock.getSource()).thenReturn(accessibilityNodeInfo);
+    when(oldDateMock.getTime()).thenReturn((long) 500);
+    when(newDateMock.getTime()).thenReturn((long) 10000);
     testSubject.onFocusEvent(accessibilityEventMock);
     verify(focusVisualizerMock, times(1)).addNewFocusedElement(accessibilityNodeInfo);
   }
@@ -145,7 +164,8 @@ public class FocusVisualizerControllerTest {
             uiThreadRunner,
             windowManager,
             layoutParamGenerator,
-            focusVisualizationCanvas);
+            focusVisualizationCanvas,
+            dateProvider);
 
     verify(windowManager).addView(focusVisualizationCanvas, layoutParams);
   }
@@ -178,7 +198,8 @@ public class FocusVisualizerControllerTest {
             uiThreadRunner,
             windowManager,
             layoutParamGenerator,
-            focusVisualizationCanvas);
+            focusVisualizationCanvas,
+            dateProvider);
 
     testSubject.onFocusEvent(accessibilityEventMock);
     listener.accept(true);
@@ -214,7 +235,8 @@ public class FocusVisualizerControllerTest {
             uiThreadRunner,
             windowManager,
             layoutParamGenerator,
-            focusVisualizationCanvas);
+            focusVisualizationCanvas,
+            dateProvider);
 
     verify(focusVisualizerMock).resetVisualizations();
   }
