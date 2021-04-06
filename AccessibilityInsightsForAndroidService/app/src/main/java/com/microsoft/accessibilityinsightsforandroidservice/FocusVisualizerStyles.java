@@ -6,6 +6,8 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import java.util.HashMap;
 
 public class FocusVisualizerStyles {
@@ -17,6 +19,7 @@ public class FocusVisualizerStyles {
   private Paint numberPaint;
   private Paint currentBackgroundLinePaint;
   private Paint nonCurrentBackgroundLinePaint;
+  private Paint transparentInnerCirclePaint;
 
   private HashMap<String, Paint> currentElementPaints;
   private HashMap<String, Paint> nonCurrentElementPaints;
@@ -34,6 +37,7 @@ public class FocusVisualizerStyles {
     this.setNonCurrentOuterCirclePaint();
     this.setCurrentBackgroundLinePaint();
     this.setNonCurrentBackgroundLinePaint();
+    this.setTransparentInnerCirclePaint();
 
     this.setCurrentElementPaints();
     this.setNonCurrentElementPaints();
@@ -46,6 +50,7 @@ public class FocusVisualizerStyles {
     this.currentElementPaints.put("outerCircle", this.currentOuterCirclePaint);
     this.currentElementPaints.put("innerCircle", this.innerCirclePaint);
     this.currentElementPaints.put("number", this.numberPaint);
+    this.currentElementPaints.put("transparentInnerCircle", this.transparentInnerCirclePaint);
   }
 
   public HashMap<String, Paint> getCurrentElementPaints() {
@@ -140,5 +145,12 @@ public class FocusVisualizerStyles {
     this.nonCurrentBackgroundLinePaint.setStyle(Paint.Style.STROKE);
     this.nonCurrentBackgroundLinePaint.setColor(Color.WHITE);
     this.nonCurrentBackgroundLinePaint.setStrokeWidth(12);
+  }
+
+  private void setTransparentInnerCirclePaint() {
+    this.transparentInnerCirclePaint = new Paint();
+    this.transparentInnerCirclePaint.setStyle(Paint.Style.FILL);
+    this.transparentInnerCirclePaint.setColor(Color.TRANSPARENT);
+    this.transparentInnerCirclePaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
   }
 }
