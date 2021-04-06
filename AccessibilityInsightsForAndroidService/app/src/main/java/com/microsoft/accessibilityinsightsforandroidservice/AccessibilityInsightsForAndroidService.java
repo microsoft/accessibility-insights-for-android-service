@@ -116,7 +116,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     LayoutParamGenerator layoutParamGenerator = new LayoutParamGenerator(this::getRealDisplayMetrics);
     focusVisualizationCanvas = new FocusVisualizationCanvas(this);
     focusVisualizer = new FocusVisualizer(new FocusVisualizerStyles(), focusVisualizationCanvas);
-    focusVisualizerController = new FocusVisualizerController(focusVisualizer, focusVisualizationStateManager, new UIThreadRunner(), windowManager, layoutParamGenerator, focusVisualizationCanvas);
+    focusVisualizerController = new FocusVisualizerController(focusVisualizer, focusVisualizationStateManager, new UIThreadRunner(), windowManager, layoutParamGenerator, focusVisualizationCanvas, new DateProvider());
     accessibilityEventDispatcher = new AccessibilityEventDispatcher();
     deviceOrientationHandler = new DeviceOrientationHandler(getResources().getConfiguration().orientation);
 
