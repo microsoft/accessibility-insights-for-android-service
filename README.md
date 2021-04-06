@@ -44,14 +44,21 @@ Accessibility Insights for Android Service is a service for Android that helps i
 		* Ensure that the **app** is selected in the left navigation pane
 		* Under **General** > **Launch Options**, change **Launch** from "Default Activity" to "Nothing"
 		* Select **Apply**, then **Ok**
-    
-1. 	Run the app from Android Studio (this will install the APK onto the emulator). The app won't show up in the list of programs--it shows up as a downloaded accessibility service. It will be off by default. To activate it:
+
+1. Run the app from Android Studio (this will install the APK onto the emulator). The app won't show up in the list of programs--it shows up as a downloaded accessibility service. It will be off by default. To activate it:
     * Open the Settings app in the emulator. *If you have trouble opening the emulator, see [Unable to start emulator](#unable-to-start-emulator) under [Known Issues](#known-issues) below*
     * Scroll down and select **Accessibility**
     * Select "Accessibility Insights for Android Service" under **Downloaded services**
     * Toggle on **Use service** to enable the service
     * Select **Allow** on the resulting dialog to grant the necessary permissions
     * An "Exposing sensitive info during casting/recording" dialog should appear. Select **Start now** 
+    
+#### Viewing raw JSON results in browser
+
+1. While the service is running, forward the emulated device port `62442` to the same port on your machine by running `adb forward tcp:62442 tcp:62442` from a command prompt.
+    * This should print the port number back or print nothing at all (port forwarding already established) if it is successful.
+    
+1. Navigate to [http://localhost:62442/AccessibilityInsights/result](http://localhost:62442/AccessibilityInsights/result) to view JSON results.
     
 #### Known issues
 
