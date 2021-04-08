@@ -5,7 +5,7 @@
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
         exclusiveContent {
             forRepository {
                 google()
@@ -14,8 +14,16 @@ buildscript {
                 includeGroupByRegex("^androidx(\$|\\..*)")
                 includeGroupByRegex("^com\\.android(\$|\\..*)")
                 // Note: not all com.google.* cases come from google(), several are published
-                // to jcenter/mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
+                // to mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
                 includeGroup("com.google.test.platform")
+            }
+        }
+        exclusiveContent {
+            forRepository {
+                gradlePluginPortal()
+            }
+            filter {
+                includeGroup("org.jetbrains.trove4j")
             }
         }
     }
@@ -33,7 +41,7 @@ plugins {
 
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
         exclusiveContent {
             forRepository {
                 google()
@@ -42,8 +50,16 @@ allprojects {
                 includeGroupByRegex("^androidx(\$|\\..*)")
                 includeGroupByRegex("^com\\.android(\$|\\..*)")
                 // Note: not all com.google.* cases come from google(), several are published
-                // to jcenter/mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
+                // to mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
                 includeGroup("com.google.test.platform")
+            }
+        }
+        exclusiveContent {
+            forRepository {
+                gradlePluginPortal()
+            }
+            filter {
+                includeGroup("org.jetbrains.trove4j")
             }
         }
     }
