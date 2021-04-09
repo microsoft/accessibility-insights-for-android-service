@@ -64,7 +64,7 @@ function parseReleaseDepsFromLockfile(path) {
 //   org.jetbrains/annotations 15.0 - Apache-2.0
 // </summary>
 //
-// output format: ["org.jetbrains/annotatoins 15.0", ...]
+// output format: ["org.jetbrains/annotations 15.0", ...]
 function parseDepsFromNoticeFile(path) {
     const noticeContent = fs.readFileSync(path).toString();
     const componentRegex = /\<summary\>\s*([a-zA-Z0-9\._\- \/]+) - ([a-zA-Z0-9\._\-]+)\s*\<\/summary\>/gm
