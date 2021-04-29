@@ -4,12 +4,13 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
-import android.view.accessibility.AccessibilityEvent;
+import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,7 +28,7 @@ public class FocusVisualizerTest {
 
   @Mock FocusVisualizerStyles focusVisualizerStylesMock;
   @Mock FocusVisualizationCanvas focusVisualizationCanvasMock;
-  @Mock AccessibilityEvent accessibilityEventMock;
+  @Mock AccessibilityNodeInfo accessibilityEventMock;
   @Mock FocusElementHighlight focusElementHighlightMock;
   @Mock FocusElementLine focusElementLineMock;
 
@@ -46,16 +47,16 @@ public class FocusVisualizerTest {
   }
 
   @Test
-  public void handleAccessibilityFocusEventCreatesElementOnFirstCall() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+  public void addNewFocusedElementCreatesElementOnFirstCall() {
+    testSubject.addNewFocusedElement(accessibilityEventMock);
     ArrayList<FocusElementHighlight> resultingHighlightList =
         Whitebox.getInternalState(testSubject, "focusElementHighlights");
     Assert.assertEquals(resultingHighlightList.size(), 1);
   }
 
   @Test
-  public void handleAccessibilityFocusEventCreatesLineOnFirstCall() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+  public void addNewFocusedElementCreatesLineOnFirstCall() {
+    testSubject.addNewFocusedElement(accessibilityEventMock);
     ArrayList<FocusElementLine> resultingLineList =
         Whitebox.getInternalState(testSubject, "focusElementLines");
     Assert.assertEquals(resultingLineList.size(), 1);
@@ -64,8 +65,8 @@ public class FocusVisualizerTest {
   @Test
   public void secondAccessibilityEventSetsPreviousElementNonCurrent() throws Exception {
     FocusVisualizer testSubjectSpy = spy(testSubject);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
 
     verifyPrivate(testSubjectSpy, times(1))
         .invoke("setPreviousElementHighlightNonCurrent", any(FocusElementHighlight.class));
@@ -74,8 +75,8 @@ public class FocusVisualizerTest {
   @Test
   public void secondAccessibilityEventSetsPreviousLineNonCurrent() throws Exception {
     FocusVisualizer testSubjectSpy = spy(testSubject);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubjectSpy.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
+    testSubjectSpy.addNewFocusedElement(accessibilityEventMock);
 
     verifyPrivate(testSubjectSpy, times(1))
         .invoke("setPreviousLineNonCurrent", any(FocusElementLine.class));
@@ -83,9 +84,9 @@ public class FocusVisualizerTest {
 
   @Test
   public void tabStopCountIncrementsAsExpected() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
 
     int resultingTabStopCount = Whitebox.getInternalState(testSubject, "tabStopCount");
 
@@ -94,8 +95,8 @@ public class FocusVisualizerTest {
 
   @Test
   public void resetVisualizationsDoesTheJob() {
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
-    testSubject.HandleAccessibilityFocusEvent(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
+    testSubject.addNewFocusedElement(accessibilityEventMock);
 
     testSubject.resetVisualizations();
     ArrayList<FocusElementLine> resultingLineList =
@@ -107,5 +108,11 @@ public class FocusVisualizerTest {
     Assert.assertEquals(resultingHighlightList.size(), 0);
     Assert.assertEquals(resultingLineList.size(), 0);
     Assert.assertEquals(resultingTabStopCount, 0);
+  }
+
+  @Test
+  public void refreshHighlightsCallsRedraw() {
+    testSubject.refreshHighlights();
+    verify(focusVisualizationCanvasMock).redraw();
   }
 }

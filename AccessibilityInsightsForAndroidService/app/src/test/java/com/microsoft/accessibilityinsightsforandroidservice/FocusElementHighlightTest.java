@@ -6,12 +6,11 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
 import static org.powermock.api.mockito.PowerMockito.spy;
 import static org.powermock.api.mockito.PowerMockito.verifyPrivate;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
 import static org.powermock.api.mockito.PowerMockito.when;
 import static org.powermock.api.mockito.PowerMockito.whenNew;
 
@@ -42,13 +41,15 @@ public class FocusElementHighlightTest {
   @Mock Resources resourcesMock;
   @Mock Rect rectMock;
   @Mock Canvas canvasMock;
+  HashMap<String, Paint> paintsStub;
 
   @Before
   public void prepare() throws Exception {
-    HashMap<String, Paint> paintsStub = new HashMap<>();
+    paintsStub = new HashMap<>();
     paintsStub.put("innerCircle", paintMock);
     paintsStub.put("outerCircle", paintMock);
     paintsStub.put("number", paintMock);
+    paintsStub.put("transparentInnerCircle", paintMock);
 
     when(viewMock.getResources()).thenReturn(resourcesMock);
     whenNew(Rect.class).withNoArguments().thenReturn(rectMock);
@@ -64,19 +65,6 @@ public class FocusElementHighlightTest {
   }
 
   @Test
-  public void followsCorrectStepsToUpdateCoordinates() throws Exception {
-    mockStatic(OffsetHelper.class);
-
-    FocusElementHighlight elementSpy = spy(testSubject);
-    elementSpy.updateWithNewCoordinates();
-
-    verifyStatic(OffsetHelper.class, times(1));
-    OffsetHelper.getYOffset(any(View.class));
-
-    verifyPrivate(elementSpy, times(1)).invoke("setCoordinates");
-  }
-
-  @Test
   public void setPaintsWorksProperly() {
     HashMap<String, Paint> testPaintsStub = new HashMap<>();
     testPaintsStub.put("test", paintMock);
@@ -89,7 +77,37 @@ public class FocusElementHighlightTest {
   }
 
   @Test
-  public void drawElementHighlightCallsAllRelevantDrawMethods() throws Exception {
+  public void drawElementHighlightDoesNothingWhenEventSourceIsNull() {
+    testSubject = new FocusElementHighlight(null, paintsStub, 10, 10, viewMock);
+    testSubject.drawElementHighlight(canvasMock);
+    verifyNoInteractions(canvasMock);
+  }
+
+  @Test
+  public void drawElementHighlightDoesNothingWhenEventSourceRefreshDoesNotWork() {
+    when(accessibilityNodeInfoMock.refresh()).thenReturn(false);
+    testSubject.drawElementHighlight(canvasMock);
+    verifyNoInteractions(canvasMock);
+  }
+
+  @Test
+  public void drawElementHighlightCallsAllRelevantDrawMethodsForCurrentElement() throws Exception {
+    when(accessibilityNodeInfoMock.refresh()).thenReturn(true);
+    FocusElementHighlight elementSpy = spy(testSubject);
+    elementSpy.drawElementHighlight(canvasMock);
+    verifyPrivate(elementSpy, times(1))
+        .invoke(
+            "drawInnerCircle", anyInt(), anyInt(), anyInt(), any(Paint.class), any(Canvas.class));
+    verifyPrivate(elementSpy, times(1))
+        .invoke(
+            "drawOuterCircle", anyInt(), anyInt(), anyInt(), any(Paint.class), any(Canvas.class));
+  }
+
+  @Test
+  public void drawElementHighlightCallsAllRelevantDrawMethodsForNonCurrentElement()
+      throws Exception {
+    testSubject.setAsNonCurrentElement();
+    when(accessibilityNodeInfoMock.refresh()).thenReturn(true);
     FocusElementHighlight elementSpy = spy(testSubject);
     elementSpy.drawElementHighlight(canvasMock);
     verifyPrivate(elementSpy, times(1))
@@ -111,5 +129,11 @@ public class FocusElementHighlightTest {
   @Test
   public void getEventSourceReturnsAccessibilityNodeInfo() {
     Assert.assertEquals(testSubject.getEventSource(), accessibilityNodeInfoMock);
+  }
+
+  @Test
+  public void setAsNonCurrentElementFunctionsAsExpected() {
+    testSubject.setAsNonCurrentElement();
+    Assert.assertEquals(Whitebox.getInternalState(testSubject, "isCurrentElement"), false);
   }
 }

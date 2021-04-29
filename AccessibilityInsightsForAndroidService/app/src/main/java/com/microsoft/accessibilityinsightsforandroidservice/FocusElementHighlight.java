@@ -20,6 +20,8 @@ public class FocusElementHighlight {
   private HashMap<String, Paint> paints;
   private Rect rect;
   private View view;
+  private boolean isCurrentElement;
+  private static final String TAG = "FocusElementHighlight";
 
   public FocusElementHighlight(
       AccessibilityNodeInfo eventSource,
@@ -33,16 +35,10 @@ public class FocusElementHighlight {
     this.radius = radius;
     this.rect = new Rect();
     this.paints = currentPaints;
-    this.updateWithNewCoordinates();
+    this.isCurrentElement = true;
   }
 
   private void setCoordinates() {
-    if (this.eventSource == null) {
-      return;
-    }
-    if (!this.eventSource.refresh()) {
-      return;
-    }
     this.eventSource.getBoundsInScreen(this.rect);
     this.rect.offset(0, this.yOffset);
     this.xCoordinate = rect.centerX();
@@ -50,10 +46,30 @@ public class FocusElementHighlight {
   }
 
   public void drawElementHighlight(Canvas canvas) {
-    this.drawInnerCircle(
-        this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
-    this.drawNumberInCircle(
-        this.xCoordinate, this.yCoordinate, this.tabStopCount, this.paints.get("number"), canvas);
+    if (this.eventSource == null) {
+      return;
+    }
+
+    if (!this.eventSource.refresh()) {
+      return;
+    }
+
+    this.updateWithNewCoordinates();
+
+    if (isCurrentElement) {
+      this.drawInnerCircle(
+          this.xCoordinate,
+          this.yCoordinate,
+          this.radius,
+          this.paints.get("transparentInnerCircle"),
+          canvas);
+    } else {
+      this.drawInnerCircle(
+          this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("innerCircle"), canvas);
+      this.drawNumberInCircle(
+          this.xCoordinate, this.yCoordinate, this.tabStopCount, this.paints.get("number"), canvas);
+    }
+
     this.drawOuterCircle(
         this.xCoordinate, this.yCoordinate, this.radius, this.paints.get("outerCircle"), canvas);
   }
@@ -81,11 +97,15 @@ public class FocusElementHighlight {
     this.paints = paints;
   }
 
+  public void setAsNonCurrentElement() {
+    this.isCurrentElement = false;
+  }
+
   public AccessibilityNodeInfo getEventSource() {
     return this.eventSource;
   }
 
-  public void updateWithNewCoordinates() {
+  private void updateWithNewCoordinates() {
     this.yOffset = OffsetHelper.getYOffset(this.view);
     this.setCoordinates();
   }

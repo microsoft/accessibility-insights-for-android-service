@@ -3,7 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.ArrayList;
 
@@ -24,30 +23,13 @@ public class FocusVisualizer {
     this.focusVisualizationCanvas = focusVisualizationCanvas;
   }
 
-  public void HandleAccessibilityRedrawEvent(AccessibilityEvent event) {
-    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-      return;
-    }
-
-    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {
-      this.resetVisualizations();
-      return;
-    }
-
-    if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_SCROLLED) {
-      this.updateDrawingsWithNewCoordinates();
-      return;
-    }
-    if (event.getEventType() == AccessibilityEvent.TYPE_WINDOWS_CHANGED) {
-      this.resetVisualizations();
-      return;
-    }
+  public void refreshHighlights() {
+    this.focusVisualizationCanvas.redraw();
   }
 
-  public void HandleAccessibilityFocusEvent(AccessibilityEvent event) {
+  public void addNewFocusedElement(AccessibilityNodeInfo eventSource) {
     tabStopCount++;
 
-    AccessibilityNodeInfo eventSource = event.getSource();
     AccessibilityNodeInfo previousEventSource = this.getPreviousEventSource();
 
     if (this.focusElementHighlights.size() > 0) {
@@ -64,8 +46,10 @@ public class FocusVisualizer {
     this.setDrawItemsAndRedraw();
   }
 
-  public void setFocusVisualizationCanvas(FocusVisualizationCanvas view) {
-    this.focusVisualizationCanvas = view;
+  public void resetVisualizations() {
+    this.tabStopCount = 0;
+    this.focusElementHighlights.clear();
+    this.focusElementLines.clear();
     this.setDrawItemsAndRedraw();
   }
 
@@ -74,6 +58,7 @@ public class FocusVisualizer {
   }
 
   private void setPreviousElementHighlightNonCurrent(FocusElementHighlight focusElementHighlight) {
+    focusElementHighlight.setAsNonCurrentElement();
     focusElementHighlight.setPaints(this.styles.getNonCurrentElementPaints());
   }
 
@@ -106,25 +91,8 @@ public class FocusVisualizer {
     return this.focusElementHighlights.get(this.focusElementHighlights.size() - 1).getEventSource();
   }
 
-  public void resetVisualizations() {
-    this.tabStopCount = 0;
-    this.focusElementHighlights.clear();
-    this.focusElementLines.clear();
-    this.setDrawItemsAndRedraw();
-  }
-
   private void setDrawItemsAndRedraw() {
     this.focusVisualizationCanvas.setDrawItems(this.focusElementHighlights, this.focusElementLines);
-    this.focusVisualizationCanvas.redraw();
-  }
-
-  private void updateDrawingsWithNewCoordinates() {
-    for (int i = 0; i < this.focusElementHighlights.size(); i++) {
-      this.focusElementHighlights.get(i).updateWithNewCoordinates();
-    }
-    for (int i = 0; i < this.focusElementLines.size(); i++) {
-      this.focusElementLines.get(i).updateWithNewCoordinates();
-    }
     this.focusVisualizationCanvas.redraw();
   }
 }

@@ -34,10 +34,18 @@ public class FocusElementLine {
     this.paints = Paints;
     this.currentRect = new Rect();
     this.prevRect = new Rect();
-    this.updateWithNewCoordinates();
   }
 
   public void drawLine(Canvas canvas) {
+    if (this.eventSource == null || this.previousEventSource == null) {
+      return;
+    }
+
+    if (!this.eventSource.refresh() || !this.previousEventSource.refresh()) {
+      return;
+    }
+
+    this.updateWithNewCoordinates();
     this.drawConnectingLine(
         this.xStart, this.yStart, this.xEnd, this.yEnd, this.paints.get("backgroundLine"), canvas);
     this.drawConnectingLine(
@@ -45,13 +53,6 @@ public class FocusElementLine {
   }
 
   private void setCoordinates() {
-    if (this.eventSource == null || this.previousEventSource == null) {
-      return;
-    }
-    if (!this.eventSource.refresh() || !this.previousEventSource.refresh()) {
-      return;
-    }
-
     this.eventSource.getBoundsInScreen(this.currentRect);
     this.currentRect.offset(0, this.yOffset);
 
@@ -73,7 +74,7 @@ public class FocusElementLine {
     this.paints = paints;
   }
 
-  public void updateWithNewCoordinates() {
+  private void updateWithNewCoordinates() {
     this.yOffset = OffsetHelper.getYOffset(this.view);
     this.setCoordinates();
   }

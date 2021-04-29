@@ -54,6 +54,17 @@ public class AccessibilityEventDispatcherTest {
   }
 
   @Test
+  public void onAppChangedDoesNotFireWhenRootNodeIsNull() {
+    int trivialEventType = -1;
+    when(eventMock.getEventType()).thenReturn(trivialEventType);
+
+    testSubject.addOnAppChangedListener(onAppChangedListenerMock);
+    testSubject.onAccessibilityEvent(eventMock, null);
+
+    verify(onAppChangedListenerMock, times(0)).accept(rootNodeMock);
+  }
+
+  @Test
   public void onAppChangedFiresWhenPackageNameChanged() {
     int trivialEventType = -1;
     CharSequence differentPackageNameStub = "different package name";
