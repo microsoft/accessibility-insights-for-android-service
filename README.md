@@ -63,7 +63,7 @@ Once the port forwarding is set up you can manually trigger requests by hitting 
 * **Config**
   * Navigate to [http://localhost:62442/AccessibilityInsights/config](http://localhost:62442/AccessibilityInsights/config) to view device configuration.
   * Returned data includes:
-    * `deviceName` - the name of the device from the Android [`Build`](https://developer.android.com/reference/android/os/Build)
+    * `deviceName` - the name of the device from the Android [`Build.MODEL`](https://developer.android.com/reference/android/os/Build#MODEL)
     * `packageName` - the package the associated root [`AccessibilityInfoNode`](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo) comes from
     * `serviceVersion` - the version of the service
 
