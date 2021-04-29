@@ -44,15 +44,50 @@ Accessibility Insights for Android Service is a service for Android that helps i
 		* Ensure that the **app** is selected in the left navigation pane
 		* Under **General** > **Launch Options**, change **Launch** from "Default Activity" to "Nothing"
 		* Select **Apply**, then **Ok**
-    
-1. 	Run the app from Android Studio (this will install the APK onto the emulator). The app won't show up in the list of programs--it shows up as a downloaded accessibility service. It will be off by default. To activate it:
+
+1. Run the app from Android Studio (this will install the APK onto the emulator). The app won't show up in the list of programs--it shows up as a downloaded accessibility service. It will be off by default. To activate it:
     * Open the Settings app in the emulator. *If you have trouble opening the emulator, see [Unable to start emulator](#unable-to-start-emulator) under [Known Issues](#known-issues) below*
     * Scroll down and select **Accessibility**
     * Select "Accessibility Insights for Android Service" under **Downloaded services**
     * Toggle on **Use service** to enable the service
     * Select **Allow** on the resulting dialog to grant the necessary permissions
     * An "Exposing sensitive info during casting/recording" dialog should appear. Select **Start now** 
-    
+
+#### Triggering requests in the browser
+
+While the service is running, forward the emulated device port `62442` (set in the [ServerThread](https://github.com/microsoft/accessibility-insights-for-android-service/blob/main/AccessibilityInsightsForAndroidService/app/src/main/java/com/microsoft/accessibilityinsightsforandroidservice/ServerThread.java)) to the same port on your machine by running `adb forward tcp:62442 tcp:62442` from a command prompt.
+
+A success will either print the port number back or print nothing at all.
+
+Once the port forwarding is set up you can manually trigger requests by hitting [endpoints](https://github.com/microsoft/accessibility-insights-for-android-service/blob/main/AccessibilityInsightsForAndroidService/app/src/main/java/com/microsoft/accessibilityinsightsforandroidservice/RequestHandlerFactory.java) in your browser.
+* **Config**
+  * Navigate to [http://localhost:62442/AccessibilityInsights/config](http://localhost:62442/AccessibilityInsights/config) to view device configuration.
+  * Returned data includes:
+    * `deviceName` - the name of the device from the Android [`Build.MODEL`](https://developer.android.com/reference/android/os/Build#MODEL)
+    * `packageName` - the package the associated root [`AccessibilityInfoNode`](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo) comes from
+    * `serviceVersion` - the version of the service
+
+* **Raw Axe Results**
+  * Navigate to [http://localhost:62442/AccessibilityInsights/result](http://localhost:62442/AccessibilityInsights/result) to view returned JSON results.
+  * Returned data includes:
+    * `axeConf` - the set [AxeConf](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeConf.java) object listing which rules will run
+    * `axeContext` - the Context axe-android is running the rules on
+      * `axeDevice` - the device the context was built on
+      * `axeEventStream` - the AccessibilityEvent Stream since the last view refresh
+      * `axeMetadata`
+        *  `analysisTimestamp` - the timestamp at time of analysis
+        *  `appIdentifier` - the Android PackageName
+        *  `axeVersion` - implementation version of package
+        *  `screenTitle` - title of current screen
+      * `axeView` - the serializable view hierarchy at the time the context was built
+      * `screenshot` - the screenshot at the time the Context was built (this will display as a wall of text BitMap in the browser)
+    * `axeRuleResults` - an array of [AxeRuleResult](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeRuleResult.java) objects. Each has:
+      * `axeViewId` - the ID of the view it's associated with (corresponds to a view listed above in `axeContext`)
+      * `impact` - the severity of the issue
+      * `props` - the properties used in determining the outcome
+      * `ruleId` - the ID of the rule
+      * `ruleSummary` - short summary of the rule.
+      * `status` - the status of the rule (PASS, FAIL, etc)
 #### Known issues
 
 ##### Gradle sync fails
