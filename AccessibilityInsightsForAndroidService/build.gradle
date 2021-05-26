@@ -16,6 +16,7 @@ buildscript {
                 // Note: not all com.google.* cases come from google(), several are published
                 // to mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
                 includeGroup("com.google.test.platform")
+                includeGroupByRegex("^com\\.google\\.android(\$|\\..*)")
             }
         }
         exclusiveContent {
@@ -52,6 +53,7 @@ allprojects {
                 // Note: not all com.google.* cases come from google(), several are published
                 // to mavenCentral only (eg, gson, protobuf, findbugs, guava, jimfs)
                 includeGroup("com.google.test.platform")
+                includeGroupByRegex("^com\\.google\\.android(\$|\\..*)")
             }
         }
         exclusiveContent {
