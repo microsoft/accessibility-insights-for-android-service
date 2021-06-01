@@ -13,18 +13,21 @@ public class ResultRequestFulfiller implements RequestFulfiller {
   private final ResponseWriter responseWriter;
   private final AxeScanner axeScanner;
   private final ScreenshotController screenshotController;
+  private final ResultSerializer resultSerializer;
 
   public ResultRequestFulfiller(
       ResponseWriter responseWriter,
       RootNodeFinder rootNodeFinder,
       EventHelper eventHelper,
       AxeScanner axeScanner,
-      ScreenshotController screenshotController) {
+      ScreenshotController screenshotController,
+      ResultSerializer resultSerializer) {
     this.responseWriter = responseWriter;
     this.rootNodeFinder = rootNodeFinder;
     this.eventHelper = eventHelper;
     this.axeScanner = axeScanner;
     this.screenshotController = screenshotController;
+    this.resultSerializer = resultSerializer;
   }
 
   public void fulfillRequest(RunnableFunction onRequestFulfilled) {
@@ -64,6 +67,8 @@ public class ResultRequestFulfiller implements RequestFulfiller {
     if (result == null) {
       throw new ScanException("Scanner returned no data");
     }
-    return result.toJson();
+
+    resultSerializer.addAxeResult(result);
+    return resultSerializer.generateResultJson();
   }
 }

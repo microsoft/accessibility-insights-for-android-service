@@ -14,6 +14,7 @@ public class RequestHandlerFactory {
   private final DeviceConfigFactory deviceConfigFactory;
   private final RequestHandlerImplFactory requestHandlerImplFactory;
   private final FocusVisualizationStateManager focusVisualizationStateManager;
+  private final ResultSerializer resultSerializer;
 
   public RequestHandlerFactory(
       ScreenshotController screenshotController,
@@ -22,7 +23,8 @@ public class RequestHandlerFactory {
       AxeScanner axeScanner,
       DeviceConfigFactory deviceConfigFactory,
       RequestHandlerImplFactory requestHandlerImplFactory,
-      FocusVisualizationStateManager focusVisualizationStateManager) {
+      FocusVisualizationStateManager focusVisualizationStateManager,
+      ResultSerializer resultSerializer) {
     this.screenshotController = screenshotController;
     this.axeScanner = axeScanner;
     this.rootNodeFinder = rootNodeFinder;
@@ -30,6 +32,7 @@ public class RequestHandlerFactory {
     this.deviceConfigFactory = deviceConfigFactory;
     this.requestHandlerImplFactory = requestHandlerImplFactory;
     this.focusVisualizationStateManager = focusVisualizationStateManager;
+    this.resultSerializer = resultSerializer;
   }
 
   public RequestHandler createHandlerForRequest(
@@ -39,7 +42,12 @@ public class RequestHandlerFactory {
       if (requestString.startsWith("GET /AccessibilityInsights/result ")) {
         ResultRequestFulfiller resultRequestFulfiller =
             new ResultRequestFulfiller(
-                responseWriter, rootNodeFinder, eventHelper, axeScanner, screenshotController);
+                responseWriter,
+                rootNodeFinder,
+                eventHelper,
+                axeScanner,
+                screenshotController,
+                resultSerializer);
         return requestHandlerImplFactory.createRequestHandler(
             socketHolder,
             resultRequestFulfiller,
