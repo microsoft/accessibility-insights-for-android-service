@@ -27,6 +27,7 @@ public class RequestHandlerFactoryTest {
   @Mock ResponseWriter responseWriter;
   @Mock RequestHandlerImplFactory requestHandlerImplFactory;
   @Mock FocusVisualizationStateManager focusVisualizationStateManager;
+  @Mock ResultSerializer resultSerializer;
 
   RequestHandlerFactory testSubject;
 
@@ -40,7 +41,8 @@ public class RequestHandlerFactoryTest {
             axeScanner,
             deviceConfigFactory,
             requestHandlerImplFactory,
-            focusVisualizationStateManager);
+            focusVisualizationStateManager,
+            resultSerializer);
   }
 
   @Test
