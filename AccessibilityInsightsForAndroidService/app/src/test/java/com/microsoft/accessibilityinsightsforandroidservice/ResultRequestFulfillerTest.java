@@ -39,6 +39,7 @@ public class ResultRequestFulfillerTest {
   @Mock AccessibilityNodeInfo rootNode;
   @Mock AxeResult axeResultMock;
   @Mock RunnableFunction onRequestFulfilledMock;
+  @Mock ResultSerializer resultSerializer;
 
   final String scanResultJson = "axe scan result";
 
@@ -55,7 +56,12 @@ public class ResultRequestFulfillerTest {
         .getScreenshotWithMediaProjection(any());
     testSubject =
         new ResultRequestFulfiller(
-            responseWriter, rootNodeFinder, eventHelper, axeScanner, screenshotController);
+            responseWriter,
+            rootNodeFinder,
+            eventHelper,
+            axeScanner,
+            screenshotController,
+            resultSerializer);
   }
 
   @Test
@@ -163,6 +169,15 @@ public class ResultRequestFulfillerTest {
     verify(sourceNode, never()).recycle();
   }
 
+  @Test
+  public void addsAxeResultToSerializer() {
+    setupSuccessfulRequest();
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verify(resultSerializer, times(1)).addAxeResult(axeResultMock);
+  }
+
   private void setupSuccessfulRequest() {
     when(eventHelper.claimLastSource()).thenReturn(sourceNode);
     when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(rootNode);
@@ -171,7 +186,7 @@ public class ResultRequestFulfillerTest {
     } catch (ViewChangedException e) {
       Assert.fail(e.getMessage());
     }
-    when(axeResultMock.toJson()).thenReturn(scanResultJson);
+    when(resultSerializer.generateResultJson()).thenReturn(scanResultJson);
   }
 
   private void verifyOnRequestFulfilledCalled() {

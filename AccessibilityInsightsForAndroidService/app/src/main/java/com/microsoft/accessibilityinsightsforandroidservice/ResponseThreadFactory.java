@@ -26,7 +26,8 @@ public class ResponseThreadFactory {
             axeScanner,
             deviceConfigFactory,
             new RequestHandlerImplFactory(),
-            focusVisualizationStateManager);
+            focusVisualizationStateManager,
+            new ResultSerializer());
   }
 
   public ResponseThread createResponseThread(Socket socket) {
