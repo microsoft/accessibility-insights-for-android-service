@@ -4,7 +4,6 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.content.Context;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,7 +20,6 @@ public class ATFAScannerFactoryTest {
 
   @Test
   public void atfaScannerExists() {
-    Assert.assertNotNull(
-        ATFAScannerFactory.createATFAScanner(contextMock));
+    Assert.assertNotNull(ATFAScannerFactory.createATFAScanner(contextMock));
   }
 }
