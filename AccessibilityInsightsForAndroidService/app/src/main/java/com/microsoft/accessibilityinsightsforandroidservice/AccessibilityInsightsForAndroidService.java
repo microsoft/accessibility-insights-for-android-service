@@ -31,6 +31,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   private static final String TAG = "AccessibilityInsightsForAndroidService";
   private static ServerThread ServerThread = null;
   private final AxeScanner axeScanner;
+  private final ATFAScanner atfaScanner;
   private final EventHelper eventHelper;
   private final DeviceConfigFactory deviceConfigFactory;
   private final OnScreenshotAvailableProvider onScreenshotAvailableProvider =
@@ -50,6 +51,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     deviceConfigFactory = new DeviceConfigFactory();
     axeScanner =
         AxeScannerFactory.createAxeScanner(deviceConfigFactory, this::getRealDisplayMetrics);
+    atfaScanner = ATFAScannerFactory.createATFAScanner(this);
     eventHelper = new EventHelper(new ThreadSafeSwapper<>());
   }
 
