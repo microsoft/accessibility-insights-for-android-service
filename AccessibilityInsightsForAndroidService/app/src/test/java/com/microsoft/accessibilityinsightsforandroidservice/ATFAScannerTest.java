@@ -4,7 +4,6 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anySet;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -14,7 +13,6 @@ import android.graphics.Bitmap;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckPreset;
-import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResult;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckResultUtils;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheck;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheckResult;
@@ -32,6 +30,7 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
+import java.util.Collections;
 import java.util.List;
 
 @RunWith(PowerMockRunner.class)
@@ -41,22 +40,25 @@ public class ATFAScannerTest {
   @Mock Bitmap bitmapMock;
   @Mock AccessibilityNodeInfo accessibilityNodeInfoMock;
   @Mock Context contextMock;
-  @Mock Parameters parametersMock;
   @Mock AccessibilityHierarchyCheck checkMock;
   @Mock AccessibilityHierarchyAndroid hierarchyMock;
   @Mock AccessibilityHierarchyAndroid.BuilderAndroid builderMock;
-  @Mock List<AccessibilityHierarchyCheckResult> resultsMock;
-  @Mock List<AccessibilityCheckResult> filteredResultsMock;
 
   ATFAScanner testSubject;
-  BitmapImage screenshotMock;
+  Parameters parametersStub;
+  BitmapImage screenshotStub;
+  List<AccessibilityHierarchyCheckResult> resultsStub;
+  List<AccessibilityHierarchyCheckResult> filteredResultsStub;
 
   @Before
   public void prepare() {
     PowerMockito.mockStatic(AccessibilityCheckPreset.class);
     PowerMockito.mockStatic(AccessibilityHierarchyAndroid.class);
     PowerMockito.mockStatic(AccessibilityCheckResultUtils.class);
-    screenshotMock = new BitmapImage(bitmapMock);
+    screenshotStub = new BitmapImage(bitmapMock);
+    parametersStub = new Parameters();
+    resultsStub = Collections.emptyList();
+    filteredResultsStub = Collections.emptyList();
     testSubject = new ATFAScanner(contextMock);
   }
 
@@ -65,11 +67,11 @@ public class ATFAScannerTest {
     when(AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(AccessibilityCheckPreset.LATEST)).thenReturn(ImmutableSet.of(checkMock));
     when(AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock)).thenReturn(builderMock);
     when(builderMock.build()).thenReturn(hierarchyMock);
-    when(checkMock.runCheckOnHierarchy(hierarchyMock, null, parametersMock)).thenReturn(resultsMock);
-    when(AccessibilityCheckResultUtils.getResultsForTypes(eq(resultsMock), anySet())).thenReturn(filteredResultsMock);
+    when(checkMock.runCheckOnHierarchy(hierarchyMock, null, parametersStub)).thenReturn(resultsStub);
+    when(AccessibilityCheckResultUtils.getResultsForTypes(eq(resultsStub), anySet())).thenReturn(filteredResultsStub);
 
     Assert.assertEquals(
-        testSubject.scanWithATFA(accessibilityNodeInfoMock, screenshotMock), resultsMock);
+        testSubject.scanWithATFA(accessibilityNodeInfoMock, screenshotStub), filteredResultsStub);
 
   }
 }

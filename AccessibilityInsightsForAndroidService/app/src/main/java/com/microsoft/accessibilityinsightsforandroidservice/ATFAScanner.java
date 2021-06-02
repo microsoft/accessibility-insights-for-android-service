@@ -39,15 +39,14 @@ public class ATFAScanner {
                 AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
                         AccessibilityCheckPreset.LATEST);
         AccessibilityHierarchyAndroid hierarchy = AccessibilityHierarchyAndroid.newBuilder(rootNode, this.context).build();
-        // ViewHierarchyElementAndroid element = hierarchy.getActiveWindow().getRootView();
         List<AccessibilityHierarchyCheckResult> results = new ArrayList<>();
 
         for (AccessibilityHierarchyCheck check : checks) {
             results.addAll(check.runCheckOnHierarchy(hierarchy, null, parameters));
         }
 
-        AccessibilityCheckResult.AccessibilityCheckResultType[] relevantTypes = {AccessibilityCheckResult.AccessibilityCheckResultType.ERROR, AccessibilityCheckResult.AccessibilityCheckResultType.INFO, AccessibilityCheckResult.AccessibilityCheckResultType.WARNING, AccessibilityCheckResult.AccessibilityCheckResultType.RESOLVED,
-                AccessibilityCheckResult.AccessibilityCheckResultType.NOT_RUN};
+        AccessibilityCheckResult.AccessibilityCheckResultType[] relevantTypes = {AccessibilityCheckResult.AccessibilityCheckResultType.ERROR, AccessibilityCheckResult.AccessibilityCheckResultType.INFO,
+            AccessibilityCheckResult.AccessibilityCheckResultType.WARNING, AccessibilityCheckResult.AccessibilityCheckResultType.RESOLVED, AccessibilityCheckResult.AccessibilityCheckResultType.NOT_RUN};
 
         return AccessibilityCheckResultUtils.getResultsForTypes(results, new HashSet<>(Arrays.asList(relevantTypes)));
     }
