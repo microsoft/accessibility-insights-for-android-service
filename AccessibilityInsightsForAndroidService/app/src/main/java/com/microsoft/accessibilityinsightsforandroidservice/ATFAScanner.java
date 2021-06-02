@@ -32,7 +32,7 @@ public class ATFAScanner {
     public List<AccessibilityHierarchyCheckResult> scanWithATFA(AccessibilityNodeInfo rootNode, BitmapImage screenshot) {
         Parameters parameters = new Parameters();
         parameters.setSaveViewImages(true);
-        parameters.putCustomTouchTargetSize(44);
+        parameters.putCustomTouchTargetSize(44); // default is 48 but min size as defined by WCAG is 44
         parameters.putScreenCapture(screenshot);
 
         ImmutableSet<AccessibilityHierarchyCheck> checks =
