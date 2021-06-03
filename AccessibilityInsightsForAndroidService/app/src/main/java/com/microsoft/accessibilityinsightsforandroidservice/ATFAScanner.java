@@ -21,6 +21,13 @@ import java.util.List;
 
 public class ATFAScanner {
   private final Context context;
+  private final AccessibilityCheckResult.AccessibilityCheckResultType[] relevantResultTypes = {
+    AccessibilityCheckResult.AccessibilityCheckResultType.ERROR,
+    AccessibilityCheckResult.AccessibilityCheckResultType.INFO,
+    AccessibilityCheckResult.AccessibilityCheckResultType.WARNING,
+    AccessibilityCheckResult.AccessibilityCheckResultType.RESOLVED,
+    AccessibilityCheckResult.AccessibilityCheckResultType.NOT_RUN
+  };
 
   public ATFAScanner(Context context) {
     this.context = context;
@@ -44,15 +51,7 @@ public class ATFAScanner {
       results.addAll(check.runCheckOnHierarchy(hierarchy, null, parameters));
     }
 
-    AccessibilityCheckResult.AccessibilityCheckResultType[] relevantTypes = {
-      AccessibilityCheckResult.AccessibilityCheckResultType.ERROR,
-      AccessibilityCheckResult.AccessibilityCheckResultType.INFO,
-      AccessibilityCheckResult.AccessibilityCheckResultType.WARNING,
-      AccessibilityCheckResult.AccessibilityCheckResultType.RESOLVED,
-      AccessibilityCheckResult.AccessibilityCheckResultType.NOT_RUN
-    };
-
     return AccessibilityCheckResultUtils.getResultsForTypes(
-        results, new HashSet<>(Arrays.asList(relevantTypes)));
+        results, new HashSet<>(Arrays.asList(relevantResultTypes)));
   }
 }
