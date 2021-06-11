@@ -20,11 +20,11 @@ import java.util.List;
 public class ATFARulesSerializer {
   private static final List<String> fieldsToSkip = Arrays.asList("ANDROID_A11Y_HELP_URL");
 
-  private static final ExclusionStrategy ATFAExclusionStrategy =
+  private static final ExclusionStrategy ruleExclusionStrategy =
     new ExclusionStrategy() {
       @Override
       public boolean shouldSkipField(FieldAttributes f) {
-        return f.getName().equals("ANDROID_A11Y_HELP_URL");
+        return fieldsToSkip.contains(f.getName());
       }
 
       @Override
@@ -42,6 +42,7 @@ public class ATFARulesSerializer {
     gsonSerializer = gsonBuilder.serializeNulls()
         .setPrettyPrinting()
         .excludeFieldsWithModifiers()
+        .setExclusionStrategies(ruleExclusionStrategy)
         .create();
   }
 
