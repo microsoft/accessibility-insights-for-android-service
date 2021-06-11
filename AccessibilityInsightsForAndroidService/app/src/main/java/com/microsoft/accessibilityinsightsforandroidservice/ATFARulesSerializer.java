@@ -14,6 +14,8 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
+import com.google.gson.TypeAdapterFactory;
+import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
@@ -41,18 +43,17 @@ public class ATFARulesSerializer {
   private static final JsonSerializer<Class<? extends AccessibilityCheck>> ClassSerializer =
       (src, typeOfSrc, context) -> new JsonPrimitive(src.getSimpleName());
 
-  private final Gson gsonSerializer;
-
-  public ATFARulesSerializer(GsonBuilder gsonBuilder) {
-    gsonSerializer = gsonBuilder.serializeNulls()
-        .setPrettyPrinting()
-        .registerTypeAdapter(AccessibilityHierarchyCheck.class, new AccessibilityHierarchyCheckAdapter())
-        .create();
-  }
+  public ATFARulesSerializer() {}
 
   public String serializeATFARules() {
+    GsonBuilder gsonBuilder = new GsonBuilder();
+    Gson gsonSerializer = gsonBuilder.serializeNulls()
+            .setPrettyPrinting()
+            .registerTypeAdapterFactory(new AccessibilityHierarchyCheckAdapterFactory())
+            .create();
+
     ImmutableSet<AccessibilityHierarchyCheck> presetChecks = AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(AccessibilityCheckPreset.LATEST);
-    
+
     return gsonSerializer.toJson(presetChecks);
   }
 
@@ -65,6 +66,16 @@ public class ATFARulesSerializer {
       .registerTypeAdapter(Class.class, ClassSerializer)
       .create();
     return gson.toJson(check);
+  }
+
+  private class AccessibilityHierarchyCheckAdapterFactory implements TypeAdapterFactory {
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
+      if (!AccessibilityHierarchyCheck.class.isAssignableFrom(type.getRawType())) return null;
+
+      return (TypeAdapter<T>) new AccessibilityHierarchyCheckAdapter();
+    }
   }
 
   private class AccessibilityHierarchyCheckAdapter extends TypeAdapter<AccessibilityHierarchyCheck> {
