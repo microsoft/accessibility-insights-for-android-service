@@ -20,6 +20,7 @@ public class RequestHandlerFactoryTest {
 
   @Mock ScreenshotController screenshotController;
   @Mock AxeScanner axeScanner;
+  @Mock ATFAScanner atfaScanner;
   @Mock RootNodeFinder rootNodeFinder;
   @Mock EventHelper eventHelper;
   @Mock DeviceConfigFactory deviceConfigFactory;
@@ -39,6 +40,7 @@ public class RequestHandlerFactoryTest {
             rootNodeFinder,
             eventHelper,
             axeScanner,
+            atfaScanner,
             deviceConfigFactory,
             requestHandlerImplFactory,
             focusVisualizationStateManager,

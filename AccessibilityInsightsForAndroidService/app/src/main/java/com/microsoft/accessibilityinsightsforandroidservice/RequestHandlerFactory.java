@@ -9,6 +9,7 @@ public class RequestHandlerFactory {
 
   private final ScreenshotController screenshotController;
   private final AxeScanner axeScanner;
+  private final ATFAScanner atfaScanner;
   private final RootNodeFinder rootNodeFinder;
   private final EventHelper eventHelper;
   private final DeviceConfigFactory deviceConfigFactory;
@@ -21,12 +22,14 @@ public class RequestHandlerFactory {
       RootNodeFinder rootNodeFinder,
       EventHelper eventHelper,
       AxeScanner axeScanner,
+      ATFAScanner atfaScanner,
       DeviceConfigFactory deviceConfigFactory,
       RequestHandlerImplFactory requestHandlerImplFactory,
       FocusVisualizationStateManager focusVisualizationStateManager,
       ResultSerializer resultSerializer) {
     this.screenshotController = screenshotController;
     this.axeScanner = axeScanner;
+    this.atfaScanner = atfaScanner;
     this.rootNodeFinder = rootNodeFinder;
     this.eventHelper = eventHelper;
     this.deviceConfigFactory = deviceConfigFactory;
@@ -46,6 +49,7 @@ public class RequestHandlerFactory {
                 rootNodeFinder,
                 eventHelper,
                 axeScanner,
+                atfaScanner,
                 screenshotController,
                 resultSerializer);
         return requestHandlerImplFactory.createRequestHandler(

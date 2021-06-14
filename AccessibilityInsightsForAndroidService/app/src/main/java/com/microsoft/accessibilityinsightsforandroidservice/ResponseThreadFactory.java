@@ -3,6 +3,7 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import com.google.gson.GsonBuilder;
 import java.net.Socket;
 
 public class ResponseThreadFactory {
@@ -14,6 +15,7 @@ public class ResponseThreadFactory {
       ScreenshotController screenshotController,
       EventHelper eventHelper,
       AxeScanner axeScanner,
+      ATFAScanner atfaScanner,
       DeviceConfigFactory deviceConfigFactory,
       FocusVisualizationStateManager focusVisualizationStateManager) {
     responseWriterFactory = new ResponseWriterFactory();
@@ -24,10 +26,11 @@ public class ResponseThreadFactory {
             new RootNodeFinder(),
             eventHelper,
             axeScanner,
+            atfaScanner,
             deviceConfigFactory,
             new RequestHandlerImplFactory(),
             focusVisualizationStateManager,
-            new ResultSerializer());
+            new ResultSerializer(new ATFAResultsSerializer(new GsonBuilder()), new GsonBuilder()));
   }
 
   public ResponseThread createResponseThread(Socket socket) {
