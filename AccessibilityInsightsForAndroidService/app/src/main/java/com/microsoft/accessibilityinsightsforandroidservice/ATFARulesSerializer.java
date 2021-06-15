@@ -18,7 +18,6 @@ import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -28,17 +27,17 @@ public class ATFARulesSerializer {
   private static final List<String> FieldsToSkip = Arrays.asList("ANDROID_A11Y_HELP_URL");
 
   private static final ExclusionStrategy ATFARuleExclusionStrategy =
-    new ExclusionStrategy() {
-      @Override
-      public boolean shouldSkipField(FieldAttributes f) {
-        return FieldsToSkip.contains(f.getName());
-      }
+      new ExclusionStrategy() {
+        @Override
+        public boolean shouldSkipField(FieldAttributes f) {
+          return FieldsToSkip.contains(f.getName());
+        }
 
-      @Override
-      public boolean shouldSkipClass(Class<?> clazz) {
-        return false;
-      }
-    };
+        @Override
+        public boolean shouldSkipClass(Class<?> clazz) {
+          return false;
+        }
+      };
 
   private static final JsonSerializer<Class<? extends AccessibilityCheck>> ClassSerializer =
       (src, typeOfSrc, context) -> new JsonPrimitive(src.getSimpleName());
@@ -47,29 +46,33 @@ public class ATFARulesSerializer {
 
   public String serializeATFARules() {
     GsonBuilder gsonBuilder = new GsonBuilder();
-    Gson gsonSerializer = gsonBuilder.serializeNulls()
-      .setPrettyPrinting()
-      .registerTypeAdapterFactory(new AccessibilityHierarchyCheckAdapterFactory())
-      .create();
+    Gson gsonSerializer =
+        gsonBuilder
+            .serializeNulls()
+            .setPrettyPrinting()
+            .registerTypeAdapterFactory(new AccessibilityHierarchyCheckAdapterFactory())
+            .create();
 
-    ImmutableSet<AccessibilityHierarchyCheck> presetChecks = AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(AccessibilityCheckPreset.LATEST);
+    ImmutableSet<AccessibilityHierarchyCheck> presetChecks =
+        AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
+            AccessibilityCheckPreset.LATEST);
 
     return gsonSerializer.toJson(presetChecks);
   }
 
   private String serializeRuleIdsAndMetadata(AccessibilityHierarchyCheck check) {
-    Gson gson = new GsonBuilder()
-      .serializeNulls()
-      .setPrettyPrinting()
-      .excludeFieldsWithModifiers()
-      .setExclusionStrategies(ATFARuleExclusionStrategy)
-      .registerTypeAdapter(Class.class, ClassSerializer)
-      .create();
+    Gson gson =
+        new GsonBuilder()
+            .serializeNulls()
+            .setPrettyPrinting()
+            .excludeFieldsWithModifiers()
+            .setExclusionStrategies(ATFARuleExclusionStrategy)
+            .registerTypeAdapter(Class.class, ClassSerializer)
+            .create();
     return gson.toJson(check);
   }
 
   private class AccessibilityHierarchyCheckAdapterFactory implements TypeAdapterFactory {
-    @SuppressWarnings("unchecked")
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
       if (!AccessibilityHierarchyCheck.class.isAssignableFrom(type.getRawType())) return null;
@@ -78,7 +81,8 @@ public class ATFARulesSerializer {
     }
   }
 
-  private class AccessibilityHierarchyCheckAdapter extends TypeAdapter<AccessibilityHierarchyCheck> {
+  private class AccessibilityHierarchyCheckAdapter
+      extends TypeAdapter<AccessibilityHierarchyCheck> {
     @Override
     public void write(JsonWriter out, AccessibilityHierarchyCheck value) throws IOException {
       out.beginObject();

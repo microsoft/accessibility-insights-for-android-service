@@ -3,6 +3,8 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import static org.mockito.Mockito.when;
+
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckPreset;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheck;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheckResult;
@@ -11,11 +13,11 @@ import com.google.android.apps.common.testing.accessibility.framework.ResultMeta
 import com.google.android.apps.common.testing.accessibility.framework.uielement.AccessibilityHierarchy;
 import com.google.android.apps.common.testing.accessibility.framework.uielement.ViewHierarchyElement;
 import com.google.common.collect.ImmutableSet;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
 import com.google.gson.JsonParser;
+import java.util.List;
+import java.util.Locale;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -23,11 +25,6 @@ import org.junit.runner.RunWith;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-
-import java.util.List;
-import java.util.Locale;
-
-import static org.mockito.Mockito.when;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({AccessibilityCheckPreset.class, GsonBuilder.class, Gson.class})
@@ -59,12 +56,16 @@ public class ATFARulesSerializerTest {
     }
 
     @Override
-    public String getShortMessageForResultData(Locale locale, int i, ResultMetadata resultMetadata) {
+    public String getShortMessageForResultData(
+        Locale locale, int i, ResultMetadata resultMetadata) {
       return null;
     }
 
     @Override
-    public List<AccessibilityHierarchyCheckResult> runCheckOnHierarchy(AccessibilityHierarchy accessibilityHierarchy, ViewHierarchyElement viewHierarchyElement, Parameters parameters) {
+    public List<AccessibilityHierarchyCheckResult> runCheckOnHierarchy(
+        AccessibilityHierarchy accessibilityHierarchy,
+        ViewHierarchyElement viewHierarchyElement,
+        Parameters parameters) {
       return null;
     }
   }
@@ -79,24 +80,27 @@ public class ATFARulesSerializerTest {
   public void serializeATFARulesReturnsExpectedRules() {
     TestCheckClass checkStub = new TestCheckClass();
 
-    String expectedSerializedRules = "[\n" +
-        "  {\n" +
-        "    \"class\": \"com.microsoft.accessibilityinsightsforandroidservice.ATFARulesSerializerTest$TestCheckClass\",\n" +
-        "    \"titleMessage\": \"test-title-message\",\n" +
-        "    \"category\": \"IMPLEMENTATION\",\n" +
-        "    \"helpUrl\": \"https://support.google.com/accessibility/android/answer/test-help-topic\",\n" +
-        "    \"resultIdsAndMetadata\": {\n" +
-        "       \"TEST_RESULT_ID\": \"test result id included in serialized rule\"\n" +
-        "      }\n" +
-        "  }\n" +
-        "]";
+    String expectedSerializedRules =
+        "[\n"
+            + "  {\n"
+            + "    \"class\": \"com.microsoft.accessibilityinsightsforandroidservice.ATFARulesSerializerTest$TestCheckClass\",\n"
+            + "    \"titleMessage\": \"test-title-message\",\n"
+            + "    \"category\": \"IMPLEMENTATION\",\n"
+            + "    \"helpUrl\": \"https://support.google.com/accessibility/android/answer/test-help-topic\",\n"
+            + "    \"resultIdsAndMetadata\": {\n"
+            + "       \"TEST_RESULT_ID\": \"test result id included in serialized rule\"\n"
+            + "      }\n"
+            + "  }\n"
+            + "]";
 
     when(AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
-        AccessibilityCheckPreset.LATEST))
+            AccessibilityCheckPreset.LATEST))
         .thenReturn(ImmutableSet.of(checkStub));
 
     String actualSerializedRules = testSubject.serializeATFARules();
 
-    Assert.assertEquals(JsonParser.parseString(expectedSerializedRules), JsonParser.parseString(actualSerializedRules));
+    Assert.assertEquals(
+        JsonParser.parseString(expectedSerializedRules),
+        JsonParser.parseString(actualSerializedRules));
   }
 }
