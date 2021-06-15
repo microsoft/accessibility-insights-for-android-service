@@ -48,9 +48,9 @@ public class ATFARulesSerializer {
   public String serializeATFARules() {
     GsonBuilder gsonBuilder = new GsonBuilder();
     Gson gsonSerializer = gsonBuilder.serializeNulls()
-            .setPrettyPrinting()
-            .registerTypeAdapterFactory(new AccessibilityHierarchyCheckAdapterFactory())
-            .create();
+      .setPrettyPrinting()
+      .registerTypeAdapterFactory(new AccessibilityHierarchyCheckAdapterFactory())
+      .create();
 
     ImmutableSet<AccessibilityHierarchyCheck> presetChecks = AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(AccessibilityCheckPreset.LATEST);
 
