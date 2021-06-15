@@ -100,7 +100,7 @@ Once the port forwarding is set up you can manually trigger requests by hitting 
       * `titleMessage` - the human-readable title of the check
       * `category` - the type of accessibility check (see [Category](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/7ab5fdb5e2cb675edb752c0d0d9cae3986c0bb0c/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheck.java#L36))
       * `helpUrl` - the URL for a help article related to the check
-      * `resultIdsAndMetadata` - a map providing additional metadata about the check
+      * `resultIdsAndMetadata` - a map providing possible result IDs and additional metadata about the check
 
 #### Known issues
 
