@@ -32,7 +32,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GsonBuilder.class, Gson.class})
-public class ResultSerializerTest {
+public class ResultsContainerSerializerTest {
 
   @Mock AxeResult axeResultMock;
   @Mock ATFAResultsSerializer atfaResultsSerializer;
@@ -44,7 +44,7 @@ public class ResultSerializerTest {
   final ResultsContainer resultsContainer = new ResultsContainer();
 
   TypeAdapter<ResultsContainer> resultsContainerTypeAdapter;
-  ResultSerializer testSubject;
+  ResultsContainerSerializer testSubject;
 
   @Before
   public void prepare() {
@@ -60,7 +60,7 @@ public class ResultSerializerTest {
     when(gsonBuilder.create()).thenReturn(gson);
     resultsContainer.AxeResult = axeResultMock;
     resultsContainer.ATFAResults = atfaResults;
-    testSubject = new ResultSerializer(atfaResultsSerializer, gsonBuilder);
+    testSubject = new ResultsContainerSerializer(atfaResultsSerializer, gsonBuilder);
   }
 
   @Test

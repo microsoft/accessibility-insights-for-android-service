@@ -13,7 +13,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class ResultSerializer {
+public class ResultsContainerSerializer {
   private final ATFAResultsSerializer atfaResultsSerializer;
   private final Gson gson;
   private final TypeAdapter<ResultsContainer> resultsContainerTypeAdapter =
@@ -33,7 +33,8 @@ public class ResultSerializer {
         }
       };
 
-  public ResultSerializer(ATFAResultsSerializer atfaResultsSerializer, GsonBuilder gsonBuilder) {
+  public ResultsContainerSerializer(
+      ATFAResultsSerializer atfaResultsSerializer, GsonBuilder gsonBuilder) {
     this.atfaResultsSerializer = atfaResultsSerializer;
     this.gson =
         gsonBuilder

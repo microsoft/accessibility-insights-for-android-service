@@ -15,7 +15,7 @@ public class RequestHandlerFactory {
   private final DeviceConfigFactory deviceConfigFactory;
   private final RequestHandlerImplFactory requestHandlerImplFactory;
   private final FocusVisualizationStateManager focusVisualizationStateManager;
-  private final ResultSerializer resultSerializer;
+  private final ResultsContainerSerializer resultsContainerSerializer;
 
   public RequestHandlerFactory(
       ScreenshotController screenshotController,
@@ -26,7 +26,7 @@ public class RequestHandlerFactory {
       DeviceConfigFactory deviceConfigFactory,
       RequestHandlerImplFactory requestHandlerImplFactory,
       FocusVisualizationStateManager focusVisualizationStateManager,
-      ResultSerializer resultSerializer) {
+      ResultsContainerSerializer resultsContainerSerializer) {
     this.screenshotController = screenshotController;
     this.axeScanner = axeScanner;
     this.atfaScanner = atfaScanner;
@@ -35,7 +35,7 @@ public class RequestHandlerFactory {
     this.deviceConfigFactory = deviceConfigFactory;
     this.requestHandlerImplFactory = requestHandlerImplFactory;
     this.focusVisualizationStateManager = focusVisualizationStateManager;
-    this.resultSerializer = resultSerializer;
+    this.resultsContainerSerializer = resultsContainerSerializer;
   }
 
   public RequestHandler createHandlerForRequest(
@@ -51,7 +51,7 @@ public class RequestHandlerFactory {
                 axeScanner,
                 atfaScanner,
                 screenshotController,
-                resultSerializer);
+                resultsContainerSerializer);
         return requestHandlerImplFactory.createRequestHandler(
             socketHolder,
             resultRequestFulfiller,

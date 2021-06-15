@@ -17,7 +17,7 @@ public class ResultRequestFulfiller implements RequestFulfiller {
   private final AxeScanner axeScanner;
   private final ATFAScanner atfaScanner;
   private final ScreenshotController screenshotController;
-  private final ResultSerializer resultSerializer;
+  private final ResultsContainerSerializer resultsContainerSerializer;
 
   public ResultRequestFulfiller(
       ResponseWriter responseWriter,
@@ -26,14 +26,14 @@ public class ResultRequestFulfiller implements RequestFulfiller {
       AxeScanner axeScanner,
       ATFAScanner atfaScanner,
       ScreenshotController screenshotController,
-      ResultSerializer resultSerializer) {
+      ResultsContainerSerializer resultsContainerSerializer) {
     this.responseWriter = responseWriter;
     this.rootNodeFinder = rootNodeFinder;
     this.eventHelper = eventHelper;
     this.axeScanner = axeScanner;
     this.atfaScanner = atfaScanner;
     this.screenshotController = screenshotController;
-    this.resultSerializer = resultSerializer;
+    this.resultsContainerSerializer = resultsContainerSerializer;
   }
 
   public void fulfillRequest(RunnableFunction onRequestFulfilled) {
@@ -69,14 +69,14 @@ public class ResultRequestFulfiller implements RequestFulfiller {
     if (rootNode == null) {
       throw new ScanException("Unable to locate root node to scan");
     }
-    AxeResult result = axeScanner.scanWithAxe(rootNode, screenshot);
-    if (result == null) {
+    AxeResult axeResult = axeScanner.scanWithAxe(rootNode, screenshot);
+    if (axeResult == null) {
       throw new ScanException("Scanner returned no data");
     }
 
-    List<AccessibilityHierarchyCheckResult> results =
+    List<AccessibilityHierarchyCheckResult> atfaResults =
         atfaScanner.scanWithATFA(rootNode, new BitmapImage(screenshot));
 
-    return resultSerializer.createResultsJson(result, results);
+    return resultsContainerSerializer.createResultsJson(axeResult, atfaResults);
   }
 }

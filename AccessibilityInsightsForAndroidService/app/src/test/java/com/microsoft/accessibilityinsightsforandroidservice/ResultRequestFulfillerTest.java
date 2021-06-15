@@ -43,7 +43,7 @@ public class ResultRequestFulfillerTest {
   @Mock AccessibilityNodeInfo rootNode;
   @Mock AxeResult axeResultMock;
   @Mock RunnableFunction onRequestFulfilledMock;
-  @Mock ResultSerializer resultSerializer;
+  @Mock ResultsContainerSerializer resultsContainerSerializer;
 
   final List<AccessibilityHierarchyCheckResult> atfaResults = Collections.emptyList();
   final String scanResultJson = "axe scan result";
@@ -67,7 +67,7 @@ public class ResultRequestFulfillerTest {
             axeScanner,
             atfaScanner,
             screenshotController,
-            resultSerializer);
+            resultsContainerSerializer);
   }
 
   @Test
@@ -184,7 +184,8 @@ public class ResultRequestFulfillerTest {
       Assert.fail(e.getMessage());
     }
     when(atfaScanner.scanWithATFA(eq(sourceNode), any())).thenReturn(atfaResults);
-    when(resultSerializer.createResultsJson(axeResultMock, atfaResults)).thenReturn(scanResultJson);
+    when(resultsContainerSerializer.createResultsJson(axeResultMock, atfaResults))
+        .thenReturn(scanResultJson);
   }
 
   private void verifyOnRequestFulfilledCalled() {
