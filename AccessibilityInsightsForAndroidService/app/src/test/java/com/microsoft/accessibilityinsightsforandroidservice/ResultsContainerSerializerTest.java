@@ -35,6 +35,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class ResultsContainerSerializerTest {
 
   @Mock AxeResult axeResultMock;
+  @Mock ATFARulesSerializer atfaRulesSerializer;
   @Mock ATFAResultsSerializer atfaResultsSerializer;
   @Mock GsonBuilder gsonBuilder;
   @Mock JsonWriter jsonWriter;
@@ -60,7 +61,8 @@ public class ResultsContainerSerializerTest {
     when(gsonBuilder.create()).thenReturn(gson);
     resultsContainer.AxeResult = axeResultMock;
     resultsContainer.ATFAResults = atfaResults;
-    testSubject = new ResultsContainerSerializer(atfaResultsSerializer, gsonBuilder);
+    testSubject =
+        new ResultsContainerSerializer(atfaRulesSerializer, atfaResultsSerializer, gsonBuilder);
   }
 
   @Test
@@ -84,17 +86,21 @@ public class ResultsContainerSerializerTest {
   @Test
   public void typeAdapterSerializes() throws IOException {
     String axeJson = "axe scan result";
+    String atfaRulesJson = "atfa rules";
     String atfaJson = "atfa scan results";
 
     when(axeResultMock.toJson()).thenReturn(axeJson);
+    when(atfaRulesSerializer.serializeATFARules()).thenReturn(atfaRulesJson);
     when(atfaResultsSerializer.serializeATFAResults(atfaResults)).thenReturn(atfaJson);
     when(jsonWriter.name("AxeResults")).thenReturn(jsonWriter);
+    when(jsonWriter.name("ATFARules")).thenReturn(jsonWriter);
     when(jsonWriter.name("ATFAResults")).thenReturn(jsonWriter);
 
     resultsContainerTypeAdapter.write(jsonWriter, resultsContainer);
 
     verify(jsonWriter, times(1)).beginObject();
     verify(jsonWriter, times(1)).jsonValue(axeJson);
+    verify(jsonWriter, times(1)).jsonValue(atfaRulesJson);
     verify(jsonWriter, times(1)).jsonValue(atfaJson);
     verify(jsonWriter, times(1)).endObject();
     verify(axeResultMock, times(1)).toJson();

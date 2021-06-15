@@ -36,13 +36,15 @@ public class ResultsContainerSerializer {
       };
 
   public ResultsContainerSerializer(
-      ATFAResultsSerializer atfaResultsSerializer, GsonBuilder gsonBuilder) {
+      ATFARulesSerializer atfaRulesSerializer,
+      ATFAResultsSerializer atfaResultsSerializer,
+      GsonBuilder gsonBuilder) {
+    this.atfaRulesSerializer = atfaRulesSerializer;
     this.atfaResultsSerializer = atfaResultsSerializer;
     this.gson =
         gsonBuilder
             .registerTypeAdapter(ResultsContainer.class, this.resultsContainerTypeAdapter)
             .create();
-    this.atfaRulesSerializer = new ATFARulesSerializer();
   }
 
   public String createResultsJson(

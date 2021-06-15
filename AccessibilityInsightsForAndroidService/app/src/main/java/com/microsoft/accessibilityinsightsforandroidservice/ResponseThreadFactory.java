@@ -31,7 +31,9 @@ public class ResponseThreadFactory {
             new RequestHandlerImplFactory(),
             focusVisualizationStateManager,
             new ResultsContainerSerializer(
-                new ATFAResultsSerializer(new GsonBuilder()), new GsonBuilder()));
+                new ATFARulesSerializer(),
+                new ATFAResultsSerializer(new GsonBuilder()),
+                new GsonBuilder()));
   }
 
   public ResponseThread createResponseThread(Socket socket) {
