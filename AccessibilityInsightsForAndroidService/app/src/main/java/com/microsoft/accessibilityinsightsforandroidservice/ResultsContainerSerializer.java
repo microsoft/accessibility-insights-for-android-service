@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.List;
 
 public class ResultsContainerSerializer {
+  private final ATFARulesSerializer atfaRulesSerializer;
   private final ATFAResultsSerializer atfaResultsSerializer;
   private final Gson gson;
   private final TypeAdapter<ResultsContainer> resultsContainerTypeAdapter =
@@ -22,6 +23,7 @@ public class ResultsContainerSerializer {
         public void write(JsonWriter out, ResultsContainer value) throws IOException {
           out.beginObject();
           out.name("AxeResults").jsonValue(value.AxeResult.toJson());
+          out.name("ATFARules").jsonValue(atfaRulesSerializer.serializeATFARules());
           out.name("ATFAResults")
               .jsonValue(atfaResultsSerializer.serializeATFAResults(value.ATFAResults));
           out.endObject();
@@ -34,7 +36,10 @@ public class ResultsContainerSerializer {
       };
 
   public ResultsContainerSerializer(
-      ATFAResultsSerializer atfaResultsSerializer, GsonBuilder gsonBuilder) {
+      ATFARulesSerializer atfaRulesSerializer,
+      ATFAResultsSerializer atfaResultsSerializer,
+      GsonBuilder gsonBuilder) {
+    this.atfaRulesSerializer = atfaRulesSerializer;
     this.atfaResultsSerializer = atfaResultsSerializer;
     this.gson =
         gsonBuilder
