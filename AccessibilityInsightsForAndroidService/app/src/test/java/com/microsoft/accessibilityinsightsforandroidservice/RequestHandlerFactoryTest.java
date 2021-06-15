@@ -20,6 +20,7 @@ public class RequestHandlerFactoryTest {
 
   @Mock ScreenshotController screenshotController;
   @Mock AxeScanner axeScanner;
+  @Mock ATFAScanner atfaScanner;
   @Mock RootNodeFinder rootNodeFinder;
   @Mock EventHelper eventHelper;
   @Mock DeviceConfigFactory deviceConfigFactory;
@@ -27,7 +28,7 @@ public class RequestHandlerFactoryTest {
   @Mock ResponseWriter responseWriter;
   @Mock RequestHandlerImplFactory requestHandlerImplFactory;
   @Mock FocusVisualizationStateManager focusVisualizationStateManager;
-  @Mock ResultSerializer resultSerializer;
+  @Mock ResultsContainerSerializer resultsContainerSerializer;
 
   RequestHandlerFactory testSubject;
 
@@ -39,10 +40,11 @@ public class RequestHandlerFactoryTest {
             rootNodeFinder,
             eventHelper,
             axeScanner,
+            atfaScanner,
             deviceConfigFactory,
             requestHandlerImplFactory,
             focusVisualizationStateManager,
-            resultSerializer);
+            resultsContainerSerializer);
   }
 
   @Test

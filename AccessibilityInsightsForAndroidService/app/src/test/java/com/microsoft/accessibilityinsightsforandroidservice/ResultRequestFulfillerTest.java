@@ -17,6 +17,9 @@ import static org.mockito.Mockito.when;
 import android.graphics.Bitmap;
 import android.view.accessibility.AccessibilityNodeInfo;
 import com.deque.axe.android.AxeResult;
+import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheckResult;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,14 +36,16 @@ public class ResultRequestFulfillerTest {
   @Mock RootNodeFinder rootNodeFinder;
   @Mock EventHelper eventHelper;
   @Mock AxeScanner axeScanner;
+  @Mock ATFAScanner atfaScanner;
   @Mock ScreenshotController screenshotController;
   @Mock Bitmap screenshotMock;
   @Mock AccessibilityNodeInfo sourceNode;
   @Mock AccessibilityNodeInfo rootNode;
   @Mock AxeResult axeResultMock;
   @Mock RunnableFunction onRequestFulfilledMock;
-  @Mock ResultSerializer resultSerializer;
+  @Mock ResultsContainerSerializer resultsContainerSerializer;
 
+  final List<AccessibilityHierarchyCheckResult> atfaResults = Collections.emptyList();
   final String scanResultJson = "axe scan result";
 
   ResultRequestFulfiller testSubject;
@@ -60,8 +65,9 @@ public class ResultRequestFulfillerTest {
             rootNodeFinder,
             eventHelper,
             axeScanner,
+            atfaScanner,
             screenshotController,
-            resultSerializer);
+            resultsContainerSerializer);
   }
 
   @Test
@@ -169,15 +175,6 @@ public class ResultRequestFulfillerTest {
     verify(sourceNode, never()).recycle();
   }
 
-  @Test
-  public void addsAxeResultToSerializer() {
-    setupSuccessfulRequest();
-
-    testSubject.fulfillRequest(onRequestFulfilledMock);
-
-    verify(resultSerializer, times(1)).addAxeResult(axeResultMock);
-  }
-
   private void setupSuccessfulRequest() {
     when(eventHelper.claimLastSource()).thenReturn(sourceNode);
     when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(rootNode);
@@ -186,7 +183,9 @@ public class ResultRequestFulfillerTest {
     } catch (ViewChangedException e) {
       Assert.fail(e.getMessage());
     }
-    when(resultSerializer.generateResultJson()).thenReturn(scanResultJson);
+    when(atfaScanner.scanWithATFA(eq(sourceNode), any())).thenReturn(atfaResults);
+    when(resultsContainerSerializer.createResultsJson(axeResultMock, atfaResults))
+        .thenReturn(scanResultJson);
   }
 
   private void verifyOnRequestFulfilledCalled() {

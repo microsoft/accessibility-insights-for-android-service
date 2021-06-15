@@ -126,7 +126,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
 
     ResponseThreadFactory responseThreadFactory =
         new ResponseThreadFactory(
-            screenshotController, eventHelper, axeScanner, deviceConfigFactory, focusVisualizationStateManager);
+            screenshotController, eventHelper, axeScanner, atfaScanner, deviceConfigFactory, focusVisualizationStateManager);
     ServerThread = new ServerThread(new ServerSocketFactory(), responseThreadFactory);
     ServerThread.start();
   }

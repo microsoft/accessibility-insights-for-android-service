@@ -9,30 +9,33 @@ public class RequestHandlerFactory {
 
   private final ScreenshotController screenshotController;
   private final AxeScanner axeScanner;
+  private final ATFAScanner atfaScanner;
   private final RootNodeFinder rootNodeFinder;
   private final EventHelper eventHelper;
   private final DeviceConfigFactory deviceConfigFactory;
   private final RequestHandlerImplFactory requestHandlerImplFactory;
   private final FocusVisualizationStateManager focusVisualizationStateManager;
-  private final ResultSerializer resultSerializer;
+  private final ResultsContainerSerializer resultsContainerSerializer;
 
   public RequestHandlerFactory(
       ScreenshotController screenshotController,
       RootNodeFinder rootNodeFinder,
       EventHelper eventHelper,
       AxeScanner axeScanner,
+      ATFAScanner atfaScanner,
       DeviceConfigFactory deviceConfigFactory,
       RequestHandlerImplFactory requestHandlerImplFactory,
       FocusVisualizationStateManager focusVisualizationStateManager,
-      ResultSerializer resultSerializer) {
+      ResultsContainerSerializer resultsContainerSerializer) {
     this.screenshotController = screenshotController;
     this.axeScanner = axeScanner;
+    this.atfaScanner = atfaScanner;
     this.rootNodeFinder = rootNodeFinder;
     this.eventHelper = eventHelper;
     this.deviceConfigFactory = deviceConfigFactory;
     this.requestHandlerImplFactory = requestHandlerImplFactory;
     this.focusVisualizationStateManager = focusVisualizationStateManager;
-    this.resultSerializer = resultSerializer;
+    this.resultsContainerSerializer = resultsContainerSerializer;
   }
 
   public RequestHandler createHandlerForRequest(
@@ -46,8 +49,9 @@ public class RequestHandlerFactory {
                 rootNodeFinder,
                 eventHelper,
                 axeScanner,
+                atfaScanner,
                 screenshotController,
-                resultSerializer);
+                resultsContainerSerializer);
         return requestHandlerImplFactory.createRequestHandler(
             socketHolder,
             resultRequestFulfiller,
