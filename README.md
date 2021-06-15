@@ -67,27 +67,41 @@ Once the port forwarding is set up you can manually trigger requests by hitting 
     * `packageName` - the package the associated root [`AccessibilityInfoNode`](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo) comes from
     * `serviceVersion` - the version of the service
 
-* **Raw Axe Results**
+* **Raw Axe and ATFA Results**
   * Navigate to [http://localhost:62442/AccessibilityInsights/result](http://localhost:62442/AccessibilityInsights/result) to view returned JSON results.
   * Returned data includes:
-    * `axeConf` - the set [AxeConf](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeConf.java) object listing which rules will run
-    * `axeContext` - the Context axe-android is running the rules on
-      * `axeDevice` - the device the context was built on
-      * `axeEventStream` - the AccessibilityEvent Stream since the last view refresh
-      * `axeMetadata`
-        *  `analysisTimestamp` - the timestamp at time of analysis
-        *  `appIdentifier` - the Android PackageName
-        *  `axeVersion` - implementation version of package
-        *  `screenTitle` - title of current screen
-      * `axeView` - the serializable view hierarchy at the time the context was built
-      * `screenshot` - the screenshot at the time the Context was built (this will display as a wall of text BitMap in the browser)
-    * `axeRuleResults` - an array of [AxeRuleResult](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeRuleResult.java) objects. Each has:
-      * `axeViewId` - the ID of the view it's associated with (corresponds to a view listed above in `axeContext`)
-      * `impact` - the severity of the issue
-      * `props` - the properties used in determining the outcome
-      * `ruleId` - the ID of the rule
-      * `ruleSummary` - short summary of the rule.
-      * `status` - the status of the rule (PASS, FAIL, etc)
+    * `AxeResults`
+      * `axeConf` - the set [AxeConf](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeConf.java) object listing which rules will run
+      * `axeContext` - the Context axe-android is running the rules on
+        * `axeDevice` - the device the context was built on
+        * `axeEventStream` - the AccessibilityEvent Stream since the last view refresh
+        * `axeMetadata`
+          *  `analysisTimestamp` - the timestamp at time of analysis
+          *  `appIdentifier` - the Android PackageName
+          *  `axeVersion` - implementation version of package
+          *  `screenTitle` - title of current screen
+        * `axeView` - the serializable view hierarchy at the time the context was built
+        * `screenshot` - the screenshot at the time the Context was built (this will display as a wall of text BitMap in the browser)
+      * `axeRuleResults` - an array of [AxeRuleResult](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeRuleResult.java) objects. Each has:
+        * `axeViewId` - the ID of the view it's associated with (corresponds to a view listed above in `axeContext`)
+        * `impact` - the severity of the issue
+        * `props` - the properties used in determining the outcome
+        * `ruleId` - the ID of the rule
+        * `ruleSummary` - short summary of the rule.
+        * `status` - the status of the rule (PASS, FAIL, etc)
+    * `ATFAResults`- an array of [AccessibilityHierarchyCheckResult](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityHierarchyCheckResult.java) objects. Each has:
+      * `AccessibilityHierarchyCheckResult.element` - a [ViewHierarchyElement](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/uielement/ViewHierarchyElement.java) object corresponding to the result 
+      * `AccessibilityHierarchyCheckResult.resultId` - an ID grouping all results from a single class
+      * `AccessibilityCheckResult.checkClass` - the name of the class for the check which reported the result
+      * `AccessibilityCheckResult.type` - the status of the result (see [AccessibilityCheckResultType](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/7ab5fdb5e2cb675edb752c0d0d9cae3986c0bb0c/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult.java#L49))
+      * `AccessibilityHierarchyCheckResult.metadata` - an object which implements [ResultMetadata](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/ResultMetadata.java) containing additional information about the result
+    * `ATFARules` - an array of [AccessibilityHierarchyCheck](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityHierarchyCheck.java) objects. Each has:
+      * `class` - the name of the class for the check
+      * `titleMessage` - the human-readable title of the check
+      * `category` - the type of accessibility check (see [Category](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/7ab5fdb5e2cb675edb752c0d0d9cae3986c0bb0c/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheck.java#L36))
+      * `helpUrl` - the URL for a help article related to the check
+      * `resultIdsAndMetadata` - a map providing additional metadata about the check
+
 #### Known issues
 
 ##### Gradle sync fails
