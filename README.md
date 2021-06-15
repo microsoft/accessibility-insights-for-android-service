@@ -89,19 +89,19 @@ Once the port forwarding is set up you can manually trigger requests by hitting 
         * `ruleId` - the ID of the rule
         * `ruleSummary` - short summary of the rule.
         * `status` - the status of the rule (PASS, FAIL, etc)
-    * `ATFAResults`- an array of [AccessibilityHierarchyCheckResult](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityHierarchyCheckResult.java) objects. Each has:
-      * `AccessibilityHierarchyCheckResult.element` - a [ViewHierarchyElement](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/uielement/ViewHierarchyElement.java) object corresponding to the result 
-      * `AccessibilityHierarchyCheckResult.resultId` - an ID grouping all results from a single class
-      * `AccessibilityCheckResult.checkClass` - the name of the class for the check which reported the result
-      * `AccessibilityCheckResult.type` - the status of the result (see [AccessibilityCheckResultType](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/7ab5fdb5e2cb675edb752c0d0d9cae3986c0bb0c/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult.java#L49))
-      * `AccessibilityHierarchyCheckResult.metadata` - an object which implements [ResultMetadata](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/ResultMetadata.java) containing additional information about the result
     * `ATFARules` - an array of [AccessibilityHierarchyCheck](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityHierarchyCheck.java) objects. Each has:
       * `class` - the name of the class for the check
       * `titleMessage` - the human-readable title of the check
       * `category` - the type of accessibility check (see [Category](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/7ab5fdb5e2cb675edb752c0d0d9cae3986c0bb0c/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheck.java#L36))
       * `helpUrl` - the URL for a help article related to the check
       * `resultIdsAndMetadata` - a map providing possible result IDs and additional metadata about the check
-
+    * `ATFAResults`- an array of [AccessibilityHierarchyCheckResult](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityHierarchyCheckResult.java) objects. Each has:
+      * `AccessibilityHierarchyCheckResult.element` - a [ViewHierarchyElement](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/uielement/ViewHierarchyElement.java) object corresponding to the result 
+      * `AccessibilityHierarchyCheckResult.resultId` - an ID grouping all results from a single class
+      * `AccessibilityCheckResult.checkClass` - the name of the class for the check which reported the result
+      * `AccessibilityCheckResult.type` - the status of the result (see [AccessibilityCheckResultType](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/7ab5fdb5e2cb675edb752c0d0d9cae3986c0bb0c/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult.java#L49))
+      * `AccessibilityHierarchyCheckResult.metadata` - an object which implements [ResultMetadata](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/ResultMetadata.java) containing additional information about the result
+      
 #### Known issues
 
 ##### Gradle sync fails
