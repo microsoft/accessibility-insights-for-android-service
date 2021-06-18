@@ -22,9 +22,12 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 public class ATFARulesSerializer {
   private static final List<String> FieldsToSkip = Arrays.asList("ANDROID_A11Y_HELP_URL");
+
+  private static final List<Class> ClassesToSkip = Arrays.asList(Pattern.class);
 
   private static final ExclusionStrategy ATFARuleExclusionStrategy =
       new ExclusionStrategy() {
@@ -35,7 +38,7 @@ public class ATFARulesSerializer {
 
         @Override
         public boolean shouldSkipClass(Class<?> clazz) {
-          return false;
+          return ClassesToSkip.contains(clazz);
         }
       };
 

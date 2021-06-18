@@ -18,6 +18,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import java.util.List;
 import java.util.Locale;
+import java.util.regex.Pattern;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -34,6 +35,7 @@ public class ATFARulesSerializerTest {
   class TestCheckClass extends AccessibilityHierarchyCheck {
     private static final String ANDROID_A11Y_HELP_URL = "excluded from serialized rule";
     private static final String TEST_RESULT_ID = "test result id included in serialized rule";
+    private final Pattern TEST_PATTERN_TO_BE_SKIPPED = Pattern.compile("");
 
     @Override
     protected String getHelpTopic() {
