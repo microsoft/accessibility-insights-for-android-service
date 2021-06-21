@@ -67,8 +67,30 @@ Once the port forwarding is set up you can manually trigger requests by hitting 
     * `packageName` - the package the associated root [`AccessibilityInfoNode`](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo) comes from
     * `serviceVersion` - the version of the service
 
-* **Raw Axe and ATFA Results**
+* **Raw Axe Results** (will soon be removed)
   * Navigate to [http://localhost:62442/AccessibilityInsights/result](http://localhost:62442/AccessibilityInsights/result) to view returned JSON results.
+  * Returned data includes:
+    * `axeConf` - the set [AxeConf](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeConf.java) object listing which rules will run
+    * `axeContext` - the Context axe-android is running the rules on
+      * `axeDevice` - the device the context was built on
+      * `axeEventStream` - the AccessibilityEvent Stream since the last view refresh
+      * `axeMetadata`
+        *  `analysisTimestamp` - the timestamp at time of analysis
+        *  `appIdentifier` - the Android PackageName
+        *  `axeVersion` - implementation version of package
+        *  `screenTitle` - title of current screen
+      * `axeView` - the serializable view hierarchy at the time the context was built
+      * `screenshot` - the screenshot at the time the Context was built (this will display as a wall of text BitMap in the browser)
+    * `axeRuleResults` - an array of [AxeRuleResult](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeRuleResult.java) objects. Each has:
+      * `axeViewId` - the ID of the view it's associated with (corresponds to a view listed above in `axeContext`)
+      * `impact` - the severity of the issue
+      * `props` - the properties used in determining the outcome
+      * `ruleId` - the ID of the rule
+      * `ruleSummary` - short summary of the rule.
+      * `status` - the status of the rule (PASS, FAIL, etc)
+
+* **Raw Axe and ATFA Results** (results version 2)
+  * Navigate to [http://localhost:62442/AccessibilityInsights/result_v2](http://localhost:62442/AccessibilityInsights/result_v2) to view returned JSON results.
   * Returned data includes:
     * `AxeResults`
       * `axeConf` - the set [AxeConf](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeConf.java) object listing which rules will run
