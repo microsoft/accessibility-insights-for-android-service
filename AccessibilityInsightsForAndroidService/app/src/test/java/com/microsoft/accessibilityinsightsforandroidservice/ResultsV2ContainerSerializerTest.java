@@ -32,7 +32,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GsonBuilder.class, Gson.class})
-public class ResultsContainerSerializerTest {
+public class ResultsV2ContainerSerializerTest {
 
   @Mock AxeResult axeResultMock;
   @Mock ATFARulesSerializer atfaRulesSerializer;
@@ -42,40 +42,40 @@ public class ResultsContainerSerializerTest {
   @Mock Gson gson;
 
   final List<AccessibilityHierarchyCheckResult> atfaResults = Collections.emptyList();
-  final ResultsContainer resultsContainer = new ResultsContainer();
+  final ResultsV2Container resultsV2Container = new ResultsV2Container();
 
-  TypeAdapter<ResultsContainer> resultsContainerTypeAdapter;
-  ResultsContainerSerializer testSubject;
+  TypeAdapter<ResultsV2Container> resultsContainerTypeAdapter;
+  ResultsV2ContainerSerializer testSubject;
 
   @Before
   public void prepare() {
     doAnswer(
             AdditionalAnswers.answer(
-                (Type type, TypeAdapter<ResultsContainer> typeAdapter) -> {
+                (Type type, TypeAdapter<ResultsV2Container> typeAdapter) -> {
                   resultsContainerTypeAdapter = typeAdapter;
                   return gsonBuilder;
                 }))
         .when(gsonBuilder)
-        .registerTypeAdapter(eq(ResultsContainer.class), any());
+        .registerTypeAdapter(eq(ResultsV2Container.class), any());
 
     when(gsonBuilder.create()).thenReturn(gson);
-    resultsContainer.AxeResult = axeResultMock;
-    resultsContainer.ATFAResults = atfaResults;
+    resultsV2Container.AxeResult = axeResultMock;
+    resultsV2Container.ATFAResults = atfaResults;
     testSubject =
-        new ResultsContainerSerializer(atfaRulesSerializer, atfaResultsSerializer, gsonBuilder);
+        new ResultsV2ContainerSerializer(atfaRulesSerializer, atfaResultsSerializer, gsonBuilder);
   }
 
   @Test
   public void generatesExpectedJson() {
-    AtomicReference<ResultsContainer> resultsContainer = new AtomicReference<>();
+    AtomicReference<ResultsV2Container> resultsContainer = new AtomicReference<>();
     doAnswer(
             AdditionalAnswers.answer(
-                (ResultsContainer container) -> {
+                (ResultsV2Container container) -> {
                   resultsContainer.set(container);
                   return "Test String";
                 }))
         .when(gson)
-        .toJson(any(ResultsContainer.class));
+        .toJson(any(ResultsV2Container.class));
 
     testSubject.createResultsJson(axeResultMock, atfaResults);
 
@@ -96,7 +96,7 @@ public class ResultsContainerSerializerTest {
     when(jsonWriter.name("ATFARules")).thenReturn(jsonWriter);
     when(jsonWriter.name("ATFAResults")).thenReturn(jsonWriter);
 
-    resultsContainerTypeAdapter.write(jsonWriter, resultsContainer);
+    resultsContainerTypeAdapter.write(jsonWriter, resultsV2Container);
 
     verify(jsonWriter, times(1)).beginObject();
     verify(jsonWriter, times(1)).jsonValue(axeJson);

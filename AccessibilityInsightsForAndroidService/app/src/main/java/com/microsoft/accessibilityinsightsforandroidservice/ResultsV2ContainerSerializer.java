@@ -13,14 +13,14 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.util.List;
 
-public class ResultsContainerSerializer {
+public class ResultsV2ContainerSerializer {
   private final ATFARulesSerializer atfaRulesSerializer;
   private final ATFAResultsSerializer atfaResultsSerializer;
   private final Gson gson;
-  private final TypeAdapter<ResultsContainer> resultsContainerTypeAdapter =
-      new TypeAdapter<ResultsContainer>() {
+  private final TypeAdapter<ResultsV2Container> resultsContainerTypeAdapter =
+      new TypeAdapter<ResultsV2Container>() {
         @Override
-        public void write(JsonWriter out, ResultsContainer value) throws IOException {
+        public void write(JsonWriter out, ResultsV2Container value) throws IOException {
           out.beginObject();
           out.name("AxeResults").jsonValue(value.AxeResult.toJson());
           out.name("ATFARules").jsonValue(atfaRulesSerializer.serializeATFARules());
@@ -30,12 +30,12 @@ public class ResultsContainerSerializer {
         }
 
         @Override
-        public ResultsContainer read(JsonReader in) {
+        public ResultsV2Container read(JsonReader in) {
           return null;
         }
       };
 
-  public ResultsContainerSerializer(
+  public ResultsV2ContainerSerializer(
       ATFARulesSerializer atfaRulesSerializer,
       ATFAResultsSerializer atfaResultsSerializer,
       GsonBuilder gsonBuilder) {
@@ -43,13 +43,13 @@ public class ResultsContainerSerializer {
     this.atfaResultsSerializer = atfaResultsSerializer;
     this.gson =
         gsonBuilder
-            .registerTypeAdapter(ResultsContainer.class, this.resultsContainerTypeAdapter)
+            .registerTypeAdapter(ResultsV2Container.class, this.resultsContainerTypeAdapter)
             .create();
   }
 
   public String createResultsJson(
       AxeResult axeResult, List<AccessibilityHierarchyCheckResult> atfaResults) {
-    ResultsContainer container = new ResultsContainer();
+    ResultsV2Container container = new ResultsV2Container();
     container.ATFAResults = atfaResults;
     container.AxeResult = axeResult;
     return gson.toJson(container);

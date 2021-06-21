@@ -16,7 +16,7 @@ public class RequestHandlerFactory {
   private final RequestHandlerImplFactory requestHandlerImplFactory;
   private final FocusVisualizationStateManager focusVisualizationStateManager;
   private final ResultV1Serializer resultV1Serializer;
-  private final ResultsContainerSerializer resultsContainerSerializer;
+  private final ResultsV2ContainerSerializer resultsV2ContainerSerializer;
 
   public RequestHandlerFactory(
       ScreenshotController screenshotController,
@@ -28,7 +28,7 @@ public class RequestHandlerFactory {
       RequestHandlerImplFactory requestHandlerImplFactory,
       FocusVisualizationStateManager focusVisualizationStateManager,
       ResultV1Serializer resultV1Serializer,
-      ResultsContainerSerializer resultsContainerSerializer) {
+      ResultsV2ContainerSerializer resultsV2ContainerSerializer) {
     this.screenshotController = screenshotController;
     this.axeScanner = axeScanner;
     this.atfaScanner = atfaScanner;
@@ -38,7 +38,7 @@ public class RequestHandlerFactory {
     this.requestHandlerImplFactory = requestHandlerImplFactory;
     this.focusVisualizationStateManager = focusVisualizationStateManager;
     this.resultV1Serializer = resultV1Serializer;
-    this.resultsContainerSerializer = resultsContainerSerializer;
+    this.resultsV2ContainerSerializer = resultsV2ContainerSerializer;
   }
 
   public RequestHandler createHandlerForRequest(
@@ -46,23 +46,23 @@ public class RequestHandlerFactory {
     SocketHolder socketHolder = new SocketHolder(socket);
     if (requestString != null) {
       if (requestString.startsWith("GET /AccessibilityInsights/result_v2 ")) {
-        ResultRequestFulfiller resultRequestFulfiller =
-            new ResultRequestFulfiller(
+        ResultV2RequestFulfiller resultV2RequestFulfiller =
+            new ResultV2RequestFulfiller(
                 responseWriter,
                 rootNodeFinder,
                 eventHelper,
                 axeScanner,
                 atfaScanner,
                 screenshotController,
-                resultsContainerSerializer);
+                resultsV2ContainerSerializer);
         return requestHandlerImplFactory.createRequestHandler(
             socketHolder,
-            resultRequestFulfiller,
+            resultV2RequestFulfiller,
             "processResultRequest",
-            "*** About to process scan request");
+            "*** About to process scan request (v2)");
       }
       if (requestString.startsWith("GET /AccessibilityInsights/result ")) {
-        ResultV1RequestFulfiller resultRequestFulfiller =
+        ResultV1RequestFulfiller resultV1RequestFulfiller =
             new ResultV1RequestFulfiller(
                 responseWriter,
                 rootNodeFinder,
@@ -72,9 +72,9 @@ public class RequestHandlerFactory {
                 resultV1Serializer);
         return requestHandlerImplFactory.createRequestHandler(
             socketHolder,
-            resultRequestFulfiller,
+            resultV1RequestFulfiller,
             "processResultRequest",
-            "*** About to process scan request");
+            "*** About to process scan request (v1)");
       }
       if (requestString.startsWith("GET /AccessibilityInsights/config ")) {
         ConfigRequestFulfiller configRequestFulfiller =

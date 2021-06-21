@@ -7,7 +7,7 @@ import com.deque.axe.android.AxeResult;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheckResult;
 import java.util.List;
 
-public class ResultsContainer {
+public class ResultsV2Container {
   public List<AccessibilityHierarchyCheckResult> ATFAResults;
   public AxeResult AxeResult;
 }
