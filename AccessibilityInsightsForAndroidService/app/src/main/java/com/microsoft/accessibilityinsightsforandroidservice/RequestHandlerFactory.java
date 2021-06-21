@@ -15,6 +15,7 @@ public class RequestHandlerFactory {
   private final DeviceConfigFactory deviceConfigFactory;
   private final RequestHandlerImplFactory requestHandlerImplFactory;
   private final FocusVisualizationStateManager focusVisualizationStateManager;
+  private final ResultV1Serializer resultV1Serializer;
   private final ResultsContainerSerializer resultsContainerSerializer;
 
   public RequestHandlerFactory(
@@ -26,6 +27,7 @@ public class RequestHandlerFactory {
       DeviceConfigFactory deviceConfigFactory,
       RequestHandlerImplFactory requestHandlerImplFactory,
       FocusVisualizationStateManager focusVisualizationStateManager,
+      ResultV1Serializer resultV1Serializer,
       ResultsContainerSerializer resultsContainerSerializer) {
     this.screenshotController = screenshotController;
     this.axeScanner = axeScanner;
@@ -35,6 +37,7 @@ public class RequestHandlerFactory {
     this.deviceConfigFactory = deviceConfigFactory;
     this.requestHandlerImplFactory = requestHandlerImplFactory;
     this.focusVisualizationStateManager = focusVisualizationStateManager;
+    this.resultV1Serializer = resultV1Serializer;
     this.resultsContainerSerializer = resultsContainerSerializer;
   }
 
@@ -42,7 +45,7 @@ public class RequestHandlerFactory {
       Socket socket, String requestString, ResponseWriter responseWriter) {
     SocketHolder socketHolder = new SocketHolder(socket);
     if (requestString != null) {
-      if (requestString.startsWith("GET /AccessibilityInsights/result ")) {
+      if (requestString.startsWith("GET /AccessibilityInsights/result_v2 ")) {
         ResultRequestFulfiller resultRequestFulfiller =
             new ResultRequestFulfiller(
                 responseWriter,
@@ -57,6 +60,21 @@ public class RequestHandlerFactory {
             resultRequestFulfiller,
             "processResultRequest",
             "*** About to process scan request");
+      }
+      if (requestString.startsWith("GET /AccessibilityInsights/result ")) {
+        ResultV1RequestFulfiller resultRequestFulfiller =
+                new ResultV1RequestFulfiller(
+                        responseWriter,
+                        rootNodeFinder,
+                        eventHelper,
+                        axeScanner,
+                        screenshotController,
+                        resultV1Serializer);
+        return requestHandlerImplFactory.createRequestHandler(
+                socketHolder,
+                resultRequestFulfiller,
+                "processResultRequest",
+                "*** About to process scan request");
       }
       if (requestString.startsWith("GET /AccessibilityInsights/config ")) {
         ConfigRequestFulfiller configRequestFulfiller =
