@@ -18,30 +18,30 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class ResultV1SerializerTest {
 
-    @Mock AxeResult axeResultMock;
+  @Mock AxeResult axeResultMock;
 
-    ResultV1Serializer testSubject;
+  ResultV1Serializer testSubject;
 
-    final String scanResultJson = "axe scan result";
+  final String scanResultJson = "axe scan result";
 
-    @Before
-    public void prepare() {
-        testSubject = new ResultV1Serializer();
-    }
+  @Before
+  public void prepare() {
+    testSubject = new ResultV1Serializer();
+  }
 
-    @Test
-    public void resultSerializerExists() {
-        Assert.assertNotNull(testSubject);
-    }
+  @Test
+  public void resultSerializerExists() {
+    Assert.assertNotNull(testSubject);
+  }
 
-    @Test
-    public void generatesExpectedJson() {
-        when(axeResultMock.toJson()).thenReturn(scanResultJson);
+  @Test
+  public void generatesExpectedJson() {
+    when(axeResultMock.toJson()).thenReturn(scanResultJson);
 
-        testSubject.addAxeResult(axeResultMock);
-        String generatedJson = testSubject.generateResultJson();
+    testSubject.addAxeResult(axeResultMock);
+    String generatedJson = testSubject.generateResultJson();
 
-        verify(axeResultMock, times(1)).toJson();
-        Assert.assertEquals(generatedJson, scanResultJson);
-    }
+    verify(axeResultMock, times(1)).toJson();
+    Assert.assertEquals(generatedJson, scanResultJson);
+  }
 }

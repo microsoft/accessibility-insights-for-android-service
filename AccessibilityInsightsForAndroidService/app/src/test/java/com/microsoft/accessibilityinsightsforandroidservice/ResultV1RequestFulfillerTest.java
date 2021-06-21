@@ -29,167 +29,167 @@ import org.mockito.junit.MockitoJUnitRunner;
 @RunWith(MockitoJUnitRunner.class)
 public class ResultV1RequestFulfillerTest {
 
-    @Mock ResponseWriter responseWriter;
-    @Mock RootNodeFinder rootNodeFinder;
-    @Mock EventHelper eventHelper;
-    @Mock AxeScanner axeScanner;
-    @Mock ScreenshotController screenshotController;
-    @Mock Bitmap screenshotMock;
-    @Mock AccessibilityNodeInfo sourceNode;
-    @Mock AccessibilityNodeInfo rootNode;
-    @Mock AxeResult axeResultMock;
-    @Mock RunnableFunction onRequestFulfilledMock;
-    @Mock ResultV1Serializer resultV1Serializer;
+  @Mock ResponseWriter responseWriter;
+  @Mock RootNodeFinder rootNodeFinder;
+  @Mock EventHelper eventHelper;
+  @Mock AxeScanner axeScanner;
+  @Mock ScreenshotController screenshotController;
+  @Mock Bitmap screenshotMock;
+  @Mock AccessibilityNodeInfo sourceNode;
+  @Mock AccessibilityNodeInfo rootNode;
+  @Mock AxeResult axeResultMock;
+  @Mock RunnableFunction onRequestFulfilledMock;
+  @Mock ResultV1Serializer resultV1Serializer;
 
-    final String scanResultJson = "axe scan result";
+  final String scanResultJson = "axe scan result";
 
-    ResultV1RequestFulfiller testSubject;
+  ResultV1RequestFulfiller testSubject;
 
-    @Before
-    public void prepare() {
-        doAnswer(
-                AdditionalAnswers.answerVoid(
-                        (Consumer<Bitmap> bitmapConsumer) -> {
-                            bitmapConsumer.accept(screenshotMock);
-                        }))
-                .when(screenshotController)
-                .getScreenshotWithMediaProjection(any());
-        testSubject =
-                new ResultV1RequestFulfiller(
-                        responseWriter,
-                        rootNodeFinder,
-                        eventHelper,
-                        axeScanner,
-                        screenshotController,
-                        resultV1Serializer);
+  @Before
+  public void prepare() {
+    doAnswer(
+            AdditionalAnswers.answerVoid(
+                (Consumer<Bitmap> bitmapConsumer) -> {
+                  bitmapConsumer.accept(screenshotMock);
+                }))
+        .when(screenshotController)
+        .getScreenshotWithMediaProjection(any());
+    testSubject =
+        new ResultV1RequestFulfiller(
+            responseWriter,
+            rootNodeFinder,
+            eventHelper,
+            axeScanner,
+            screenshotController,
+            resultV1Serializer);
+  }
+
+  @Test
+  public void resultRequestFulfillerExists() {
+    Assert.assertNotNull(testSubject);
+  }
+
+  @Test
+  public void isBlockingRequestReturnsTrue() {
+    Assert.assertTrue(testSubject.isBlockingRequest());
+  }
+
+  @Test
+  public void callsOnRequestFulfilled() {
+    setupSuccessfulRequest();
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verifyOnRequestFulfilledCalled();
+  }
+
+  @Test
+  public void callsGetScreenshotWithMediaProjection() {
+    setupSuccessfulRequest();
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verify(screenshotController, times(1)).getScreenshotWithMediaProjection(any());
+  }
+
+  @Test
+  public void requestHandledInsideGetScreenshotWithMediaProjection() {
+    reset(screenshotController);
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verifyZeroInteractions(responseWriter);
+    verifyZeroInteractions(onRequestFulfilledMock);
+  }
+
+  @Test
+  public void writesSuccessfulResponse() {
+    setupSuccessfulRequest();
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verify(responseWriter, times(1)).writeSuccessfulResponse(scanResultJson);
+  }
+
+  @Test
+  public void recyclesNodes() {
+    setupSuccessfulRequest();
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verify(rootNode, times(1)).recycle();
+    verify(sourceNode, times(1)).recycle();
+  }
+
+  @Test
+  public void recyclesNodeOnceIfRootEqualsSource() throws ViewChangedException {
+    setupSuccessfulRequest();
+    reset(rootNodeFinder);
+    reset(axeScanner);
+    when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(sourceNode);
+    when(axeScanner.scanWithAxe(eq(sourceNode), any())).thenReturn(axeResultMock);
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verifyZeroInteractions(rootNode);
+    verify(sourceNode, times(1)).recycle();
+  }
+
+  @Test
+  public void writesErrorIfNoRootNode() {
+    when(rootNodeFinder.getRootNodeFromSource(null)).thenReturn(null);
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verify(responseWriter, times(1))
+        .writeErrorResponse(argThat((e) -> e.getMessage() == "Unable to locate root node to scan"));
+    verifyOnRequestFulfilledCalled();
+  }
+
+  @Test
+  public void writesErrorIfScanFailed() throws ViewChangedException {
+    when(eventHelper.claimLastSource()).thenReturn(sourceNode);
+    when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(rootNode);
+    when(axeScanner.scanWithAxe(eq(rootNode), any())).thenReturn(null);
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verify(responseWriter, times(1))
+        .writeErrorResponse(argThat((e) -> e.getMessage() == "Scanner returned no data"));
+    verifyOnRequestFulfilledCalled();
+  }
+
+  @Test
+  public void doesNotRecycleSourceIfRestoreLastSourceSucceeds() {
+    setupSuccessfulRequest();
+    when(eventHelper.restoreLastSource(sourceNode)).thenReturn(true);
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+    verify(rootNode, times(1)).recycle();
+    verify(sourceNode, never()).recycle();
+  }
+
+  @Test
+  public void addsAxeResultToSerializer() {
+    setupSuccessfulRequest();
+
+    testSubject.fulfillRequest(onRequestFulfilledMock);
+
+    verify(resultV1Serializer, times(1)).addAxeResult(axeResultMock);
+  }
+
+  private void setupSuccessfulRequest() {
+    when(eventHelper.claimLastSource()).thenReturn(sourceNode);
+    when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(rootNode);
+    try {
+      when(axeScanner.scanWithAxe(eq(rootNode), any())).thenReturn(axeResultMock);
+    } catch (ViewChangedException e) {
+      Assert.fail(e.getMessage());
     }
+    when(resultV1Serializer.generateResultJson()).thenReturn(scanResultJson);
+  }
 
-    @Test
-    public void resultRequestFulfillerExists() {
-        Assert.assertNotNull(testSubject);
-    }
-
-    @Test
-    public void isBlockingRequestReturnsTrue() {
-        Assert.assertTrue(testSubject.isBlockingRequest());
-    }
-
-    @Test
-    public void callsOnRequestFulfilled() {
-        setupSuccessfulRequest();
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verifyOnRequestFulfilledCalled();
-    }
-
-    @Test
-    public void callsGetScreenshotWithMediaProjection() {
-        setupSuccessfulRequest();
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verify(screenshotController, times(1)).getScreenshotWithMediaProjection(any());
-    }
-
-    @Test
-    public void requestHandledInsideGetScreenshotWithMediaProjection() {
-        reset(screenshotController);
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verifyZeroInteractions(responseWriter);
-        verifyZeroInteractions(onRequestFulfilledMock);
-    }
-
-    @Test
-    public void writesSuccessfulResponse() {
-        setupSuccessfulRequest();
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verify(responseWriter, times(1)).writeSuccessfulResponse(scanResultJson);
-    }
-
-    @Test
-    public void recyclesNodes() {
-        setupSuccessfulRequest();
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verify(rootNode, times(1)).recycle();
-        verify(sourceNode, times(1)).recycle();
-    }
-
-    @Test
-    public void recyclesNodeOnceIfRootEqualsSource() throws ViewChangedException {
-        setupSuccessfulRequest();
-        reset(rootNodeFinder);
-        reset(axeScanner);
-        when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(sourceNode);
-        when(axeScanner.scanWithAxe(eq(sourceNode), any())).thenReturn(axeResultMock);
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verifyZeroInteractions(rootNode);
-        verify(sourceNode, times(1)).recycle();
-    }
-
-    @Test
-    public void writesErrorIfNoRootNode() {
-        when(rootNodeFinder.getRootNodeFromSource(null)).thenReturn(null);
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verify(responseWriter, times(1))
-                .writeErrorResponse(argThat((e) -> e.getMessage() == "Unable to locate root node to scan"));
-        verifyOnRequestFulfilledCalled();
-    }
-
-    @Test
-    public void writesErrorIfScanFailed() throws ViewChangedException {
-        when(eventHelper.claimLastSource()).thenReturn(sourceNode);
-        when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(rootNode);
-        when(axeScanner.scanWithAxe(eq(rootNode), any())).thenReturn(null);
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verify(responseWriter, times(1))
-                .writeErrorResponse(argThat((e) -> e.getMessage() == "Scanner returned no data"));
-        verifyOnRequestFulfilledCalled();
-    }
-
-    @Test
-    public void doesNotRecycleSourceIfRestoreLastSourceSucceeds() {
-        setupSuccessfulRequest();
-        when(eventHelper.restoreLastSource(sourceNode)).thenReturn(true);
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-        verify(rootNode, times(1)).recycle();
-        verify(sourceNode, never()).recycle();
-    }
-
-    @Test
-    public void addsAxeResultToSerializer() {
-        setupSuccessfulRequest();
-
-        testSubject.fulfillRequest(onRequestFulfilledMock);
-
-        verify(resultV1Serializer, times(1)).addAxeResult(axeResultMock);
-    }
-
-    private void setupSuccessfulRequest() {
-        when(eventHelper.claimLastSource()).thenReturn(sourceNode);
-        when(rootNodeFinder.getRootNodeFromSource(any())).thenReturn(rootNode);
-        try {
-            when(axeScanner.scanWithAxe(eq(rootNode), any())).thenReturn(axeResultMock);
-        } catch (ViewChangedException e) {
-            Assert.fail(e.getMessage());
-        }
-        when(resultV1Serializer.generateResultJson()).thenReturn(scanResultJson);
-    }
-
-    private void verifyOnRequestFulfilledCalled() {
-        verify(onRequestFulfilledMock, times(1)).run();
-    }
+  private void verifyOnRequestFulfilledCalled() {
+    verify(onRequestFulfilledMock, times(1)).run();
+  }
 }

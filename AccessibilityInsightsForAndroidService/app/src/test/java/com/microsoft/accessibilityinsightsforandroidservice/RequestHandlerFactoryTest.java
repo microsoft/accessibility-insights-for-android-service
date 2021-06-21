@@ -64,11 +64,11 @@ public class RequestHandlerFactoryTest {
   public void createsResultV2RequestHandler() {
     tryCreateRequestHandler("GET /AccessibilityInsights/result_v2 something else");
     verify(requestHandlerImplFactory)
-            .createRequestHandler(
-                    any(SocketHolder.class),
-                    any(ResultRequestFulfiller.class),
-                    eq("processResultRequest"),
-                    eq("*** About to process scan request"));
+        .createRequestHandler(
+            any(SocketHolder.class),
+            any(ResultRequestFulfiller.class),
+            eq("processResultRequest"),
+            eq("*** About to process scan request"));
   }
 
   @Test

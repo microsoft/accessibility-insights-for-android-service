@@ -63,18 +63,18 @@ public class RequestHandlerFactory {
       }
       if (requestString.startsWith("GET /AccessibilityInsights/result ")) {
         ResultV1RequestFulfiller resultRequestFulfiller =
-                new ResultV1RequestFulfiller(
-                        responseWriter,
-                        rootNodeFinder,
-                        eventHelper,
-                        axeScanner,
-                        screenshotController,
-                        resultV1Serializer);
+            new ResultV1RequestFulfiller(
+                responseWriter,
+                rootNodeFinder,
+                eventHelper,
+                axeScanner,
+                screenshotController,
+                resultV1Serializer);
         return requestHandlerImplFactory.createRequestHandler(
-                socketHolder,
-                resultRequestFulfiller,
-                "processResultRequest",
-                "*** About to process scan request");
+            socketHolder,
+            resultRequestFulfiller,
+            "processResultRequest",
+            "*** About to process scan request");
       }
       if (requestString.startsWith("GET /AccessibilityInsights/config ")) {
         ConfigRequestFulfiller configRequestFulfiller =
