@@ -10,30 +10,30 @@ import com.google.android.apps.common.testing.accessibility.framework.Accessibil
 import com.google.android.apps.common.testing.accessibility.framework.utils.contrast.BitmapImage;
 import java.util.List;
 
-public class ResultRequestFulfiller implements RequestFulfiller {
+public class ResultV2RequestFulfiller implements RequestFulfiller {
   private final RootNodeFinder rootNodeFinder;
   private final EventHelper eventHelper;
   private final ResponseWriter responseWriter;
   private final AxeScanner axeScanner;
   private final ATFAScanner atfaScanner;
   private final ScreenshotController screenshotController;
-  private final ResultsContainerSerializer resultsContainerSerializer;
+  private final ResultsV2ContainerSerializer resultsV2ContainerSerializer;
 
-  public ResultRequestFulfiller(
+  public ResultV2RequestFulfiller(
       ResponseWriter responseWriter,
       RootNodeFinder rootNodeFinder,
       EventHelper eventHelper,
       AxeScanner axeScanner,
       ATFAScanner atfaScanner,
       ScreenshotController screenshotController,
-      ResultsContainerSerializer resultsContainerSerializer) {
+      ResultsV2ContainerSerializer resultsV2ContainerSerializer) {
     this.responseWriter = responseWriter;
     this.rootNodeFinder = rootNodeFinder;
     this.eventHelper = eventHelper;
     this.axeScanner = axeScanner;
     this.atfaScanner = atfaScanner;
     this.screenshotController = screenshotController;
-    this.resultsContainerSerializer = resultsContainerSerializer;
+    this.resultsV2ContainerSerializer = resultsV2ContainerSerializer;
   }
 
   public void fulfillRequest(RunnableFunction onRequestFulfilled) {
@@ -77,6 +77,6 @@ public class ResultRequestFulfiller implements RequestFulfiller {
     List<AccessibilityHierarchyCheckResult> atfaResults =
         atfaScanner.scanWithATFA(rootNode, new BitmapImage(screenshot));
 
-    return resultsContainerSerializer.createResultsJson(axeResult, atfaResults);
+    return resultsV2ContainerSerializer.createResultsJson(axeResult, atfaResults);
   }
 }

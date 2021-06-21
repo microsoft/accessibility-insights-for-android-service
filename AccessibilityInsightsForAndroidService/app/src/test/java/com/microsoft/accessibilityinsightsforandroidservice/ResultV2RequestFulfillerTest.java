@@ -30,7 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-public class ResultRequestFulfillerTest {
+public class ResultV2RequestFulfillerTest {
 
   @Mock ResponseWriter responseWriter;
   @Mock RootNodeFinder rootNodeFinder;
@@ -43,12 +43,12 @@ public class ResultRequestFulfillerTest {
   @Mock AccessibilityNodeInfo rootNode;
   @Mock AxeResult axeResultMock;
   @Mock RunnableFunction onRequestFulfilledMock;
-  @Mock ResultsContainerSerializer resultsContainerSerializer;
+  @Mock ResultsV2ContainerSerializer resultsV2ContainerSerializer;
 
   final List<AccessibilityHierarchyCheckResult> atfaResults = Collections.emptyList();
   final String scanResultJson = "axe scan result";
 
-  ResultRequestFulfiller testSubject;
+  ResultV2RequestFulfiller testSubject;
 
   @Before
   public void prepare() {
@@ -60,14 +60,14 @@ public class ResultRequestFulfillerTest {
         .when(screenshotController)
         .getScreenshotWithMediaProjection(any());
     testSubject =
-        new ResultRequestFulfiller(
+        new ResultV2RequestFulfiller(
             responseWriter,
             rootNodeFinder,
             eventHelper,
             axeScanner,
             atfaScanner,
             screenshotController,
-            resultsContainerSerializer);
+            resultsV2ContainerSerializer);
   }
 
   @Test
@@ -184,7 +184,7 @@ public class ResultRequestFulfillerTest {
       Assert.fail(e.getMessage());
     }
     when(atfaScanner.scanWithATFA(eq(sourceNode), any())).thenReturn(atfaResults);
-    when(resultsContainerSerializer.createResultsJson(axeResultMock, atfaResults))
+    when(resultsV2ContainerSerializer.createResultsJson(axeResultMock, atfaResults))
         .thenReturn(scanResultJson);
   }
 

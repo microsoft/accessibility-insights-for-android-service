@@ -29,7 +29,7 @@ public class RequestHandlerFactoryTest {
   @Mock RequestHandlerImplFactory requestHandlerImplFactory;
   @Mock FocusVisualizationStateManager focusVisualizationStateManager;
   @Mock ResultV1Serializer resultSerializerV1;
-  @Mock ResultsContainerSerializer resultsContainerSerializer;
+  @Mock ResultsV2ContainerSerializer resultsV2ContainerSerializer;
 
   RequestHandlerFactory testSubject;
 
@@ -46,7 +46,7 @@ public class RequestHandlerFactoryTest {
             requestHandlerImplFactory,
             focusVisualizationStateManager,
             resultSerializerV1,
-            resultsContainerSerializer);
+            resultsV2ContainerSerializer);
   }
 
   @Test
@@ -56,8 +56,8 @@ public class RequestHandlerFactoryTest {
         .createRequestHandler(
             any(SocketHolder.class),
             any(ResultV1RequestFulfiller.class),
-            eq("processResultRequest"),
-            eq("*** About to process scan request"));
+            eq("processResultRequestV1"),
+            eq("*** About to process scan request (v1)"));
   }
 
   @Test
@@ -66,9 +66,9 @@ public class RequestHandlerFactoryTest {
     verify(requestHandlerImplFactory)
         .createRequestHandler(
             any(SocketHolder.class),
-            any(ResultRequestFulfiller.class),
-            eq("processResultRequest"),
-            eq("*** About to process scan request"));
+            any(ResultV2RequestFulfiller.class),
+            eq("processResultRequestV2"),
+            eq("*** About to process scan request (v2)"));
   }
 
   @Test
