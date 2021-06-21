@@ -30,6 +30,7 @@ public class ResponseThreadFactory {
             deviceConfigFactory,
             new RequestHandlerImplFactory(),
             focusVisualizationStateManager,
+            new ResultV1Serializer(),
             new ResultsContainerSerializer(
                 new ATFARulesSerializer(),
                 new ATFAResultsSerializer(new GsonBuilder()),

@@ -28,6 +28,7 @@ public class RequestHandlerFactoryTest {
   @Mock ResponseWriter responseWriter;
   @Mock RequestHandlerImplFactory requestHandlerImplFactory;
   @Mock FocusVisualizationStateManager focusVisualizationStateManager;
+  @Mock ResultV1Serializer resultSerializerV1;
   @Mock ResultsContainerSerializer resultsContainerSerializer;
 
   RequestHandlerFactory testSubject;
@@ -44,12 +45,24 @@ public class RequestHandlerFactoryTest {
             deviceConfigFactory,
             requestHandlerImplFactory,
             focusVisualizationStateManager,
+            resultSerializerV1,
             resultsContainerSerializer);
   }
 
   @Test
-  public void createsResultRequestHandler() {
+  public void createsResultV1RequestHandler() {
     tryCreateRequestHandler("GET /AccessibilityInsights/result something else");
+    verify(requestHandlerImplFactory)
+        .createRequestHandler(
+            any(SocketHolder.class),
+            any(ResultV1RequestFulfiller.class),
+            eq("processResultRequest"),
+            eq("*** About to process scan request"));
+  }
+
+  @Test
+  public void createsResultV2RequestHandler() {
+    tryCreateRequestHandler("GET /AccessibilityInsights/result_v2 something else");
     verify(requestHandlerImplFactory)
         .createRequestHandler(
             any(SocketHolder.class),
