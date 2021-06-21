@@ -56,7 +56,7 @@ public class RequestHandlerFactoryTest {
         .createRequestHandler(
             any(SocketHolder.class),
             any(ResultV1RequestFulfiller.class),
-            eq("processResultRequest"),
+            eq("processResultRequestV1"),
             eq("*** About to process scan request (v1)"));
   }
 
@@ -67,7 +67,7 @@ public class RequestHandlerFactoryTest {
         .createRequestHandler(
             any(SocketHolder.class),
             any(ResultV2RequestFulfiller.class),
-            eq("processResultRequest"),
+            eq("processResultRequestV2"),
             eq("*** About to process scan request (v2)"));
   }
 

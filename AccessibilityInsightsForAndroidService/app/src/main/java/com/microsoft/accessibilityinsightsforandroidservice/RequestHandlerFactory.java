@@ -58,7 +58,7 @@ public class RequestHandlerFactory {
         return requestHandlerImplFactory.createRequestHandler(
             socketHolder,
             resultV2RequestFulfiller,
-            "processResultRequest",
+            "processResultRequestV2",
             "*** About to process scan request (v2)");
       }
       if (requestString.startsWith("GET /AccessibilityInsights/result ")) {
@@ -73,7 +73,7 @@ public class RequestHandlerFactory {
         return requestHandlerImplFactory.createRequestHandler(
             socketHolder,
             resultV1RequestFulfiller,
-            "processResultRequest",
+            "processResultRequestV1",
             "*** About to process scan request (v1)");
       }
       if (requestString.startsWith("GET /AccessibilityInsights/config ")) {
