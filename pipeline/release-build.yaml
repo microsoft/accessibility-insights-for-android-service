@@ -92,3 +92,9 @@ jobs:
                         "ToolVersion" : "1.0"
                     }
             ]
+
+      - task: PublishPipelineArtifact@1
+        displayName: (signed-apk) publish artifact
+        inputs:
+          artifactName: 'signed-apk'
+          targetPath: '$(build.artifactstagingdirectory)/signed-apk'
