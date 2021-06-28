@@ -98,3 +98,92 @@ jobs:
         inputs:
           artifactName: 'signed-apk'
           targetPath: '$(build.artifactstagingdirectory)/signed-apk'
+
+      # terms artifact
+
+      - task: ComponentGovernanceComponentDetection@0
+        displayName: '(terms) dependency detection (Component Governance)'
+        timeoutInMinutes: 5
+
+      - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js
+        displayName: (terms) verify NOTICE.html content matches lockfile
+
+      - task: CopyFiles@2
+        displayName: (terms) copy LICENSE and NOTICE.html to artifact staging
+        inputs:
+          contents: |
+            LICENSE
+            NOTICE.html
+          sourceFolder: '$(system.defaultWorkingDirectory)'
+          targetFolder: '$(build.artifactstagingdirectory)/terms'
+
+      - task: PublishPipelineArtifact@1
+        displayName: (terms) publish artifact
+        inputs:
+          artifactName: 'terms'
+          targetPath: '$(build.artifactstagingdirectory)/terms'
+
+      # github-release-archive artifact
+
+      - task: CopyFiles@2
+        displayName: (github-release-archive) copy files to artifact staging
+        inputs:
+          contents: |
+            terms/LICENSE
+            terms/NOTICE.html
+            signed-apk/AccessibilityInsightsforAndroidService.apk
+          sourceFolder: '$(build.artifactstagingdirectory)'
+          targetFolder: '$(build.artifactstagingdirectory)/github-release-archive/contents'
+          flattenFolders: true
+
+      - task: ArchiveFiles@2
+        displayName: '(github-release-archive) create release archive'
+        inputs:
+          rootFolderOrFile: '$(build.artifactstagingdirectory)/github-release-archive/contents'
+          includeRootFolder: false
+          archiveFile: '$(build.artifactstagingdirectory)/github-release-archive/AccessibilityInsightsForAndroid.zip'
+
+      - task: PublishPipelineArtifact@1
+        displayName: (github-release-archive) publish artifact
+        inputs:
+          artifactName: 'github-release-archive'
+          targetPath: '$(build.artifactstagingdirectory)/github-release-archive'
+
+      # npm-wrapper artifact
+
+      - task: CopyFiles@2
+        displayName: (npm-wrapper) Copy generated files for packaging
+        inputs:
+          contents: |
+            terms/LICENSE
+            terms/NOTICE.html
+            signed-apk/AccessibilityInsightsforAndroidService.apk
+          sourceFolder: '$(build.artifactstagingdirectory)'
+          targetFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
+          flattenFolders: true
+
+      - script: npm version $(APK_VERSION_NAME)
+        displayName: (npm-wrapper) set package version to APK_VERSION_NAME
+        workingDirectory: '$(system.defaultWorkingDirectory)/npm-wrapper'
+
+      - script: npm pack
+        displayName: (npm-wrapper) npm pack
+        workingDirectory: '$(system.defaultWorkingDirectory)/npm-wrapper'
+
+      - task: CopyFiles@2
+        displayName: (npm-wrapper) copy packed NPM wrapper to artifact staging
+        inputs:
+          contents: |
+            accessibility-insights-for-android-service-bin-$(APK_VERSION_NAME).tgz
+          sourceFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
+          targetFolder: '$(build.artifactstagingdirectory)/npm-wrapper'
+
+      - script: 'move accessibility-insights-for-android-service-bin-$(APK_VERSION_NAME).tgz accessibility-insights-for-android-service-bin.tgz'
+        displayName: (npm-wrapper) rename packed archive to remove version number
+        workingDirectory: '$(build.artifactstagingdirectory)/npm-wrapper'
+
+      - task: PublishPipelineArtifact@1
+        displayName: (npm-wrapper) publish artifact
+        inputs:
+          artifactName: 'npm-wrapper'
+          targetPath: '$(build.artifactstagingdirectory)/npm-wrapper'
