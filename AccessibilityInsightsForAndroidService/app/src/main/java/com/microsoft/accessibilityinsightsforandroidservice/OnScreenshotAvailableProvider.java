@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 
 public class OnScreenshotAvailableProvider {
   public OnScreenshotAvailable getOnScreenshotAvailable(
-      Consumer<Bitmap> bitmapConsumer, DisplayMetrics metrics, BitmapProvider bitmapProvider) {
-    return new OnScreenshotAvailable(bitmapConsumer, metrics, bitmapProvider);
+      DisplayMetrics metrics, BitmapProvider bitmapProvider, Consumer<Bitmap> bitmapConsumer) {
+    return new OnScreenshotAvailable(metrics, bitmapProvider, bitmapConsumer);
   }
 }

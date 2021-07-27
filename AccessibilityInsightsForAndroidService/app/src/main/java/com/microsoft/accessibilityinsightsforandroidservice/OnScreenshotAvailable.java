@@ -21,7 +21,7 @@ public class OnScreenshotAvailable implements ImageReader.OnImageAvailableListen
   private BitmapProvider bitmapProvider;
 
   public OnScreenshotAvailable(
-      Consumer<Bitmap> bitmapConsumer, DisplayMetrics metrics, BitmapProvider bitmapProvider) {
+      DisplayMetrics metrics, BitmapProvider bitmapProvider, Consumer<Bitmap> bitmapConsumer) {
     this.bitmapConsumer = bitmapConsumer;
     this.metrics = metrics;
     this.bitmapProvider = bitmapProvider;

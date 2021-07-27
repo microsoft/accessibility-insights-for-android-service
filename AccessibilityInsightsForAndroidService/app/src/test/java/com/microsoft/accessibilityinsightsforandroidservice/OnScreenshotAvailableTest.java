@@ -58,7 +58,7 @@ public class OnScreenshotAvailableTest {
     imagePlanesStub = new Image.Plane[1];
     imagePlanesStub[0] = imagePlaneMock;
 
-    testSubject = new OnScreenshotAvailable(bitmapConsumerMock, metricsStub, bitmapProviderMock);
+    testSubject = new OnScreenshotAvailable(metricsStub, bitmapProviderMock, bitmapConsumerMock);
   }
 
   @Test
