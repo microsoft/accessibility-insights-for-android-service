@@ -73,7 +73,7 @@ public class ATFAResultsSerializerTest {
 
     doAnswer(
             AdditionalAnswers.answer(
-                (Type type, JsonSerializer serializer) -> {
+                (Type type, JsonSerializer<Class> serializer) -> {
                   jsonSerializer = serializer;
                   return gsonBuilder;
                 }))

@@ -44,7 +44,7 @@ public class RequestReaderTest {
 
   @Test
   public void limitsInputLength() throws IOException {
-    OngoingStubbing bufferedReaderStubbing = when(bufferedReaderMock.read());
+    OngoingStubbing<Integer> bufferedReaderStubbing = when(bufferedReaderMock.read());
     for (int i = 0; i < 300; i++) {
       bufferedReaderStubbing = bufferedReaderStubbing.thenReturn(42);
     }
@@ -58,7 +58,7 @@ public class RequestReaderTest {
   }
 
   private void setupReadLine(String str) {
-    OngoingStubbing bufferedReaderStubbing;
+    OngoingStubbing<Integer> bufferedReaderStubbing;
     try {
       bufferedReaderStubbing = when(bufferedReaderMock.read());
     } catch (IOException e) {

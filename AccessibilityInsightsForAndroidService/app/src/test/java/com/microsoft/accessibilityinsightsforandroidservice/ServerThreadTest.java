@@ -123,7 +123,7 @@ public class ServerThreadTest {
   public void setupResponseThreadStubs(int numThreads) {
     // Set up a chain of n responseThreadFactory calls
     // (They need to be different objects because we can only run threads once)
-    OngoingStubbing responseThreadFactoryStubbing =
+    OngoingStubbing<ResponseThread> responseThreadFactoryStubbing =
         when(responseThreadFactory.createResponseThread(any()));
     for (int i = 0; i < numThreads - 1; i++) {
       TestableResponseThread responseThreadStub = new TestableResponseThread();
