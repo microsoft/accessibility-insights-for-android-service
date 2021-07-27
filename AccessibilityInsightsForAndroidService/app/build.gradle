@@ -63,7 +63,8 @@ android {
     testOptions.unitTests.all {
         // This is a workaround for https://github.com/powermock/powermock/issues/969, based on
         // comment https://github.com/powermock/powermock/issues/969#issuecomment-841267805
-        jvmArgs "--add-opens","java.logging/java.util.logging=ALL-UNNAMED",
+        jvmArgs "--illegal-access=warn",
+                "--add-opens","java.logging/java.util.logging=ALL-UNNAMED",
                 "--add-opens","java.base/java.time.zone=ALL-UNNAMED",
                 "--add-opens","java.base/java.lang.reflect=ALL-UNNAMED",
                 "--add-opens","java.base/java.security.cert=ALL-UNNAMED",
