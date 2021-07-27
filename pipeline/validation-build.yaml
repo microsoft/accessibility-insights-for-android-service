@@ -32,7 +32,7 @@ jobs:
           contents: |
             lint-results.html
             lint-results.xml
-          sourceFolder: '$(system.defaultWorkingDirectory))/AccessibilityInsightsForAndroidService/app/build/reports'
+          sourceFolder: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/reports'
           targetFolder: '$(build.artifactstagingdirectory)/lint-results'
 
       - task: PublishPipelineArtifact@1
