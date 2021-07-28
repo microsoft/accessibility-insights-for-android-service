@@ -70,7 +70,16 @@ public class ScreenshotController {
   private ImageReader getImageReader(DisplayMetrics metrics, Consumer<Bitmap> bitmapConsumer) {
     ImageReader imageReader =
         ImageReader.newInstance(
-            metrics.widthPixels, metrics.heightPixels, PixelFormat.RGBA_8888, 2);
+            metrics.widthPixels,
+            metrics.heightPixels,
+            // The linter gives a false positive here because it wants us to use one of the
+            // ImageFormat.* constants, but ImageReader.newInstance documents the PixelFormat
+            // constants as being acceptable, too. We don't control the choice of format; it's
+            // determined by the input data we get from the system screenshot functionality.
+            //
+            // noinspection WrongConstant
+            PixelFormat.RGBA_8888,
+            2);
 
     Consumer<Bitmap> onBitmapAvailable =
         bitmap -> {
@@ -80,7 +89,7 @@ public class ScreenshotController {
 
     OnScreenshotAvailable onScreenshotAvailable =
         onScreenshotAvailableProvider.getOnScreenshotAvailable(
-            onBitmapAvailable, metrics, bitmapProvider);
+            metrics, bitmapProvider, onBitmapAvailable);
     imageReader.setOnImageAvailableListener(onScreenshotAvailable, screenshotHandler);
 
     return imageReader;

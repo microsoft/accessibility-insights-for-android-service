@@ -19,11 +19,28 @@ jobs:
           gradleOptions: '-Xmx3072m'
           options: -S
           javaHomeOption: 'JDKVersion'
-          jdkVersionOption: '1.8'
+          jdkVersionOption: '1.11'
           jdkArchitectureOption: 'x64'
           publishJUnitResults: true
           testResultsFiles: '**/TEST-*.xml'
           tasks: 'build'
+
+      - task: CopyFiles@2
+        displayName: (lint-results) copy lint-results files to artifact staging
+        condition: succeededOrFailed()
+        inputs:
+          contents: |
+            lint-results.html
+            lint-results.xml
+          sourceFolder: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/reports'
+          targetFolder: '$(build.artifactstagingdirectory)/lint-results'
+
+      - task: PublishPipelineArtifact@1
+        displayName: (lint-results) publish lint-results artifact
+        condition: succeededOrFailed()
+        inputs:
+          artifactName: 'lint-results'
+          targetPath: '$(build.artifactstagingdirectory)/lint-results'
 
       - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js
         displayName: verify NOTICE.html content matches lockfile

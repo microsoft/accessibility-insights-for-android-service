@@ -80,7 +80,7 @@ public class ScreenshotControllerTest {
   @Test
   public void createVirtualDisplayWithExpectedImageReader() {
     PowerMockito.mockStatic(ImageReader.class);
-    bitmapConsumerCallback = ArgumentCaptor.forClass(Consumer.class);
+    bitmapConsumerCallback = createBitmapConsumerCallback();
     when(mediaProjectionSupplierMock.get()).thenReturn(mediaProjectionMock);
     when(displayMetricsSupplierMock.get()).thenReturn(displayMetricsStub);
     when(ImageReader.newInstance(
@@ -91,7 +91,7 @@ public class ScreenshotControllerTest {
         .thenReturn(imageReaderMock);
     when(imageReaderMock.getSurface()).thenReturn(surfaceMock);
     when(onScreenshotAvailableProviderMock.getOnScreenshotAvailable(
-            bitmapConsumerCallback.capture(), eq(displayMetricsStub), eq(bitmapProviderMock)))
+            eq(displayMetricsStub), eq(bitmapProviderMock), bitmapConsumerCallback.capture()))
         .thenReturn(onScreenshotAvailableMock);
     when(mediaProjectionMock.createVirtualDisplay(
             "myDisplay",
@@ -109,6 +109,11 @@ public class ScreenshotControllerTest {
 
     verify(displayMock, times(1)).release();
     verify(bitmapConsumerMock, times(1)).accept(bitmapMock);
+  }
+
+  @SuppressWarnings("unchecked")
+  private ArgumentCaptor<Consumer<Bitmap>> createBitmapConsumerCallback() {
+    return ArgumentCaptor.forClass(Consumer.class);
   }
 
   @Test

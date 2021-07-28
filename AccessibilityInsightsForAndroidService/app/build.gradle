@@ -33,7 +33,62 @@ android {
         targetCompatibility JavaVersion.VERSION_1_8
     }
     lintOptions {
-        abortOnError false
+        checkAllWarnings true
+        warningsAsErrors true
+        abortOnError true
+
+        // GradleDependency and OldTargetApi can start breaking build-over-build due to external
+        // dependency updates, so we treat them as non-fatal to ensure build reproducibility.
+        //
+        // UnknownNullness is grandfathered in as non-fatal only because it already had hundreds
+        // of true positives at the time we enabled warnings-as-errors. It would improve the
+        // codebase to fix all the warnings it generates and make it fatal.
+        warning 'GradleDependency', 'OldTargetApi', 'UnknownNullness'
+
+        // ConvertToWebp is a false positive; it triggers against our launcher icon PNG files, even
+        // though the rule documentation explains that launcher icons must be PNGs and cannot be
+        // converted to Webp.
+        //
+        // GoogleAppIndexWarning is irrelevant to us; we don't ship to the store and don't care if
+        // it can index us, and it's intentional that we don't have a launchable home activity.
+        //
+        // SyntheticAccessor is a legitimate performance warning, but one which is not significant
+        // for a project of our small size (it's only relevant once a project starts bumping up
+        // against the 64K total method limit for jar files).
+        //
+        // UnsafeExperimentalUsageError and UnsafeExperimentalUsageWarning are incomplete,
+        // experimental rules that trigger other false positive warnings if enabled.
+        ignore 'ConvertToWebp', 'GoogleAppIndexingWarning', 'SyntheticAccessor', 'UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning'
+    }
+    testOptions.unitTests.all {
+        // This is a workaround for https://github.com/powermock/powermock/issues/969, based on
+        // comment https://github.com/powermock/powermock/issues/969#issuecomment-841267805
+        jvmArgs "--illegal-access=warn",
+                "--add-opens","java.logging/java.util.logging=ALL-UNNAMED",
+                "--add-opens","java.base/java.time.zone=ALL-UNNAMED",
+                "--add-opens","java.base/java.lang.reflect=ALL-UNNAMED",
+                "--add-opens","java.base/java.security.cert=ALL-UNNAMED",
+                "--add-opens","java.base/java.text=ALL-UNNAMED",
+                "--add-opens","java.base/java.net=ALL-UNNAMED",
+                "--add-opens","java.base/java.nio=ALL-UNNAMED",
+                "--add-opens","java.base/java.nio.charset=ALL-UNNAMED",
+                "--add-opens","java.base/java.nio.file=ALL-UNNAMED",
+                "--add-opens","java.base/sun.nio.fs=ALL-UNNAMED",
+                "--add-opens","java.base/sun.security.x509=ALL-UNNAMED",
+                "--add-opens","java.base/java.util.regex=ALL-UNNAMED",
+                "--add-opens","java.base/java.util.stream=ALL-UNNAMED",
+                "--add-opens","java.base/java.util.concurrent=ALL-UNNAMED",
+                "--add-opens","java.base/java.util.concurrent.atomic=ALL-UNNAMED",
+                "--add-opens","java.base/java.util.concurrent.locks=ALL-UNNAMED",
+                "--add-opens","java.base/java.time=ALL-UNNAMED",
+                "--add-opens","java.base/java.util=ALL-UNNAMED",
+                "--add-opens","java.base/java.io=ALL-UNNAMED",
+                "--add-opens","java.base/java.lang=ALL-UNNAMED"
+    }
+    tasks.withType(JavaCompile) {
+        configure(options) {
+            options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked' << '-Werror'
+        }
     }
 }
 

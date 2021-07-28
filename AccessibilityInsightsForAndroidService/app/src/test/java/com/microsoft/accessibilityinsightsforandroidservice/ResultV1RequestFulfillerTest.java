@@ -11,7 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
@@ -98,8 +98,8 @@ public class ResultV1RequestFulfillerTest {
 
     testSubject.fulfillRequest(onRequestFulfilledMock);
 
-    verifyZeroInteractions(responseWriter);
-    verifyZeroInteractions(onRequestFulfilledMock);
+    verifyNoInteractions(responseWriter);
+    verifyNoInteractions(onRequestFulfilledMock);
   }
 
   @Test
@@ -131,7 +131,7 @@ public class ResultV1RequestFulfillerTest {
 
     testSubject.fulfillRequest(onRequestFulfilledMock);
 
-    verifyZeroInteractions(rootNode);
+    verifyNoInteractions(rootNode);
     verify(sourceNode, times(1)).recycle();
   }
 

@@ -31,7 +31,7 @@ jobs:
           gradleOptions: '-Xmx3072m'
           options: -S -PapkVersionCode=$(APK_VERSION_CODE) -PapkVersionName=$(APK_VERSION_NAME)
           javaHomeOption: 'JDKVersion'
-          jdkVersionOption: '1.8'
+          jdkVersionOption: '1.11'
           jdkArchitectureOption: 'x64'
           publishJUnitResults: true
           testResultsFiles: '**/TEST-*.xml'
@@ -39,6 +39,25 @@ jobs:
 
       - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output-metadata.json
         displayName: print out generated release APK info
+
+      # lint-results artifact
+
+      - task: CopyFiles@2
+        displayName: (lint-results) copy lint-results files to artifact staging
+        condition: succeededOrFailed()
+        inputs:
+          contents: |
+            lint-results.html
+            lint-results.xml
+          sourceFolder: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/reports'
+          targetFolder: '$(build.artifactstagingdirectory)/lint-results'
+
+      - task: PublishPipelineArtifact@1
+        displayName: (lint-results) publish lint-results artifact
+        condition: succeededOrFailed()
+        inputs:
+          artifactName: 'lint-results'
+          targetPath: '$(build.artifactstagingdirectory)/lint-results'
 
       # unsigned-apk artifact
 
