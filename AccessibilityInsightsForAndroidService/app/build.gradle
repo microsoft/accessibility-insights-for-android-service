@@ -37,13 +37,14 @@ android {
         warningsAsErrors true
         abortOnError true
 
-        // GradleDependency and OldTargetApi can start breaking build-over-build due to external
-        // dependency updates, so we treat them as non-fatal to ensure build reproducibility.
+        // GradleDependency, NewerVersionAvailable, and OldTargetApi can start breaking
+        // build-over-build due to external dependency updates, so we treat them as non-fatal to
+        // ensure build reproducibility.
         //
         // UnknownNullness is grandfathered in as non-fatal only because it already had hundreds
         // of true positives at the time we enabled warnings-as-errors. It would improve the
         // codebase to fix all the warnings it generates and make it fatal.
-        warning 'GradleDependency', 'OldTargetApi', 'UnknownNullness'
+        warning 'GradleDependency', 'NewerVersionAvailable', 'OldTargetApi', 'UnknownNullness'
 
         // ConvertToWebp is a false positive; it triggers against our launcher icon PNG files, even
         // though the rule documentation explains that launcher icons must be PNGs and cannot be
