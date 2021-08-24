@@ -3,9 +3,10 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 
-import org.junit.Assert;
+import android.os.CancellationSignal;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -13,28 +14,16 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TabStopsRequestFulfillerTest {
-  @Mock ResponseWriter responseWriter;
   @Mock FocusVisualizationStateManager focusVisualizationStateManager;
-  @Mock RunnableFunction onRequestFulfilled;
+  @Mock CancellationSignal cancellationSignal;
 
   TabStopsRequestFulfiller testSubject;
 
   @Test
-  public void isBlockingRequestIsTrue() {
-    testSubject =
-        new TabStopsRequestFulfiller(responseWriter, focusVisualizationStateManager, true);
-    Assert.assertTrue(testSubject.isBlockingRequest());
-  }
-
-  @Test
   public void fulfillRequestSetsTabStopState() {
-    testSubject =
-        new TabStopsRequestFulfiller(responseWriter, focusVisualizationStateManager, true);
-    testSubject.fulfillRequest(onRequestFulfilled);
+    testSubject = new TabStopsRequestFulfiller(focusVisualizationStateManager, true);
+    assertEquals("", testSubject.fulfillRequest(cancellationSignal));
 
     verify(focusVisualizationStateManager).setState(true);
-    verify(responseWriter).writeSuccessfulResponse("");
-    verify(onRequestFulfilled).run();
-    Assert.assertTrue(testSubject.isBlockingRequest());
   }
 }

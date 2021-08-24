@@ -3,8 +3,8 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-public interface RequestFulfiller {
-  void fulfillRequest(RunnableFunction onRequestFulfilled);
+import android.os.CancellationSignal;
 
-  boolean isBlockingRequest();
+public interface RequestFulfiller {
+  String fulfillRequest(CancellationSignal cancellationSignal) throws Exception;
 }

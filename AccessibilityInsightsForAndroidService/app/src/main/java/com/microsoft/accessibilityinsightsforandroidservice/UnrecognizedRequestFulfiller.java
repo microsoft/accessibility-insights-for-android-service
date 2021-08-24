@@ -3,23 +3,16 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.os.CancellationSignal;
+
 public class UnrecognizedRequestFulfiller implements RequestFulfiller {
+  private final String requestMethod;
 
-  private final ResponseWriter responseWriter;
-  private final String requestString;
-
-  public UnrecognizedRequestFulfiller(ResponseWriter responseWriter, String requestString) {
-    this.responseWriter = responseWriter;
-    this.requestString = requestString;
+  public UnrecognizedRequestFulfiller(String requestMethod) {
+    this.requestMethod = requestMethod;
   }
 
-  public void fulfillRequest(RunnableFunction onRequestFulfilled) {
-    responseWriter.writeNotFoundResponse(requestString);
-    onRequestFulfilled.run();
-  }
-
-  @Override
-  public boolean isBlockingRequest() {
-    return false;
+  public String fulfillRequest(CancellationSignal cancellationSignal) {
+    throw new RuntimeException("Unrecognized request: " + requestMethod);
   }
 }
