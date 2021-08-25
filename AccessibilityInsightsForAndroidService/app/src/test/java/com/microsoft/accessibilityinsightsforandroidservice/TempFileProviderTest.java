@@ -11,9 +11,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -116,7 +116,7 @@ public class TempFileProviderTest {
     File noErasableFile = testSubject.createTempFileWithContents("Test sting");
     makeFileLookOld(erasableFile);
     makeFileLookOld(noErasableFile);
-    try (BufferedReader reader = new BufferedReader(new FileReader(noErasableFile))) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(noErasableFile))) {
       testSubject.cleanOldFilesBestEffort();
     }
     assertTrue(noErasableFile.exists());
