@@ -27,9 +27,10 @@ import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.view.accessibility.AccessibilityEvent;
 
+import com.google.gson.GsonBuilder;
+
 public class AccessibilityInsightsForAndroidService extends AccessibilityService {
   private static final String TAG = "AccessibilityInsightsForAndroidService";
-  private static ServerThread ServerThread = null;
   private final AxeScanner axeScanner;
   private final ATFAScanner atfaScanner;
   private final EventHelper eventHelper;
@@ -46,6 +47,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   private FocusVisualizationCanvas focusVisualizationCanvas;
   private AccessibilityEventDispatcher accessibilityEventDispatcher;
   private DeviceOrientationHandler deviceOrientationHandler;
+  private TempFileProvider tempFileProvider;
 
   public AccessibilityInsightsForAndroidService() {
     deviceConfigFactory = new DeviceConfigFactory();
@@ -59,18 +61,6 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     // Correct screen metrics are only accessible within the context of the running
     // service. They're not available when the service initializes, hence the callback
     return DisplayMetricsHelper.getRealDisplayMetrics(this);
-  }
-
-  private void StopServerThread() {
-    if (ServerThread != null) {
-      ServerThread.exit();
-      try {
-        ServerThread.join();
-      } catch (InterruptedException e) {
-        Logger.logError(TAG, StackTrace.getStackTrace(e));
-      }
-      ServerThread = null;
-    }
   }
 
   private void stopScreenshotHandlerThread() {
@@ -111,7 +101,9 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
             bitmapProvider,
             MediaProjectionHolder::get);
 
-    StopServerThread();
+    SynchronizedRequestDispatcher.SharedInstance.teardown();
+    tempFileProvider = new TempFileProvider(getApplicationContext().getCacheDir());
+    tempFileProvider.cleanOldFilesBestEffort();
 
     WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
     focusVisualizationStateManager = new FocusVisualizationStateManager();
@@ -121,14 +113,16 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
     focusVisualizerController = new FocusVisualizerController(focusVisualizer, focusVisualizationStateManager, new UIThreadRunner(), windowManager, layoutParamGenerator, focusVisualizationCanvas, new DateProvider());
     accessibilityEventDispatcher = new AccessibilityEventDispatcher();
     deviceOrientationHandler = new DeviceOrientationHandler(getResources().getConfiguration().orientation);
+    RootNodeFinder rootNodeFinder = new RootNodeFinder();
+    ResultsV2ContainerSerializer resultsV2ContainerSerializer = new ResultsV2ContainerSerializer(
+        new ATFARulesSerializer(),
+        new ATFAResultsSerializer(new GsonBuilder()),
+        new GsonBuilder());
 
     setupFocusVisualizationListeners();
 
-    ResponseThreadFactory responseThreadFactory =
-        new ResponseThreadFactory(
-            screenshotController, eventHelper, axeScanner, atfaScanner, deviceConfigFactory, focusVisualizationStateManager);
-    ServerThread = new ServerThread(new ServerSocketFactory(), responseThreadFactory);
-    ServerThread.start();
+    RequestDispatcher requestDispatcher = new RequestDispatcher(rootNodeFinder, screenshotController, eventHelper, axeScanner, atfaScanner, deviceConfigFactory, focusVisualizationStateManager, resultsV2ContainerSerializer);
+    SynchronizedRequestDispatcher.SharedInstance.setup(requestDispatcher);
   }
 
   private void setupFocusVisualizationListeners() {
@@ -141,7 +135,8 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
   @Override
   public boolean onUnbind(Intent intent) {
     Logger.logVerbose(TAG, "*** onUnbind");
-    StopServerThread();
+    SynchronizedRequestDispatcher.SharedInstance.teardown();
+    tempFileProvider.cleanOldFilesBestEffort();
     stopScreenshotHandlerThread();
     MediaProjectionHolder.cleanUp();
     return false;

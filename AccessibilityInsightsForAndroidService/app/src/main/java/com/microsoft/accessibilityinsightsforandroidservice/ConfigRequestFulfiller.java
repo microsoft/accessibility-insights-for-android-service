@@ -3,47 +3,36 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.os.CancellationSignal;
 import android.view.accessibility.AccessibilityNodeInfo;
 
 public class ConfigRequestFulfiller implements RequestFulfiller {
   private final RootNodeFinder rootNodeFinder;
   private final EventHelper eventHelper;
   private final DeviceConfigFactory deviceConfigFactory;
-  private final ResponseWriter responseWriter;
 
   public ConfigRequestFulfiller(
-      ResponseWriter responseWriter,
       RootNodeFinder rootNodeFinder,
       EventHelper eventHelper,
       DeviceConfigFactory deviceConfigFactory) {
-    this.responseWriter = responseWriter;
     this.rootNodeFinder = rootNodeFinder;
     this.deviceConfigFactory = deviceConfigFactory;
     this.eventHelper = eventHelper;
   }
 
-  public void fulfillRequest(RunnableFunction onRequestFulfilled) {
-    writeConfigResponse();
-    onRequestFulfilled.run();
-  }
-
-  @Override
-  public boolean isBlockingRequest() {
-    return true;
-  }
-
-  private void writeConfigResponse() {
+  public String fulfillRequest(CancellationSignal cancellationSignal) {
     AccessibilityNodeInfo source = eventHelper.claimLastSource();
     AccessibilityNodeInfo rootNode = rootNodeFinder.getRootNodeFromSource(source);
 
-    String content = deviceConfigFactory.getDeviceConfig(rootNode).toJson();
-    responseWriter.writeSuccessfulResponse(content);
-
-    if (rootNode != null && rootNode != source) {
-      rootNode.recycle();
-    }
-    if (source != null && !eventHelper.restoreLastSource(source)) {
-      source.recycle();
+    try {
+      return deviceConfigFactory.getDeviceConfig(rootNode).toJson();
+    } finally {
+      if (rootNode != null && rootNode != source) {
+        rootNode.recycle();
+      }
+      if (source != null && !eventHelper.restoreLastSource(source)) {
+        source.recycle();
+      }
     }
   }
 }

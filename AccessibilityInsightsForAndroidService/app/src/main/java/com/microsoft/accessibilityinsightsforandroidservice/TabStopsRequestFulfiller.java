@@ -3,29 +3,21 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.os.CancellationSignal;
+
 public class TabStopsRequestFulfiller implements RequestFulfiller {
-  private ResponseWriter responseWriter;
-  private FocusVisualizationStateManager focusVisualizationStateManager;
-  private boolean requestValue;
+  private final FocusVisualizationStateManager focusVisualizationStateManager;
+  private final boolean requestValue;
 
   public TabStopsRequestFulfiller(
-      ResponseWriter responseWriter,
-      FocusVisualizationStateManager focusVisualizationStateManager,
-      boolean requestValue) {
-    this.responseWriter = responseWriter;
+      FocusVisualizationStateManager focusVisualizationStateManager, boolean requestValue) {
     this.focusVisualizationStateManager = focusVisualizationStateManager;
     this.requestValue = requestValue;
   }
 
   @Override
-  public void fulfillRequest(RunnableFunction onRequestFulfilled) {
+  public String fulfillRequest(CancellationSignal cancellationSignal) {
     focusVisualizationStateManager.setState(requestValue);
-    responseWriter.writeSuccessfulResponse("");
-    onRequestFulfilled.run();
-  }
-
-  @Override
-  public boolean isBlockingRequest() {
-    return true;
+    return "";
   }
 }

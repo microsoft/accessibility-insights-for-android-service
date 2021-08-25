@@ -42,5 +42,19 @@
             android:excludeFromRecents="true"
             android:exported="false"
             android:label="@string/accessibility_service_label" />
+        <!--
+        SET_DEBUG_APP is a privileged system permission which is only available to com.android.shell.
+        Restricting the provider with that permission prevents any apps (except for adb) from
+        accessing scan data directly.
+
+        If this ever needs to be changed, be aware that the permissions granted to com.android.shell
+        have changed substantially between Android versions; make sure to test against downlevel cases.
+        -->
+        <provider
+            android:authorities="com.microsoft.accessibilityinsightsforandroidservice"
+            android:name="com.microsoft.accessibilityinsightsforandroidservice.AccessibilityInsightsContentProvider"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.SET_DEBUG_APP" />
     </application>
 </manifest>

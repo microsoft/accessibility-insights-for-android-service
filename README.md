@@ -53,44 +53,19 @@ Accessibility Insights for Android Service is a service for Android that helps i
     * Select **Allow** on the resulting dialog to grant the necessary permissions
     * An "Exposing sensitive info during casting/recording" dialog should appear. Select **Start now** 
 
-#### Triggering requests in the browser
+#### Triggering requests in adb
 
-While the service is running, forward the emulated device port `62442` (set in the [ServerThread](https://github.com/microsoft/accessibility-insights-for-android-service/blob/main/AccessibilityInsightsForAndroidService/app/src/main/java/com/microsoft/accessibilityinsightsforandroidservice/ServerThread.java)) to the same port on your machine by running `adb forward tcp:62442 tcp:62442` from a command prompt.
+While the service is running, you can manually trigger requests by invoking the following `adb shell content` commands:
 
-A success will either print the port number back or print nothing at all.
-
-Once the port forwarding is set up you can manually trigger requests by hitting [endpoints](https://github.com/microsoft/accessibility-insights-for-android-service/blob/main/AccessibilityInsightsForAndroidService/app/src/main/java/com/microsoft/accessibilityinsightsforandroidservice/RequestHandlerFactory.java) in your browser.
 * **Config**
-  * Navigate to [http://localhost:62442/AccessibilityInsights/config](http://localhost:62442/AccessibilityInsights/config) to view device configuration.
+  * `adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/config`
   * Returned data includes:
     * `deviceName` - the name of the device from the Android [`Build.MODEL`](https://developer.android.com/reference/android/os/Build#MODEL)
     * `packageName` - the package the associated root [`AccessibilityInfoNode`](https://developer.android.com/reference/android/view/accessibility/AccessibilityNodeInfo) comes from
     * `serviceVersion` - the version of the service
 
-* **Raw Axe Results** (will soon be removed)
-  * Navigate to [http://localhost:62442/AccessibilityInsights/result](http://localhost:62442/AccessibilityInsights/result) to view returned JSON results.
-  * Returned data includes:
-    * `axeConf` - the set [AxeConf](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeConf.java) object listing which rules will run
-    * `axeContext` - the Context axe-android is running the rules on
-      * `axeDevice` - the device the context was built on
-      * `axeEventStream` - the AccessibilityEvent Stream since the last view refresh
-      * `axeMetadata`
-        *  `analysisTimestamp` - the timestamp at time of analysis
-        *  `appIdentifier` - the Android PackageName
-        *  `axeVersion` - implementation version of package
-        *  `screenTitle` - title of current screen
-      * `axeView` - the serializable view hierarchy at the time the context was built
-      * `screenshot` - the screenshot at the time the Context was built (this will display as a wall of text BitMap in the browser)
-    * `axeRuleResults` - an array of [AxeRuleResult](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeRuleResult.java) objects. Each has:
-      * `axeViewId` - the ID of the view it's associated with (corresponds to a view listed above in `axeContext`)
-      * `impact` - the severity of the issue
-      * `props` - the properties used in determining the outcome
-      * `ruleId` - the ID of the rule
-      * `ruleSummary` - short summary of the rule.
-      * `status` - the status of the rule (PASS, FAIL, etc)
-
 * **Raw Axe and ATFA Results** (results version 2)
-  * Navigate to [http://localhost:62442/AccessibilityInsights/result_v2](http://localhost:62442/AccessibilityInsights/result_v2) to view returned JSON results.
+  * `adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/result`
   * Returned data includes:
     * `AxeResults`
       * `axeConf` - the set [AxeConf](https://github.com/dequelabs/axe-android/blob/develop/src/main/java/com/deque/axe/android/AxeConf.java) object listing which rules will run
@@ -123,12 +98,16 @@ Once the port forwarding is set up you can manually trigger requests by hitting 
       * `AccessibilityCheckResult.checkClass` - the name of the class for the check which reported the result
       * `AccessibilityCheckResult.type` - the status of the result (see [AccessibilityCheckResultType](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/7ab5fdb5e2cb675edb752c0d0d9cae3986c0bb0c/src/main/java/com/google/android/apps/common/testing/accessibility/framework/AccessibilityCheckResult.java#L49))
       * `AccessibilityHierarchyCheckResult.metadata` - an object which implements [ResultMetadata](https://github.com/google/Accessibility-Test-Framework-for-Android/blob/master/src/main/java/com/google/android/apps/common/testing/accessibility/framework/ResultMetadata.java) containing additional information about the result
-      
+
 #### Known issues
 
 ##### Gradle sync fails
 
 Restarting Android Studio and waiting for everything to load before building the project could solve the issue
+
+* Error message: Cannot find symbol.
+
+  *  Sometimes the issue is caused because the file path exceeded the maximum number of characters allowed, so you could try to shorten the path by changing the location of the project folder on your computer.
 
 ##### SDK setup issues
 
@@ -158,6 +137,11 @@ Restarting Android Studio and waiting for everything to load before building the
 <!-- ### Testing -->
 
 <!-- ## Data/Telemetry -->
+
+## Migrating from version 1.x
+
+* The communication protocol in 1.x was "use `adb forward` to access an http server on the device". This method has been removed in 2.x and replaced with the `adb shell content` commands listed above.
+* The "v1" results API (which included only Axe results and not ATFA results) was removed in 2.x and replaced with the v2 results API which also includes ATFA results.
 
 ## Reporting security vulnerabilities
 

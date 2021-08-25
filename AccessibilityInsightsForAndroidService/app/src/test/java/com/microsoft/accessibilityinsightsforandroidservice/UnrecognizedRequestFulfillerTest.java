@@ -3,8 +3,9 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertThrows;
 
+import android.os.CancellationSignal;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -14,17 +15,15 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UnrecognizedRequestFulfillerTest {
+  final String requestMethod = "Test request method";
 
-  @Mock ResponseWriter responseWriter;
-  @Mock RunnableFunction onRequestFulfilledMock;
-
-  final String requestString = "Test request string";
+  @Mock CancellationSignal cancellationSignal;
 
   UnrecognizedRequestFulfiller testSubject;
 
   @Before
   public void prepare() {
-    testSubject = new UnrecognizedRequestFulfiller(responseWriter, requestString);
+    testSubject = new UnrecognizedRequestFulfiller(requestMethod);
   }
 
   @Test
@@ -33,18 +32,10 @@ public class UnrecognizedRequestFulfillerTest {
   }
 
   @Test
-  public void isBlockingRequestReturnsFalse() {
-    Assert.assertFalse(testSubject.isBlockingRequest());
-  }
-
-  @Test
-  public void callsOnRequestFulfilled() {
-    testSubject.fulfillRequest(onRequestFulfilledMock);
-  }
-
-  @Test
-  public void writesResponseMessage() {
-    testSubject.fulfillRequest(onRequestFulfilledMock);
-    verify(responseWriter).writeNotFoundResponse(requestString);
+  public void fulfillsRequestByThrowingPinnedException() {
+    assertThrows(
+        "Unrecognized request: Test request method",
+        RuntimeException.class,
+        () -> testSubject.fulfillRequest(cancellationSignal));
   }
 }
