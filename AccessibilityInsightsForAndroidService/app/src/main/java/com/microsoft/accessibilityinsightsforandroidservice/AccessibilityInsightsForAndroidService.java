@@ -102,7 +102,7 @@ public class AccessibilityInsightsForAndroidService extends AccessibilityService
             MediaProjectionHolder::get);
 
     SynchronizedRequestDispatcher.SharedInstance.teardown();
-    tempFileProvider = new TempFileProvider(getApplicationContext().getCacheDir());
+    tempFileProvider = new TempFileProvider(getApplicationContext());
     tempFileProvider.cleanOldFilesBestEffort();
 
     WindowManager windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);

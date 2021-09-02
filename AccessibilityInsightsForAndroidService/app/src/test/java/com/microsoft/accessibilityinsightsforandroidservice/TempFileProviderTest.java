@@ -3,6 +3,12 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import android.content.Context;
+
+import androidx.work.Configuration;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
@@ -18,10 +24,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
@@ -29,6 +38,12 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({TempFileProvider.class})
 public class TempFileProviderTest {
+
+  @Mock Context contextMock;
+
+  Configuration configuration;
+  OneTimeWorkRequest oneTimeWorkRequest;
+
 
   TempFileProvider testSubject;
   File cacheDirectory;
@@ -40,10 +55,25 @@ public class TempFileProviderTest {
         new Date().getTime() - TempFileProvider.tempFileLifetimeMillis - 60 * 1000);
   }
 
+  void prepareWorkerManager(){
+    configuration = new Configuration.Builder()
+            .setMinimumLoggingLevel(android.util.Log.INFO)
+            .build();
+    oneTimeWorkRequest = new OneTimeWorkRequest.Builder(CleanWorker.class)
+            .setInitialDelay(5, TimeUnit.MINUTES)
+            .build();
+    when(WorkerManagerRunner.initializeConfiguration()).thenReturn(configuration);
+    when(WorkerManagerRunner.createTask()).thenReturn(oneTimeWorkRequest);
+    when(WorkerManagerRunner.startWorkerManager()).thenReturn(WorkManager.getInstance(contextMock));
+  }
+
   @Before
   public void prepare() throws Exception {
     cacheDirectory = Files.createTempDirectory("tempFileProviderTest").toFile();
-    testSubject = new TempFileProvider(cacheDirectory);
+    when(contextMock.getCacheDir()).thenReturn(cacheDirectory);
+    PowerMockito.mockStatic(WorkerManagerRunner.class);
+    prepareWorkerManager();
+    testSubject = new TempFileProvider(contextMock);
   }
 
   @After
