@@ -54,25 +54,10 @@ public class TempFileProviderTest {
     file.setLastModified(
         new Date().getTime() - TempFileProvider.tempFileLifetimeMillis - 60 * 1000);
   }
-
-  void prepareWorkerManager(){
-    configuration = new Configuration.Builder()
-            .setMinimumLoggingLevel(android.util.Log.INFO)
-            .build();
-    oneTimeWorkRequest = new OneTimeWorkRequest.Builder(CleanWorker.class)
-            .setInitialDelay(5, TimeUnit.MINUTES)
-            .build();
-    when(WorkerManagerRunner.initializeConfiguration()).thenReturn(configuration);
-    when(WorkerManagerRunner.createTask()).thenReturn(oneTimeWorkRequest);
-    when(WorkerManagerRunner.startWorkerManager()).thenReturn(WorkManager.getInstance(contextMock));
-  }
-
   @Before
   public void prepare() throws Exception {
     cacheDirectory = Files.createTempDirectory("tempFileProviderTest").toFile();
     when(contextMock.getCacheDir()).thenReturn(cacheDirectory);
-    PowerMockito.mockStatic(WorkerManagerRunner.class);
-    prepareWorkerManager();
     testSubject = new TempFileProvider(contextMock);
   }
 
