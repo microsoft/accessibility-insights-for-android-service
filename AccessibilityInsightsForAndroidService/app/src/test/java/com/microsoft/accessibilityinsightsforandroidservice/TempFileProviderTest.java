@@ -32,7 +32,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
@@ -40,6 +42,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -51,6 +54,7 @@ public class TempFileProviderTest {
 
   @Mock Context contextMock;
   @Mock WorkManager workManagerMock;
+  @Captor ArgumentCaptor<List<? extends WorkRequest>> workRequestCaptor;
 
   TempFileProvider testSubject;
   File cacheDirectory;
@@ -147,15 +151,15 @@ public class TempFileProviderTest {
 
   @Test
   public void createTempFileSchedulesACleanWorker() throws IOException {
-    ArgumentCaptor<WorkRequest> workRequestCaptor = ArgumentCaptor.forClass(WorkRequest.class);
     File oldFile = testSubject.createTempFileWithContents("Old File");
     verify(workManagerMock, times(1)).enqueue(workRequestCaptor.capture());
     makeFileLookOld(oldFile);
-    WorkSpec workSpec = workRequestCaptor.getValue().getWorkSpec();
+    assertEquals(1, workRequestCaptor.getValue().size());
+    WorkSpec workSpec = workRequestCaptor.getValue().get(0).getWorkSpec();
     assertEquals(TempFileProvider.tempFileLifetimeMillis, workSpec.initialDelay);
     assertEquals(TempFileProvider.CleanWorker.class.getName(), workSpec.workerClassName);
     Data inputData = workSpec.input;
-    WorkerParameters workerParameters = new WorkerParameters(null, inputData, null, null, 1, null, null, null, null, null);
+    WorkerParameters workerParameters = new WorkerParameters(null, inputData, new ArrayList<>(), null, 1, null, null, null, null, null);
     TempFileProvider.CleanWorker cleanWorker = new TempFileProvider.CleanWorker(contextMock, workerParameters);
     ListenableWorker.Result result = cleanWorker.doWork();
     assertEquals(ListenableWorker.Result.success(), result);
