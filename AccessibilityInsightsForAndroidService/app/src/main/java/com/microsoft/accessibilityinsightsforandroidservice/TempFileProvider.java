@@ -30,10 +30,14 @@ public class TempFileProvider {
 
   @NonNull public static final int tempFileLifetimeMillis = 5 * 60 * 1000; // 5 minutes
   @NonNull private File tempDir;
-  @NonNull private Context context;
+  @NonNull private WorkManager workManager;
 
   public TempFileProvider(Context context) {
-    this.context = context;
+    this(context, WorkManager.getInstance(context));
+  }
+
+  public TempFileProvider(Context context, WorkManager workManager) {
+    this.workManager = workManager;
     File cacheDir = context.getCacheDir();
     String tempDirPath = cacheDir.getAbsolutePath() + File.separator + tempDirName;
     this.tempDir = new File(tempDirPath);
@@ -81,7 +85,7 @@ public class TempFileProvider {
             .setInitialDelay(tempFileLifetimeMillis, TimeUnit.MILLISECONDS)
             .setInputData(inputData)
             .build();
-    WorkManager.getInstance(context).enqueue(cleanFilesWorker);
+    workManager.enqueue(cleanFilesWorker);
   }
 
   public static class CleanWorker extends Worker {

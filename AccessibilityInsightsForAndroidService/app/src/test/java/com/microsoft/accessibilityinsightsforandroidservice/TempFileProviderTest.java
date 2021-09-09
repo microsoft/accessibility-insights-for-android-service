@@ -5,16 +5,25 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.content.Context;
 
-import androidx.work.Configuration;
+import androidx.work.Data;
+import androidx.work.ListenableWorker;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
+import androidx.work.Worker;
+import androidx.work.WorkerParameters;
+import androidx.work.impl.model.WorkSpec;
 
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.BufferedWriter;
@@ -24,12 +33,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
@@ -40,10 +50,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 public class TempFileProviderTest {
 
   @Mock Context contextMock;
-
-  Configuration configuration;
-  OneTimeWorkRequest oneTimeWorkRequest;
-
+  @Mock WorkManager workManagerMock;
 
   TempFileProvider testSubject;
   File cacheDirectory;
@@ -58,7 +65,7 @@ public class TempFileProviderTest {
   public void prepare() throws Exception {
     cacheDirectory = Files.createTempDirectory("tempFileProviderTest").toFile();
     when(contextMock.getCacheDir()).thenReturn(cacheDirectory);
-    testSubject = new TempFileProvider(contextMock);
+    testSubject = new TempFileProvider(contextMock, workManagerMock);
   }
 
   @After
@@ -137,4 +144,22 @@ public class TempFileProviderTest {
     assertTrue(noErasableFile.exists());
     assertFalse(erasableFile.exists());
   }
+
+  @Test
+  public void createTempFileSchedulesACleanWorker() throws IOException {
+    ArgumentCaptor<WorkRequest> workRequestCaptor = ArgumentCaptor.forClass(WorkRequest.class);
+    File oldFile = testSubject.createTempFileWithContents("Old File");
+    verify(workManagerMock, times(1)).enqueue(workRequestCaptor.capture());
+    makeFileLookOld(oldFile);
+    WorkSpec workSpec = workRequestCaptor.getValue().getWorkSpec();
+    assertEquals(TempFileProvider.tempFileLifetimeMillis, workSpec.initialDelay);
+    assertEquals(TempFileProvider.CleanWorker.class.getName(), workSpec.workerClassName);
+    Data inputData = workSpec.input;
+    WorkerParameters workerParameters = new WorkerParameters(null, inputData, null, null, 1, null, null, null, null, null);
+    TempFileProvider.CleanWorker cleanWorker = new TempFileProvider.CleanWorker(contextMock, workerParameters);
+    ListenableWorker.Result result = cleanWorker.doWork();
+    assertEquals(ListenableWorker.Result.success(), result);
+    assertFalse(oldFile.exists());
+  }
+
 }
