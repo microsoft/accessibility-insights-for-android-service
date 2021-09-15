@@ -4,14 +4,12 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
-
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -79,9 +77,10 @@ public class TempFileProvider {
     this.tempDir.mkdir();
   }
 
-  private void scheduleCleanOldFiles(String tempDir){
+  private void scheduleCleanOldFiles(String tempDir) {
     Data inputData = new Data.Builder().putString("tempDir", tempDir).build();
-    OneTimeWorkRequest cleanFilesWorker = new OneTimeWorkRequest.Builder(CleanWorker.class)
+    OneTimeWorkRequest cleanFilesWorker =
+        new OneTimeWorkRequest.Builder(CleanWorker.class)
             .setInitialDelay(tempFileLifetimeMillis, TimeUnit.MILLISECONDS)
             .setInputData(inputData)
             .build();
@@ -91,7 +90,7 @@ public class TempFileProvider {
   public static class CleanWorker extends Worker {
     private String tempDir;
 
-    public CleanWorker(@NonNull Context context, @NonNull  WorkerParameters workerParams) {
+    public CleanWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
       super(context, workerParams);
       tempDir = workerParams.getInputData().getString("tempDir");
     }

@@ -3,29 +3,25 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import android.content.Context;
-
-import androidx.work.Data;
-import androidx.work.ListenableWorker;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
-import androidx.work.Worker;
-import androidx.work.WorkerParameters;
-import androidx.work.impl.model.WorkSpec;
-
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
+import androidx.annotation.NonNull;
+import androidx.work.Data;
+import androidx.work.ListenableWorker;
+import androidx.work.WorkManager;
+import androidx.work.WorkRequest;
+import androidx.work.WorkerParameters;
+import androidx.work.impl.model.WorkSpec;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -35,8 +31,6 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -65,6 +59,7 @@ public class TempFileProviderTest {
     file.setLastModified(
         new Date().getTime() - TempFileProvider.tempFileLifetimeMillis - 60 * 1000);
   }
+
   @Before
   public void prepare() throws Exception {
     cacheDirectory = Files.createTempDirectory("tempFileProviderTest").toFile();
@@ -152,18 +147,38 @@ public class TempFileProviderTest {
   @Test
   public void createTempFileSchedulesACleanWorker() throws IOException {
     File oldFile = testSubject.createTempFileWithContents("Old File");
-    verify(workManagerMock, times(1)).enqueue(workRequestCaptor.capture());
     makeFileLookOld(oldFile);
-    assertEquals(1, workRequestCaptor.getValue().size());
-    WorkSpec workSpec = workRequestCaptor.getValue().get(0).getWorkSpec();
+
+    WorkSpec workSpec = getLastWorkManagerRequest();
     assertEquals(TempFileProvider.tempFileLifetimeMillis, workSpec.initialDelay);
     assertEquals(TempFileProvider.CleanWorker.class.getName(), workSpec.workerClassName);
-    Data inputData = workSpec.input;
-    WorkerParameters workerParameters = new WorkerParameters(null, inputData, new ArrayList<>(), null, 1, null, null, null, null, null);
-    TempFileProvider.CleanWorker cleanWorker = new TempFileProvider.CleanWorker(contextMock, workerParameters);
+
+    WorkerParameters workerParameters = createStubWorkerParameters(workSpec);
+    TempFileProvider.CleanWorker cleanWorker =
+        new TempFileProvider.CleanWorker(contextMock, workerParameters);
     ListenableWorker.Result result = cleanWorker.doWork();
     assertEquals(ListenableWorker.Result.success(), result);
     assertFalse(oldFile.exists());
   }
 
+  @NonNull
+  private WorkerParameters createStubWorkerParameters(WorkSpec workSpec) {
+    Data inputData = workSpec.input;
+    WorkerParameters workerParameters =
+        new WorkerParameters(
+            null, inputData, new ArrayList<>(), null, 1, null, null, null, null, null);
+    return workerParameters;
+  }
+
+  // We are working with the version of the enqueue method that returns a list
+  // because it is the only one that Mockito can mock.
+  // The version that accepts a WorkRequest as a parameter is marked as final.
+  // We are assuming that the list will only contain the current WorkingManager information.
+  @NonNull
+  private WorkSpec getLastWorkManagerRequest() {
+    verify(workManagerMock, times(1)).enqueue(workRequestCaptor.capture());
+    assertEquals(1, workRequestCaptor.getValue().size());
+    WorkSpec workSpec = workRequestCaptor.getValue().get(0).getWorkSpec();
+    return workSpec;
+  }
 }

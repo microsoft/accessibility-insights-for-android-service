@@ -5,7 +5,6 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Binder;
@@ -14,12 +13,6 @@ import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.work.OneTimeWorkRequest;
-import androidx.work.WorkManager;
-import androidx.work.WorkRequest;
-import androidx.work.Worker;
-
-import java.util.concurrent.TimeUnit;
 
 public class AccessibilityInsightsContentProvider extends ContentProvider {
   private SynchronizedRequestDispatcher requestDispatcher;
@@ -28,8 +21,7 @@ public class AccessibilityInsightsContentProvider extends ContentProvider {
   @Override
   public boolean onCreate() {
     return onCreate(
-        SynchronizedRequestDispatcher.SharedInstance,
-        new TempFileProvider(this.getContext()));
+        SynchronizedRequestDispatcher.SharedInstance, new TempFileProvider(this.getContext()));
   }
 
   public boolean onCreate(
