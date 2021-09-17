@@ -14,7 +14,7 @@ const child_process = require('child_process');
 
 const lockfilePath = path.join(__dirname, '..', 'AccessibilityInsightsForAndroidService', 'app', 'gradle.lockfile');
 
-const gitStatusResult = child_process.execSync(`git status --porcelain=1 -- ${lockfilePath}`);
+const gitStatusResult = child_process.execFileSync('git', ['status', '--porcelain=1', '--', lockfilePath]);
 const isLockfileChanged = gitStatusResult.toString() !== '';
 
 if (isLockfileChanged) {
