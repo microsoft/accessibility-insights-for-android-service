@@ -1,5 +1,9 @@
 * text eol=lf
 
+# Gradle always writes its lockfile with OS-default line endings
+# and can't be configured to use LF-only
+gradle.lockfile text -eol
+
 # Denote all files that are truly binary and should not be modified.
 *.png binary
 *.jar binary
