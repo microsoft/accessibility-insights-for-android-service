@@ -90,7 +90,7 @@ jobs:
       - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
         displayName: '(signed-apk) sign release APK with ESRP CodeSigning'
         inputs:
-          ConnectedServiceName: 'ai-android-service ESRP Code Signing'
+          ConnectedServiceName: 'ESRP Code Signing'
           FolderPath: '$(build.artifactstagingdirectory)/signed-apk'
           Pattern: '*.apk'
           signConfigType: inlineSignParams
