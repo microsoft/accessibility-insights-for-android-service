@@ -34,7 +34,7 @@ public class AxeViewsFactory {
 
   private AxeView buildAxeViewsWithRetries(AccessibilityNodeInfo rootNode, int retries)
       throws ViewChangedException {
-    Queue<AccessibilityNodeInfoSorter> queue = queueBuilder.buildPriorityQueue(rootNode);
+    Queue<OrderedValue<AccessibilityNodeInfo>> queue = queueBuilder.buildPriorityQueue(rootNode);
     axeMap = new Hashtable<>();
 
     try {
@@ -52,12 +52,12 @@ public class AxeViewsFactory {
   }
 
   private AxeView buildAxeViews(
-      Queue<AccessibilityNodeInfoSorter> queue, AccessibilityNodeInfo rootNode)
+      Queue<OrderedValue<AccessibilityNodeInfo>> queue, AccessibilityNodeInfo rootNode)
       throws ViewChangedException {
-    AccessibilityNodeInfoSorter queueObject;
+    OrderedValue<AccessibilityNodeInfo> nextOrderedNode;
 
-    while ((queueObject = queue.poll()) != null) {
-      AccessibilityNodeInfo node = queueObject.node;
+    while ((nextOrderedNode = queue.poll()) != null) {
+      AccessibilityNodeInfo node = nextOrderedNode.value;
       List<AxeView> children = getChildViews(node);
       AxeView labeledByView = getLabeledByView(node);
       AxeView nodeView =
@@ -94,10 +94,10 @@ public class AxeViewsFactory {
   }
 
   private void recycleAllNodes(
-      AccessibilityNodeInfo rootNode, Queue<AccessibilityNodeInfoSorter> queue) {
+      AccessibilityNodeInfo rootNode, Queue<OrderedValue<AccessibilityNodeInfo>> queue) {
     Set<AccessibilityNodeInfo> allNodes = new HashSet<>(axeMap.keySet());
-    for (AccessibilityNodeInfoSorter nodeSorter : queue) {
-      allNodes.add(nodeSorter.node);
+    for (OrderedValue<AccessibilityNodeInfo> orderedNode : queue) {
+      allNodes.add(orderedNode.value);
     }
 
     for (AccessibilityNodeInfo node : allNodes) {
