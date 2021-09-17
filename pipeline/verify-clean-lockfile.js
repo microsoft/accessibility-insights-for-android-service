@@ -18,17 +18,22 @@ const gitStatusResult = child_process.execFileSync('git', ['status', '--porcelai
 const isLockfileChanged = gitStatusResult.toString() !== '';
 
 if (isLockfileChanged) {
+    const gitDiffResult = child_process.execFileSync('git', ['diff', '--', lockfilePath]);
     console.error(`
-    Error: git status reports that there is an unexpected lockfile change
-    in ${lockfilePath}.
+Error: git status reports that there is an unexpected lockfile change
+in ${lockfilePath}.
 
-    This probably means that you (or Dependabot) has updated a dependency
-    in a build.gradle file without updating the lockfile. To update the
-    lockfile:
+This probably means that you (or Dependabot) has updated a dependency
+in a build.gradle file without updating the lockfile. To update the
+lockfile:
 
-        1) Pull this branch
-        2) Run "./gradlew build" from /AccessibilityInsightsForAndroidService
-        3) Commit and push the resulting change to gradle.lockfile
+    1) Pull this branch
+    2) Run "./gradlew build" from /AccessibilityInsightsForAndroidService
+    3) Commit and push the resulting change to gradle.lockfile
+    
+Diff of the unexpected change:
+
+${gitDiffResult.toString()}
     `);
     process.exit(1);
 } else {
