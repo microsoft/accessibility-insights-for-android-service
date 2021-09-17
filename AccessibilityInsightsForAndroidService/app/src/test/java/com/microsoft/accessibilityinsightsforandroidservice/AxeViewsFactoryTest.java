@@ -38,7 +38,7 @@ public class AxeViewsFactoryTest {
   @Mock AxeView childViewMock;
   @Mock AxeView labelViewMock;
 
-  Queue<AccessibilityNodeInfoSorter> queue;
+  Queue<OrderedValue<AccessibilityNodeInfo>> queue;
 
   AxeViewsFactory testSubject;
 
@@ -224,7 +224,7 @@ public class AxeViewsFactoryTest {
   }
 
   private void enqueueNode(AccessibilityNodeInfo node) {
-    AccessibilityNodeInfoSorter sorter = new AccessibilityNodeInfoSorter(node, 0L);
-    queue.add(sorter);
+    OrderedValue<AccessibilityNodeInfo> orderedNode = new OrderedValue<>(node, 0L);
+    queue.add(orderedNode);
   }
 }
