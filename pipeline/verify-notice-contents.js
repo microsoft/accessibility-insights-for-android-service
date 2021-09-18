@@ -100,22 +100,16 @@ if (exitCode !== 0) {
     console.log(`
 Lockfile ${lockfilePath} does not match the NOTICE file at ${noticePath}.
 
-The two most likely reasons for this are:
+The most likely issue is an outdated Component Governance Notice Config.
 
-1) The lockfile is out of date. The lockfile must be regenerated each
-   time a dependency is added/removed. To do this, run "./gradlew build"
-   from /AccessibilityInsightsForAndroidService and commit the resulting
-   gradle.lockfile change.
+When a new dependency is added, you must go to the Component Governance
+page for this repository in our private Azure DevOps project and adjust
+the settings under "Notice > Configure" to check the box next to each new
+non-dev dependency. Once you change the configuration there, you should be
+able to re-run this build.
 
-2) The NOTICE generator configuration is out of date. When a new
-   dependency is added, you must go to the Component Governance
-   page in our private Azure DevOps project and adjust the settings
-   under "Notice > Configure" to check the box next to each new
-   non-dev dependency. Once you change the configuration there,
-   you should be able to re-run this build.
-
-If neither of these fix the problem, you can look over the generated
-NOTICE.html file in the "terms" artifact to investigate further.`);
+If that doesn't fix the problem, you can look over the generated NOTICE.html
+file in the "terms" artifact to investigate further.`);
 }
 
 process.exit(exitCode);
