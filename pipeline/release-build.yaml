@@ -62,6 +62,35 @@ jobs:
           artifactName: 'lint-results'
           targetPath: '$(build.artifactstagingdirectory)/lint-results'
 
+      # terms artifact
+
+      - task: CopyFiles@2
+        displayName: (terms) copy LICENSE to artifact staging
+        inputs:
+          contents: LICENSE
+          sourceFolder: '$(system.defaultWorkingDirectory)'
+          targetFolder: '$(build.artifactstagingdirectory)/terms'
+
+      - task: ComponentGovernanceComponentDetection@0
+        displayName: '(terms) dependency detection (Component Governance)'
+        timeoutInMinutes: 5
+
+      - task: msospo.ospo-extension.8d7f9abb-6896-461d-9e25-4f74ed65ddb2.notice@0
+        displayName: '(terms) generate NOTICE.html file'
+        inputs:
+            outputfile: '$(build.artifactstagingdirectory)/terms/NOTICE.html'
+            outputformat: html
+        timeoutInMinutes: 5
+
+      - task: PublishPipelineArtifact@1
+        displayName: (terms) publish artifact
+        inputs:
+          artifactName: 'terms'
+          targetPath: '$(build.artifactstagingdirectory)/terms'
+
+      - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js $(build.artifactstagingdirectory)/terms/NOTICE.html
+        displayName: (terms) verify NOTICE.html content matches lockfile
+
       # unsigned-apk artifact
 
       - task: CopyFiles@2
@@ -120,39 +149,6 @@ jobs:
         inputs:
           artifactName: 'signed-apk'
           targetPath: '$(build.artifactstagingdirectory)/signed-apk'
-
-      # terms artifact
-
-      - task: CopyFiles@2
-        displayName: (terms) copy LICENSE to artifact staging
-        inputs:
-          contents: LICENSE
-          sourceFolder: '$(system.defaultWorkingDirectory)'
-          targetFolder: '$(build.artifactstagingdirectory)/terms'
-
-      - task: ComponentGovernanceComponentDetection@0
-        displayName: '(terms) dependency detection (Component Governance)'
-        timeoutInMinutes: 5
-
-      - task: msospo.ospo-extension.8d7f9abb-6896-461d-9e25-4f74ed65ddb2.notice@0
-        displayName: '(terms) generate NOTICE.html file'
-        inputs:
-            outputfile: '$(build.artifactstagingdirectory)/terms/NOTICE.html'
-            outputformat: html
-        timeoutInMinutes: 5
-
-      - script: |
-          node \
-            $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js \
-            $(build.artifactstagingdirectory)/terms/NOTICE.html
-        displayName: (terms) verify NOTICE.html content matches lockfile
-
-      - task: PublishPipelineArtifact@1
-        displayName: (terms) publish artifact
-        condition: succeededOrFailed()
-        inputs:
-          artifactName: 'terms'
-          targetPath: '$(build.artifactstagingdirectory)/terms'
 
       # github-release-archive artifact
 
