@@ -42,5 +42,5 @@ jobs:
           artifactName: 'lint-results'
           targetPath: '$(build.artifactstagingdirectory)/lint-results'
 
-      - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js
-        displayName: verify NOTICE.html content matches lockfile
+      - script: node $(system.defaultWorkingDirectory)/pipeline/verify-clean-lockfile.js
+        displayName: verify that building did not change the lockfile unexpectedly
