@@ -10,6 +10,8 @@
 /.idea/modules.xml
 /.idea/navEditor.xml
 /.idea/workspace.xml
+.idea/deploymentTargetDropDown.xml
+/.idea/runConfigurations.xml
 /build
 /captures
 /local.properties
