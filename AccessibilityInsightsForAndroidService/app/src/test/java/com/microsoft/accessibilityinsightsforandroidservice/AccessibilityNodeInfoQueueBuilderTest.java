@@ -3,8 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -23,30 +21,27 @@ public class AccessibilityNodeInfoQueueBuilderTest {
   @Mock AccessibilityNodeInfo childNode0;
   @Mock AccessibilityNodeInfo childNode1;
   @Mock AccessibilityNodeInfo grandchildNode;
-  @Mock AccessibilityNodeInfoSorterFactory nodeSorterFactory;
 
   AccessibilityNodeInfoQueueBuilder testSubject;
 
   @Before
   public void prepare() {
-    when(nodeSorterFactory.createNodeSorter(any(), any())).thenCallRealMethod();
-    testSubject = new AccessibilityNodeInfoQueueBuilder(nodeSorterFactory);
+    testSubject = new AccessibilityNodeInfoQueueBuilder();
   }
 
   @Test
   public void buildEmptyQueue() {
-    Queue<AccessibilityNodeInfoSorter> queue = testSubject.buildPriorityQueue(null);
+    Queue<OrderedValue<AccessibilityNodeInfo>> queue = testSubject.buildPriorityQueue(null);
     Assert.assertNotNull(queue);
     Assert.assertTrue(queue.isEmpty());
   }
 
   @Test
   public void buildSingleNodeQueue() {
-    Queue<AccessibilityNodeInfoSorter> queue = testSubject.buildPriorityQueue(rootNode);
+    Queue<OrderedValue<AccessibilityNodeInfo>> queue = testSubject.buildPriorityQueue(rootNode);
     Assert.assertNotNull(queue);
     Assert.assertEquals(queue.size(), 1);
 
-    verify(nodeSorterFactory).createNodeSorter(rootNode, Long.MAX_VALUE);
     assertNextQueueItemEquals(queue, rootNode, Long.MAX_VALUE);
   }
 
@@ -54,19 +49,17 @@ public class AccessibilityNodeInfoQueueBuilderTest {
   public void buildQueueWithChildren() {
     createChildren();
 
-    Queue<AccessibilityNodeInfoSorter> queue = testSubject.buildPriorityQueue(rootNode);
+    Queue<OrderedValue<AccessibilityNodeInfo>> queue = testSubject.buildPriorityQueue(rootNode);
 
-    Long rootOrder = Long.MAX_VALUE;
-    Long childOrder = rootOrder - 1;
-    Long grandchildOrder = rootOrder - 2;
-
-    verifyAllNodesCreated(rootOrder, childOrder, childOrder, grandchildOrder);
+    long rootOrder = Long.MAX_VALUE;
+    long childOrder = rootOrder - 1;
+    long grandchildOrder = rootOrder - 2;
 
     Assert.assertEquals(queue.size(), 4);
     assertNextQueueItemEquals(queue, grandchildNode, grandchildOrder);
     // Since the child nodes have the same priority, they can appear here in any order,
     // so check for both ordering possibilities
-    if (queue.peek().node == childNode0) {
+    if (queue.peek().value == childNode0) {
       assertNextQueueItemEquals(queue, childNode0, childOrder);
       assertNextQueueItemEquals(queue, childNode1, childOrder);
     } else {
@@ -82,14 +75,12 @@ public class AccessibilityNodeInfoQueueBuilderTest {
 
     when(childNode0.getLabelFor()).thenReturn(childNode1);
 
-    Queue<AccessibilityNodeInfoSorter> queue = testSubject.buildPriorityQueue(rootNode);
+    Queue<OrderedValue<AccessibilityNodeInfo>> queue = testSubject.buildPriorityQueue(rootNode);
 
-    Long rootOrder = Long.MAX_VALUE;
-    Long child0Order = (rootOrder - 1) / 2;
-    Long child1Order = rootOrder - 1;
-    Long grandchildOrder = child0Order - 1;
-
-    verifyAllNodesCreated(rootOrder, child0Order, child1Order, grandchildOrder);
+    long rootOrder = Long.MAX_VALUE;
+    long child0Order = (rootOrder - 1) / 2;
+    long child1Order = rootOrder - 1;
+    long grandchildOrder = child0Order - 1;
 
     Assert.assertEquals(queue.size(), 4);
     assertNextQueueItemEquals(queue, grandchildNode, grandchildOrder);
@@ -108,18 +99,10 @@ public class AccessibilityNodeInfoQueueBuilderTest {
   }
 
   public void assertNextQueueItemEquals(
-      Queue<AccessibilityNodeInfoSorter> queue, AccessibilityNodeInfo node, Long priority) {
-    AccessibilityNodeInfoSorter nextItem = queue.poll();
+      Queue<OrderedValue<AccessibilityNodeInfo>> queue, AccessibilityNodeInfo node, long priority) {
+    OrderedValue<AccessibilityNodeInfo> nextItem = queue.poll();
     Assert.assertNotNull(nextItem);
-    Assert.assertEquals(nextItem.node, node);
+    Assert.assertEquals(nextItem.value, node);
     Assert.assertEquals(nextItem.order, priority);
-  }
-
-  public void verifyAllNodesCreated(
-      Long rootOrder, Long child0Order, Long child1Order, Long grandchildOrder) {
-    verify(nodeSorterFactory).createNodeSorter(rootNode, rootOrder);
-    verify(nodeSorterFactory).createNodeSorter(childNode0, child0Order);
-    verify(nodeSorterFactory).createNodeSorter(childNode1, child1Order);
-    verify(nodeSorterFactory).createNodeSorter(grandchildNode, grandchildOrder);
   }
 }

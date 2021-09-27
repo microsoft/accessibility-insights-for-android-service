@@ -8,21 +8,17 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 public class AccessibilityNodeInfoQueueBuilder {
-
-  private AccessibilityNodeInfoSorterFactory nodeSorterFactory;
-
-  public AccessibilityNodeInfoQueueBuilder(AccessibilityNodeInfoSorterFactory nodeSorterFactory) {
-    this.nodeSorterFactory = nodeSorterFactory;
-  }
-
-  public Queue<AccessibilityNodeInfoSorter> buildPriorityQueue(AccessibilityNodeInfo rootNode) {
-    PriorityQueue<AccessibilityNodeInfoSorter> queue = new PriorityQueue<>();
+  public Queue<OrderedValue<AccessibilityNodeInfo>> buildPriorityQueue(
+      AccessibilityNodeInfo rootNode) {
+    PriorityQueue<OrderedValue<AccessibilityNodeInfo>> queue = new PriorityQueue<>();
     recursivelyEnqueueNodes(queue, rootNode, Long.MAX_VALUE);
     return queue;
   }
 
   private void recursivelyEnqueueNodes(
-      PriorityQueue<AccessibilityNodeInfoSorter> queue, AccessibilityNodeInfo node, Long order) {
+      PriorityQueue<OrderedValue<AccessibilityNodeInfo>> queue,
+      AccessibilityNodeInfo node,
+      Long order) {
     // The AxeView object requires that we create the AxeView
     // objects for both child nodes and for any labeledBy nodes. Child nodes use
     // easily predictable rules, but labeledBy nodes are less structured. We use
@@ -40,7 +36,7 @@ public class AccessibilityNodeInfoQueueBuilder {
       order /= 2;
     }
 
-    queue.add(nodeSorterFactory.createNodeSorter(node, order));
+    queue.add(new OrderedValue<>(node, order));
 
     int childCount = node.getChildCount();
 
