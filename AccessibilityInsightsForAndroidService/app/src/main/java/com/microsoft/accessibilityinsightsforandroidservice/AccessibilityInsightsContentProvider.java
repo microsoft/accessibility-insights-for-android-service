@@ -21,8 +21,7 @@ public class AccessibilityInsightsContentProvider extends ContentProvider {
   @Override
   public boolean onCreate() {
     return onCreate(
-        SynchronizedRequestDispatcher.SharedInstance,
-        new TempFileProvider(getContext().getCacheDir()));
+        SynchronizedRequestDispatcher.SharedInstance, new TempFileProvider(this.getContext()));
   }
 
   public boolean onCreate(
