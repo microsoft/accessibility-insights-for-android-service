@@ -96,11 +96,23 @@ android {
 dependencies {
     // Non-dev dependencies (redistributed with releases)
     implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'androidx.work:work-runtime:2.5.0'
     implementation 'com.deque.android:axe-android:0.2.0'
-    implementation 'com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:3.1.1'
+    implementation('com.google.android.apps.common.testing.accessibility.framework:accessibility-test-framework:3.1.1') {
+        // guava and android-test-framework use two different variations of this library ("checker" vs "checker-qual")
+        // which provide identically named classes. This works okay as long as they happen to be compatible versions,
+        // but causes errors along the lines of "Duplicate class org.checkerframework.*" when they happen to update
+        // out of sync.
+        //
+        // This exclusion causes accessibility-test-framework to pick up the library classes from guava's transitive
+        // dependency, rather than from its own. In practice, neither guava nor android-test-framework uses more than
+        // a few basic annotations from the library, so this isn't particularly risky.
+        //
+        // See https://github.com/android/android-test/issues/861 for more context.
+        exclude group: 'org.checkerframework', module: 'checker'
+    }
     implementation 'com.google.code.gson:gson:2.8.8'
     implementation 'com.google.guava:guava:31.0.1-android'
-    implementation("androidx.work:work-runtime:2.5.0")
 
     // Dev dependencies (not redistributed)
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0')
