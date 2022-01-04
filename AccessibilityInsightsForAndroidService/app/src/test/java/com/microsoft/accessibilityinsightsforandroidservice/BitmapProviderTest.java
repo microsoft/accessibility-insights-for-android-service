@@ -21,6 +21,8 @@ public class BitmapProviderTest {
 
   @Mock Bitmap.Config config;
   @Mock Bitmap bitmapMock;
+  MockedStatic<Bitmap> bitmapStaticMock;
+
   private final int width = 1;
   private final int height = 2;
 
@@ -28,9 +30,14 @@ public class BitmapProviderTest {
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(Bitmap.class);
-    when(Bitmap.createBitmap(width, height, config)).thenReturn(bitmapMock);
+    bitmapStaticMock = Mockito.mockStatic(Bitmap.class);
+    bitmapStaticMock.when(() -> Bitmap.createBitmap(width, height, config)).thenReturn(bitmapMock);
     testSubject = new BitmapProvider();
+  }
+
+  @After
+  public void cleanUp() {
+    bitmapStaticMock.close();
   }
 
   @Test

@@ -73,15 +73,16 @@ public class ScreenshotAxeImageTest {
   public void toBase64PngReturnsCorrectString() {
     byte[] byteArrayStub = new byte[1];
     String expectedString = "some string";
-    PowerMockito.mockStatic(Base64.class);
 
-    when(byteArrayOutputStreamProviderMock.get()).thenReturn(byteArrayOutputStreamMock);
-    when(byteArrayOutputStreamMock.toByteArray()).thenReturn(byteArrayStub);
-    when(Base64.encodeToString(byteArrayStub, Base64.NO_WRAP)).thenReturn(expectedString);
+    try (MockedStatic<Base64> base64StaticMock = Mockito.mockStatic(Base64.class)) {
+      when(byteArrayOutputStreamProviderMock.get()).thenReturn(byteArrayOutputStreamMock);
+      when(byteArrayOutputStreamMock.toByteArray()).thenReturn(byteArrayStub);
+      base64StaticMock.when(() -> Base64.encodeToString(byteArrayStub, Base64.NO_WRAP)).thenReturn(expectedString);
 
-    Assert.assertEquals(testSubject.toBase64Png(), expectedString);
+      Assert.assertEquals(testSubject.toBase64Png(), expectedString);
 
-    verify(bitmapMock, times(1))
-        .compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStreamMock);
+      verify(bitmapMock, times(1))
+          .compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStreamMock);
+    }
   }
 }

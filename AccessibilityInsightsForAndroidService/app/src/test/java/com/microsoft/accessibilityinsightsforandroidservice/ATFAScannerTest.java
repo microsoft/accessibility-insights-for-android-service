@@ -44,6 +44,10 @@ public class ATFAScannerTest {
   @Mock AccessibilityHierarchyAndroid hierarchyMock;
   @Mock AccessibilityHierarchyAndroid.BuilderAndroid builderMock;
 
+  MockedStatic<AccessibilityCheckPreset> accessibilityCheckPresetStaticMock;
+  MockedStatic<AccessibilityHierarchyAndroid> accessibilityHierarchyAndroidStaticMock;
+  MockedStatic<AccessibilityCheckResultUtils> accessibilityCheckResultUtilsStaticMock;
+
   ATFAScanner testSubject;
   Parameters parametersStub;
   BitmapImage screenshotStub;
@@ -52,9 +56,9 @@ public class ATFAScannerTest {
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(AccessibilityCheckPreset.class);
-    PowerMockito.mockStatic(AccessibilityHierarchyAndroid.class);
-    PowerMockito.mockStatic(AccessibilityCheckResultUtils.class);
+    accessibilityCheckPresetStaticMock = Mockito.mockStatic(AccessibilityCheckPreset.class);
+    accessibilityHierarchyAndroidStaticMock = Mockito.mockStatic(AccessibilityHierarchyAndroid.class);
+    accessibilityCheckResultUtilsStaticMock = Mockito.mockStatic(AccessibilityCheckResultUtils.class);
     screenshotStub = new BitmapImage(bitmapMock);
     parametersStub = new Parameters();
     resultsStub = Collections.emptyList();
@@ -62,17 +66,24 @@ public class ATFAScannerTest {
     testSubject = new ATFAScanner(contextMock);
   }
 
+  @After
+  public void cleanUp() {
+    accessibilityCheckResultUtilsStaticMock.close();
+    accessibilityHierarchyAndroidStaticMock.close();
+    accessibilityCheckPresetStaticMock.close();
+  }
+
   @Test
   public void scanWithATFAReturnsCorrectResult() throws ViewChangedException {
-    when(AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
+    accessibilityCheckPresetStaticMock.when(() -> AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
             AccessibilityCheckPreset.LATEST))
         .thenReturn(ImmutableSet.of(checkMock));
-    when(AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock))
+    accessibilityHierarchyAndroidStaticMock.when(() -> AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock))
         .thenReturn(builderMock);
     when(builderMock.build()).thenReturn(hierarchyMock);
     when(checkMock.runCheckOnHierarchy(hierarchyMock, null, parametersStub))
         .thenReturn(resultsStub);
-    when(AccessibilityCheckResultUtils.getResultsForTypes(eq(resultsStub), anySet()))
+    accessibilityCheckResultUtilsStaticMock.when(() -> AccessibilityCheckResultUtils.getResultsForTypes(eq(resultsStub), anySet()))
         .thenReturn(filteredResultsStub);
 
     Assert.assertEquals(

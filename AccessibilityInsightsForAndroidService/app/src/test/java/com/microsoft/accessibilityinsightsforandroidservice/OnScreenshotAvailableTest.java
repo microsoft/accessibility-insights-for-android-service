@@ -36,6 +36,8 @@ public class OnScreenshotAvailableTest {
   @Mock BitmapProvider bitmapProviderMock;
   @Mock Bitmap bitmapMock;
 
+  MockedStatic loggerStaticMock;
+
   Image.Plane[] imagePlanesStub;
   OnScreenshotAvailable testSubject;
   int widthStub;
@@ -46,7 +48,7 @@ public class OnScreenshotAvailableTest {
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(Logger.class);
+    loggerStaticMock = Mockito.mockStatic(Logger.class);
 
     DisplayMetrics metricsStub = new DisplayMetrics();
     metricsStub.widthPixels = widthStub;
@@ -59,6 +61,11 @@ public class OnScreenshotAvailableTest {
     imagePlanesStub[0] = imagePlaneMock;
 
     testSubject = new OnScreenshotAvailable(metricsStub, bitmapProviderMock, bitmapConsumerMock);
+  }
+
+  @After
+  public void cleanup() {
+    loggerStaticMock.close();
   }
 
   @Test

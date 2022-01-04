@@ -31,9 +31,16 @@ public class DisplayMetricsHelperTest {
   @Mock WindowManager windowManagerMock;
   @Mock Display displayMock;
 
+  MockedStatic<Resources> resourcesStaticMock;
+
   @Before
   public void prepare() {
     setupDisplayMocks();
+  }
+
+  @After
+  public void cleanUp() {
+    resourcesStaticMock.close();
   }
 
   @Test
@@ -50,8 +57,8 @@ public class DisplayMetricsHelperTest {
   }
 
   private void setupDisplayMocks() {
-    PowerMockito.mockStatic(Resources.class);
-    when(Resources.getSystem()).thenReturn(resourcesMock);
+    resourcesStaticMock = Mockito.mockStatic(Resources.class);
+    resourcesStaticMock.when(Resources::getSystem).thenReturn(resourcesMock);
     when(resourcesMock.getDisplayMetrics()).thenReturn(displayMetricsMock);
     when(contextMock.getSystemService(Context.WINDOW_SERVICE)).thenReturn(windowManagerMock);
     when(windowManagerMock.getDefaultDisplay()).thenReturn(displayMock);

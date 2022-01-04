@@ -22,12 +22,18 @@ public class FocusVisualizerStylesTest {
   FocusVisualizerStyles testSubject;
 
   @Mock Paint paintMock;
+  MockedStatic<Color> colorStaticMock;
 
   @Before
   public void prepare() throws Exception {
     PowerMockito.whenNew(Paint.class).withNoArguments().thenReturn(paintMock);
-    PowerMockito.mockStatic(Color.class);
+    colorStaticMock = Mockito.mockStatic(Color.class);
     testSubject = new FocusVisualizerStyles();
+  }
+
+  @After
+  public void cleanUp() {
+    colorStaticMock.close();
   }
 
   @Test

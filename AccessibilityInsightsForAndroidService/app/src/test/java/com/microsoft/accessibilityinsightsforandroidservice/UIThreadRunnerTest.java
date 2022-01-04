@@ -30,22 +30,23 @@ public class UIThreadRunnerTest {
 
   @Test
   public void createsNewHandlerUsingMainLooper() throws Exception {
-    PowerMockito.mockStatic(Looper.class);
-    when(Looper.getMainLooper()).thenReturn(looperMock);
-    whenNew(Handler.class).withArguments(looperMock).thenReturn(handlerMock);
+    try (MockedStatic<Looper> looperStaticMock = Mockito.mockStatic(Looper.class)) {
+      looperStaticMock.when(Looper::getMainLooper).thenReturn(looperMock);
+      whenNew(Handler.class).withArguments(looperMock).thenReturn(handlerMock);
 
-    doAnswer(
-            invocation -> {
-              Runnable runnable = invocation.getArgument(0);
-              runnable.run();
-              return null;
-            })
-        .when(handlerMock)
-        .post(any());
+      doAnswer(
+              invocation -> {
+                Runnable runnable = invocation.getArgument(0);
+                runnable.run();
+                return null;
+              })
+          .when(handlerMock)
+          .post(any());
 
-    testSubject = new UIThreadRunner();
-    testSubject.run(runnableMock);
+      testSubject = new UIThreadRunner();
+      testSubject.run(runnableMock);
 
-    verify(runnableMock).run();
+      verify(runnableMock).run();
+    }
   }
 }

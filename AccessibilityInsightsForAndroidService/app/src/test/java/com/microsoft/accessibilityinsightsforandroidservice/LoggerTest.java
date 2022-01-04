@@ -19,9 +19,16 @@ public class LoggerTest {
   final String logTag = "logTag";
   final String logMessage = "log message";
 
+  MockedStatic<Log> logStaticMock;
+
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(Log.class);
+    logStaticMock = Mockito.mockStatic(Log.class);
+  }
+
+  @After
+  public void cleanUp() {
+    logStaticMock.close();
   }
 
   @Test
@@ -30,8 +37,7 @@ public class LoggerTest {
 
     Logger.logVerbose(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.v(logTag, logMessage);
+    logStaticMock.verify(() -> Log.v(logTag, logMessage));
   }
 
   @Test
@@ -40,7 +46,7 @@ public class LoggerTest {
 
     Logger.logVerbose(logTag, logMessage);
 
-    PowerMockito.verifyNoMoreInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
@@ -49,8 +55,7 @@ public class LoggerTest {
 
     Logger.logDebug(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.d(logTag, logMessage);
+    logStaticMock.verify(() -> Log.d(logTag, logMessage));
   }
 
   @Test
@@ -59,7 +64,7 @@ public class LoggerTest {
 
     Logger.logDebug(logTag, logMessage);
 
-    PowerMockito.verifyNoMoreInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
@@ -68,8 +73,7 @@ public class LoggerTest {
 
     Logger.logError(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.e(logTag, logMessage);
+    logStaticMock.verify(() -> Log.e(logTag, logMessage));
   }
 
   @Test
@@ -78,7 +82,7 @@ public class LoggerTest {
 
     Logger.logError(logTag, logMessage);
 
-    PowerMockito.verifyNoMoreInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
@@ -87,8 +91,7 @@ public class LoggerTest {
 
     Logger.logInfo(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.i(logTag, logMessage);
+    logStaticMock.verify(() -> Log.i(logTag, logMessage));
   }
 
   @Test
@@ -97,7 +100,7 @@ public class LoggerTest {
 
     Logger.logInfo(logTag, logMessage);
 
-    PowerMockito.verifyNoMoreInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
@@ -106,8 +109,7 @@ public class LoggerTest {
 
     Logger.logWarning(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.w(logTag, logMessage);
+    logStaticMock.verify(() -> Log.w(logTag, logMessage));
   }
 
   @Test
@@ -116,6 +118,6 @@ public class LoggerTest {
 
     Logger.logWarning(logTag, logMessage);
 
-    PowerMockito.verifyNoMoreInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 }

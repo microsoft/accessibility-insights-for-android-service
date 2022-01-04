@@ -26,7 +26,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -45,20 +44,30 @@ public class AccessibilityInsightsContentProviderTest {
   @Mock File tempFileMock;
   @Mock Bundle bundleMock;
 
+  MockedStatic<Binder> binderStaticMock;
+  MockedStatic<ParcelFileDescriptor> parcelFileDescriptorStaticMock;
+
   AccessibilityInsightsContentProvider testSubject;
 
   @Before
   public void prepare() throws Exception {
-    PowerMockito.mockStatic(Binder.class);
+    binderStaticMock = Mockito.mockStatic(Binder.class);
+    parcelFileDescriptorStaticMock = Mockito.mockStatic(ParcelFileDescriptor.class);
+
     testSubject = new AccessibilityInsightsContentProvider();
     assertTrue(testSubject.onCreate(requestDispatcherMock, tempFileProviderMock));
 
     whenNew(Bundle.class).withNoArguments().thenReturn(bundleMock);
     doNothing().when(bundleMock).putString(anyString(), anyString());
 
-    PowerMockito.mockStatic(ParcelFileDescriptor.class);
     when(ParcelFileDescriptor.open(tempFileMock, ParcelFileDescriptor.MODE_READ_ONLY))
         .thenReturn(tempFileDescriptor);
+  }
+
+  @After
+  public void cleanUp() {
+    parcelFileDescriptorStaticMock.close();
+    binderStaticMock.close();
   }
 
   private void setupCallerAsAdb() {

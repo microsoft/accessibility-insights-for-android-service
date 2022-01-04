@@ -34,9 +34,11 @@ public class RequestDispatcherTest {
   @Mock RequestFulfiller requestFulfillerMock;
   RequestDispatcher testSubject;
 
+  MockedStatic<Logger> loggerStaticMock;
+
   @Before
   public void prepare() {
-    mockStatic(Logger.class);
+    loggerStaticMock = Mockito.mockStatic(Logger.class);
     testSubject =
         new RequestDispatcher(
             rootNodeFinder,
@@ -47,6 +49,11 @@ public class RequestDispatcherTest {
             deviceConfigFactory,
             focusVisualizationStateManager,
             resultsV2ContainerSerializer);
+  }
+
+  @After
+  public void cleanUp() {
+    loggerStaticMock.close();
   }
 
   private void setupMockRequestFulfiller() throws Exception {
@@ -61,8 +68,7 @@ public class RequestDispatcherTest {
 
     testSubject.request("mock method", cancellationSignal);
 
-    verifyStatic(Logger.class);
-    Logger.logVerbose("RequestDispatcher", "Handling request for method mock method");
+    loggerStaticMock.verify(() -> Logger.logVerbose("RequestDispatcher", "Handling request for method mock method"));
   }
 
   @Test

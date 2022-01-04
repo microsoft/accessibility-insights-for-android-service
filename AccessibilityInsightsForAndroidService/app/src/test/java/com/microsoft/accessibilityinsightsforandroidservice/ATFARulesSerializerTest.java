@@ -30,6 +30,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 @RunWith(MockitoJUnitRunner.class)
 @PrepareForTest({AccessibilityCheckPreset.class, GsonBuilder.class, Gson.class})
 public class ATFARulesSerializerTest {
+  MockedStatic<AccessibilityCheckPreset> accessibilityCheckPresetStaticMock;
+
   ATFARulesSerializer testSubject;
 
   class TestCheckClass extends AccessibilityHierarchyCheck {
@@ -74,8 +76,13 @@ public class ATFARulesSerializerTest {
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(AccessibilityCheckPreset.class);
+    accessibilityCheckPresetStaticMock = Mockito.mockStatic(AccessibilityCheckPreset.class);
     testSubject = new ATFARulesSerializer();
+  }
+
+  @After
+  public void cleanUp() {
+    accessibilityCheckPresetStaticMock.close();
   }
 
   @Test
@@ -95,7 +102,7 @@ public class ATFARulesSerializerTest {
             + "  }\n"
             + "]";
 
-    when(AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
+    accessibilityCheckPresetStaticMock.when(() -> AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
             AccessibilityCheckPreset.LATEST))
         .thenReturn(ImmutableSet.of(checkStub));
 

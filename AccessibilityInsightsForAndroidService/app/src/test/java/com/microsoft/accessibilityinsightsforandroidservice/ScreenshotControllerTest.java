@@ -46,6 +46,9 @@ public class ScreenshotControllerTest {
   @Mock Bitmap bitmapMock;
   @Mock OnScreenshotAvailable onScreenshotAvailableMock;
   @Mock VirtualDisplay displayMock;
+
+  MockedStatic<ImageReader> imageReaderStaticMock;
+
   @Captor ArgumentCaptor<Consumer<Bitmap>> bitmapConsumerCallback;
 
   DisplayMetrics displayMetricsStub;
@@ -53,6 +56,7 @@ public class ScreenshotControllerTest {
 
   @Before
   public void prepare() {
+    imageReaderStaticMock = Mockito.mockStatic(ImageReader.class);
     displayMetricsStub = new DisplayMetricsStub();
     testSubject =
         new ScreenshotController(
@@ -61,6 +65,11 @@ public class ScreenshotControllerTest {
             onScreenshotAvailableProviderMock,
             bitmapProviderMock,
             mediaProjectionSupplierMock);
+  }
+
+  @After
+  public void cleanUp() {
+    imageReaderStaticMock.close();
   }
 
   @Test
@@ -79,11 +88,10 @@ public class ScreenshotControllerTest {
 
   @Test
   public void createVirtualDisplayWithExpectedImageReader() {
-    PowerMockito.mockStatic(ImageReader.class);
     bitmapConsumerCallback = createBitmapConsumerCallback();
     when(mediaProjectionSupplierMock.get()).thenReturn(mediaProjectionMock);
     when(displayMetricsSupplierMock.get()).thenReturn(displayMetricsStub);
-    when(ImageReader.newInstance(
+    imageReaderStaticMock.when(() -> ImageReader.newInstance(
             displayMetricsStub.widthPixels,
             displayMetricsStub.heightPixels,
             PixelFormat.RGBA_8888,
@@ -118,14 +126,13 @@ public class ScreenshotControllerTest {
 
   @Test
   public void createVirtualDisplayCleansResourcesAppropriatelyBeforeGettingScreenshot() {
-    PowerMockito.mockStatic(ImageReader.class);
     when(mediaProjectionSupplierMock.get()).thenReturn(mediaProjectionMock);
     when(displayMetricsSupplierMock.get()).thenReturn(displayMetricsStub);
-    when(ImageReader.newInstance(
+    imageReaderStaticMock.when(ImageReader::newInstance,
             displayMetricsStub.widthPixels,
             displayMetricsStub.heightPixels,
             PixelFormat.RGBA_8888,
-            2))
+            2)
         .thenReturn(imageReaderMock);
     when(imageReaderMock.getSurface()).thenReturn(surfaceMock);
     when(mediaProjectionMock.createVirtualDisplay(

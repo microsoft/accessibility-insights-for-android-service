@@ -94,9 +94,10 @@ public class TempFileProviderTest {
   @Test
   public void createTempFileWithContentsThrowsIOExceptionIfTempFileCanNotBeCreated()
       throws IOException {
-    PowerMockito.mockStatic(File.class);
-    when(File.createTempFile(any(), any(), any())).thenThrow(new IOException());
-    assertThrows(IOException.class, () -> testSubject.createTempFileWithContents("Content"));
+    try (MockedStatic<File> fileStaticMock = Mockito.mockStatic(File.class)) {
+      fileStaticMock.when(File::createTempFile).thenThrow(new IOException());
+      assertThrows(IOException.class, () -> testSubject.createTempFileWithContents("Content"));
+    }
   }
 
   @Test
