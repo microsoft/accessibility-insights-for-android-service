@@ -16,7 +16,7 @@ import org.mockito.Mock;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-@RunWith(PowerMockRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 public class DeviceOrientationHandlerTest {
 
   @Mock Consumer<Integer> onChangeMock;

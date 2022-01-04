@@ -12,7 +12,7 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 import org.powermock.reflect.Whitebox;
 
-@RunWith(PowerMockRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @PrepareForTest({Log.class})
 public class LoggerTest {
 
@@ -40,7 +40,7 @@ public class LoggerTest {
 
     Logger.logVerbose(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    PowerMockito.verifyNoMoreInteractions(Log.class);
   }
 
   @Test
@@ -59,7 +59,7 @@ public class LoggerTest {
 
     Logger.logDebug(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    PowerMockito.verifyNoMoreInteractions(Log.class);
   }
 
   @Test
@@ -78,7 +78,7 @@ public class LoggerTest {
 
     Logger.logError(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    PowerMockito.verifyNoMoreInteractions(Log.class);
   }
 
   @Test
@@ -97,7 +97,7 @@ public class LoggerTest {
 
     Logger.logInfo(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    PowerMockito.verifyNoMoreInteractions(Log.class);
   }
 
   @Test
@@ -116,6 +116,6 @@ public class LoggerTest {
 
     Logger.logWarning(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    PowerMockito.verifyNoMoreInteractions(Log.class);
   }
 }

@@ -28,7 +28,7 @@ import org.mockito.Mock;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(PowerMockRunner.class)
+@RunWith(MockitoJUnitRunner.class)
 @PrepareForTest({SynchronizedRequestDispatcher.class})
 public class SynchronizedRequestDispatcherTest {
   @Mock RequestDispatcher underlyingDispatcher;
