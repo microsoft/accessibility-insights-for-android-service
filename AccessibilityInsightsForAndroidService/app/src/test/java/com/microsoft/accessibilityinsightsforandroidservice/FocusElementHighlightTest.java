@@ -39,8 +39,9 @@ public class FocusElementHighlightTest {
   @Mock View viewMock;
   @Mock Paint paintMock;
   @Mock Resources resourcesMock;
-  @Mock Rect rectMock;
   @Mock Canvas canvasMock;
+  MockedConstruction<Rect> rectConstructionMock;
+
   HashMap<String, Paint> paintsStub;
 
   @Before
@@ -52,11 +53,15 @@ public class FocusElementHighlightTest {
     paintsStub.put("transparentInnerCircle", paintMock);
 
     when(viewMock.getResources()).thenReturn(resourcesMock);
-    whenNew(Rect.class).withNoArguments().thenReturn(rectMock);
-    doNothing().when(rectMock).offset(isA(Integer.class), isA(Integer.class));
+    rectConstructionMock = Mockito.mockConstruction(Rect.class, (rectMock, context) -> doNothing().when(rectMock).offset(isA(Integer.class), isA(Integer.class)));
 
     testSubject =
         new FocusElementHighlight(accessibilityNodeInfoMock, paintsStub, 10, 10, viewMock);
+  }
+
+  @After
+  public void cleanUp() {
+    rectConstructionMock.close();
   }
 
   @Test

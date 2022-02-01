@@ -12,8 +12,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import android.net.Uri;
 import android.os.Binder;
@@ -42,10 +40,10 @@ public class AccessibilityInsightsContentProviderTest {
   @Mock SynchronizedRequestDispatcher requestDispatcherMock;
   @Mock ParcelFileDescriptor tempFileDescriptor;
   @Mock File tempFileMock;
-  @Mock Bundle bundleMock;
 
   MockedStatic<Binder> binderStaticMock;
   MockedStatic<ParcelFileDescriptor> parcelFileDescriptorStaticMock;
+  MockedConstruction<Bundle> bundleConstructionMock;
 
   AccessibilityInsightsContentProvider testSubject;
 
@@ -53,14 +51,12 @@ public class AccessibilityInsightsContentProviderTest {
   public void prepare() throws Exception {
     binderStaticMock = Mockito.mockStatic(Binder.class);
     parcelFileDescriptorStaticMock = Mockito.mockStatic(ParcelFileDescriptor.class);
+    bundleConstructionMock = Mockito.mockConstruction(Bundle.class, invocation -> null);
 
     testSubject = new AccessibilityInsightsContentProvider();
     assertTrue(testSubject.onCreate(requestDispatcherMock, tempFileProviderMock));
 
-    whenNew(Bundle.class).withNoArguments().thenReturn(bundleMock);
-    doNothing().when(bundleMock).putString(anyString(), anyString());
-
-    when(ParcelFileDescriptor.open(tempFileMock, ParcelFileDescriptor.MODE_READ_ONLY))
+    parcelFileDescriptorStaticMock.when(() -> ParcelFileDescriptor.open(tempFileMock, ParcelFileDescriptor.MODE_READ_ONLY))
         .thenReturn(tempFileDescriptor);
   }
 
@@ -152,6 +148,9 @@ public class AccessibilityInsightsContentProviderTest {
     when(requestDispatcherMock.request(eq(expectedMethod), notNull()))
         .thenReturn(dispatcherResponse);
 
+    assertEquals(1, bundleConstructionMock.constructed().size());
+    Bundle bundleMock = bundleConstructionMock.constructed().get(0);
+
     assertSame(bundleMock, testSubject.call("method", null, null));
     verify(bundleMock).putString("response", dispatcherResponse);
   }
@@ -163,7 +162,8 @@ public class AccessibilityInsightsContentProviderTest {
     when(requestDispatcherMock.request(eq(expectedMethod), notNull()))
         .thenThrow(new Exception("dispatcher error"));
 
-    assertSame(bundleMock, testSubject.call("method", null, null));
+    assertEquals(1, bundleConstructionMock.constructed().size());
+    Bundle bundleMock = bundleConstructionMock.constructed().get(0);
 
     String serializedException = "java.lang.Exception: dispatcher error";
     verify(bundleMock).putString("response", serializedException);

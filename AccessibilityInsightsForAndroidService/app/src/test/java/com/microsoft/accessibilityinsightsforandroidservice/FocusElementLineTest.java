@@ -41,8 +41,9 @@ public class FocusElementLineTest {
   @Mock Paint paintMock;
   @Mock View viewMock;
   @Mock Resources resourcesMock;
-  @Mock Rect rectMock;
   @Mock Canvas canvasMock;
+  MockedConstruction<Rect> rectConstructionMock;
+
   HashMap<String, Paint> paintsStub;
 
   @Before
@@ -52,11 +53,15 @@ public class FocusElementLineTest {
     paintsStub.put("backgroundLine", paintMock);
 
     when(viewMock.getResources()).thenReturn(resourcesMock);
-    whenNew(Rect.class).withNoArguments().thenReturn(rectMock);
-    doNothing().when(rectMock).offset(isA(Integer.class), isA(Integer.class));
+    rectConstructionMock = Mockito.mockConstruction(Rect.class, (rectMock, context) -> doNothing().when(rectMock).offset(isA(Integer.class), isA(Integer.class)));
 
     testSubject =
         new FocusElementLine(eventSourceMock, previousEventSourceMock, paintsStub, viewMock);
+  }
+
+  @After
+  public void cleanUp() {
+    rectConstructionMock.close();
   }
 
   @Test
