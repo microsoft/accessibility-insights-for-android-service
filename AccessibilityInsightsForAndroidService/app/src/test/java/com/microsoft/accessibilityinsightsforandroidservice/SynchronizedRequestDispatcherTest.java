@@ -11,6 +11,7 @@ import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -186,7 +187,7 @@ public class SynchronizedRequestDispatcherTest {
     testSubject.setup(underlyingDispatcher);
     DelayedRequest delayedRequest = setupCancellableDelayedRequest();
     Thread requestThread =
-        new Thread(
+        startOnNewThread(
             () ->
                 assertThrows(
                     OperationCanceledException.class,
@@ -298,6 +299,21 @@ public class SynchronizedRequestDispatcherTest {
             })
         .when(mockSignal)
         .cancel();
+
+    // lenient() prevents Mockito from throwing an UnnecessaryStubbingException - Mockito's default
+    // strict() context complains that this is unused because it is only ever used on secondary
+    // test threads, not the original @Test thread.
+    lenient().doAnswer(
+            invocation -> {
+                synchronized (mockSignal) {
+                    if (isCancelled.get()) {
+                        throw new OperationCanceledException();
+                      }
+                  }
+                return null;
+              })
+        .when(mockSignal)
+        .throwIfCanceled();
 
     doAnswer(
             invocation -> {
