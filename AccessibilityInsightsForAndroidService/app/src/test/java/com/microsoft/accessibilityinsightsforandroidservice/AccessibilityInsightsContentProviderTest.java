@@ -50,7 +50,7 @@ public class AccessibilityInsightsContentProviderTest {
   public void prepare() throws Exception {
     binderStaticMock = Mockito.mockStatic(Binder.class);
     parcelFileDescriptorStaticMock = Mockito.mockStatic(ParcelFileDescriptor.class);
-    bundleConstructionMock = Mockito.mockConstruction(Bundle.class, invocation -> null);
+    bundleConstructionMock = Mockito.mockConstruction(Bundle.class);
 
     testSubject = new AccessibilityInsightsContentProvider();
     assertTrue(testSubject.onCreate(requestDispatcherMock, tempFileProviderMock));
@@ -61,6 +61,7 @@ public class AccessibilityInsightsContentProviderTest {
 
   @After
   public void cleanUp() {
+    bundleConstructionMock.close();
     parcelFileDescriptorStaticMock.close();
     binderStaticMock.close();
   }
