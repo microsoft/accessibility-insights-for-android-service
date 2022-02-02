@@ -48,7 +48,6 @@ public class ATFAScannerTest {
   ATFAScanner testSubject;
   Parameters parametersStub;
   BitmapImage screenshotStub;
-  List<AccessibilityHierarchyCheckResult> resultsStub;
   List<AccessibilityHierarchyCheckResult> filteredResultsStub;
 
   @Before
@@ -58,7 +57,6 @@ public class ATFAScannerTest {
     accessibilityCheckResultUtilsStaticMock = Mockito.mockStatic(AccessibilityCheckResultUtils.class);
     screenshotStub = new BitmapImage(bitmapMock);
     parametersStub = new Parameters();
-    resultsStub = Collections.emptyList();
     filteredResultsStub = Collections.emptyList();
     testSubject = new ATFAScanner(contextMock);
   }
@@ -78,9 +76,7 @@ public class ATFAScannerTest {
     accessibilityHierarchyAndroidStaticMock.when(() -> AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock))
         .thenReturn(builderMock);
     when(builderMock.build()).thenReturn(hierarchyMock);
-    when(checkMock.runCheckOnHierarchy(hierarchyMock, null, parametersStub))
-        .thenReturn(resultsStub);
-    accessibilityCheckResultUtilsStaticMock.when(() -> AccessibilityCheckResultUtils.getResultsForTypes(eq(resultsStub), anySet()))
+    accessibilityCheckResultUtilsStaticMock.when(() -> AccessibilityCheckResultUtils.getResultsForTypes(eq(Collections.emptyList()), anySet()))
         .thenReturn(filteredResultsStub);
 
     Assert.assertEquals(
