@@ -20,7 +20,6 @@ import android.os.OperationCanceledException;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -201,9 +200,11 @@ public class SynchronizedRequestDispatcherTest {
   }
 
   private MockedConstruction<CancellationSignal> setupBasicCancellationSignalsOnThisThread() {
-    return Mockito.mockConstruction(CancellationSignal.class, (mockSignal, context) -> {
-      setupBasicCancellationSignal(mockSignal);
-    });
+    return Mockito.mockConstruction(
+        CancellationSignal.class,
+        (mockSignal, context) -> {
+          setupBasicCancellationSignal(mockSignal);
+        });
   }
 
   private static final int THREAD_DELAY_ALLOWANCE_MS = 500;
@@ -211,17 +212,18 @@ public class SynchronizedRequestDispatcherTest {
 
   private Thread startOnNewThread(ThrowingRunnable callback) {
     return new Thread(
-            () -> {
-              try(MockedConstruction<CancellationSignal> cancellationSignalConstructionMock = setupBasicCancellationSignalsOnThisThread()) {
-                callback.run();
-              } catch (Throwable e) {
-                fail(
-                        "unexpected exception from async request:\n\n"
-                                + e.getMessage()
-                                + "\n\n"
-                                + Arrays.toString(e.getStackTrace()));
-              }
-            });
+        () -> {
+          try (MockedConstruction<CancellationSignal> cancellationSignalConstructionMock =
+              setupBasicCancellationSignalsOnThisThread()) {
+            callback.run();
+          } catch (Throwable e) {
+            fail(
+                "unexpected exception from async request:\n\n"
+                    + e.getMessage()
+                    + "\n\n"
+                    + Arrays.toString(e.getStackTrace()));
+          }
+        });
   }
 
   int delayedRequestPollIntervalMillis = 100;
@@ -303,15 +305,16 @@ public class SynchronizedRequestDispatcherTest {
     // lenient() prevents Mockito from throwing an UnnecessaryStubbingException - Mockito's default
     // strict() context complains that this is unused because it is only ever used on secondary
     // test threads, not the original @Test thread.
-    lenient().doAnswer(
+    lenient()
+        .doAnswer(
             invocation -> {
-                synchronized (mockSignal) {
-                    if (isCancelled.get()) {
-                        throw new OperationCanceledException();
-                      }
-                  }
-                return null;
-              })
+              synchronized (mockSignal) {
+                if (isCancelled.get()) {
+                  throw new OperationCanceledException();
+                }
+              }
+              return null;
+            })
         .when(mockSignal)
         .throwIfCanceled();
 

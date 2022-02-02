@@ -20,7 +20,6 @@ import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import java.io.File;
 import java.io.IOException;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +54,8 @@ public class AccessibilityInsightsContentProviderTest {
     testSubject = new AccessibilityInsightsContentProvider();
     assertTrue(testSubject.onCreate(requestDispatcherMock, tempFileProviderMock));
 
-    parcelFileDescriptorStaticMock.when(() -> ParcelFileDescriptor.open(tempFileMock, ParcelFileDescriptor.MODE_READ_ONLY))
+    parcelFileDescriptorStaticMock
+        .when(() -> ParcelFileDescriptor.open(tempFileMock, ParcelFileDescriptor.MODE_READ_ONLY))
         .thenReturn(tempFileDescriptor);
   }
 

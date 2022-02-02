@@ -4,7 +4,6 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.graphics.Bitmap;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

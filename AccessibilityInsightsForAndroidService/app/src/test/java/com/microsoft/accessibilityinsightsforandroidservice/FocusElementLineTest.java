@@ -3,7 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
@@ -19,7 +18,6 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -76,8 +74,10 @@ public class FocusElementLineTest {
     when(previousEventSourceMock.refresh()).thenReturn(true);
 
     testSubject.drawLine(canvasMock);
-    verify(canvasMock, times(1)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(foregroundLinePaintMock));
-    verify(canvasMock, times(1)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(backgroundLinePaintMock));
+    verify(canvasMock, times(1))
+        .drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(foregroundLinePaintMock));
+    verify(canvasMock, times(1))
+        .drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(backgroundLinePaintMock));
     verifyNoMoreInteractions(canvasMock);
   }
 
@@ -92,10 +92,17 @@ public class FocusElementLineTest {
     testSubject.setPaint(updatedPaints);
     testSubject.drawLine(canvasMock);
 
-    verify(canvasMock, times(0)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(/* original */ backgroundLinePaintMock));
-    verify(canvasMock, times(1)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(differentBackgroundLinePaintMock));
+    verify(canvasMock, times(0))
+        .drawLine(
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            anyFloat(),
+            same(/* original */ backgroundLinePaintMock));
+    verify(canvasMock, times(1))
+        .drawLine(
+            anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(differentBackgroundLinePaintMock));
   }
-
 
   @Test
   public void drawLineDoesNothingWhenEventSourceIsNull() {

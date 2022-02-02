@@ -16,7 +16,6 @@ import android.media.ImageReader;
 import android.util.DisplayMetrics;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

@@ -19,7 +19,6 @@ import android.util.DisplayMetrics;
 import android.view.Surface;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -92,11 +91,14 @@ public class ScreenshotControllerTest {
     bitmapConsumerCallback = createBitmapConsumerCallback();
     when(mediaProjectionSupplierMock.get()).thenReturn(mediaProjectionMock);
     when(displayMetricsSupplierMock.get()).thenReturn(displayMetricsStub);
-    imageReaderStaticMock.when(() -> ImageReader.newInstance(
-            displayMetricsStub.widthPixels,
-            displayMetricsStub.heightPixels,
-            PixelFormat.RGBA_8888,
-            2))
+    imageReaderStaticMock
+        .when(
+            () ->
+                ImageReader.newInstance(
+                    displayMetricsStub.widthPixels,
+                    displayMetricsStub.heightPixels,
+                    PixelFormat.RGBA_8888,
+                    2))
         .thenReturn(imageReaderMock);
     when(imageReaderMock.getSurface()).thenReturn(surfaceMock);
     when(onScreenshotAvailableProviderMock.getOnScreenshotAvailable(
@@ -129,11 +131,14 @@ public class ScreenshotControllerTest {
   public void createVirtualDisplayCleansResourcesAppropriatelyBeforeGettingScreenshot() {
     when(mediaProjectionSupplierMock.get()).thenReturn(mediaProjectionMock);
     when(displayMetricsSupplierMock.get()).thenReturn(displayMetricsStub);
-    imageReaderStaticMock.when(() -> ImageReader.newInstance(
-            displayMetricsStub.widthPixels,
-            displayMetricsStub.heightPixels,
-            PixelFormat.RGBA_8888,
-            2))
+    imageReaderStaticMock
+        .when(
+            () ->
+                ImageReader.newInstance(
+                    displayMetricsStub.widthPixels,
+                    displayMetricsStub.heightPixels,
+                    PixelFormat.RGBA_8888,
+                    2))
         .thenReturn(imageReaderMock);
     when(imageReaderMock.getSurface()).thenReturn(surfaceMock);
     when(mediaProjectionMock.createVirtualDisplay(

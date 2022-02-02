@@ -8,7 +8,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.when;
 
 import android.os.CancellationSignal;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -67,7 +66,8 @@ public class RequestDispatcherTest {
 
     testSubject.request("mock method", cancellationSignal);
 
-    loggerStaticMock.verify(() -> Logger.logVerbose("RequestDispatcher", "Handling request for method mock method"));
+    loggerStaticMock.verify(
+        () -> Logger.logVerbose("RequestDispatcher", "Handling request for method mock method"));
   }
 
   @Test

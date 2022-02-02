@@ -6,7 +6,6 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.graphics.Color;
 import android.graphics.Paint;
 import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

@@ -30,7 +30,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -93,7 +92,9 @@ public class TempFileProviderTest {
   public void createTempFileWithContentsThrowsIOExceptionIfTempFileCanNotBeCreated()
       throws IOException {
     try (MockedStatic<File> fileStaticMock = Mockito.mockStatic(File.class)) {
-      fileStaticMock.when(() -> File.createTempFile(any(), any(), any())).thenThrow(new IOException());
+      fileStaticMock
+          .when(() -> File.createTempFile(any(), any(), any()))
+          .thenThrow(new IOException());
       assertThrows(IOException.class, () -> testSubject.createTempFileWithContents("Content"));
     }
   }
@@ -168,7 +169,7 @@ public class TempFileProviderTest {
             null, inputData, new ArrayList<>(), null, 1, null, null, null, null, null);
     return workerParameters;
   }
-  
+
   @NonNull
   private WorkSpec getLastWorkManagerRequest() {
     verify(workManagerMock, times(1)).enqueue(workRequestCaptor.capture());

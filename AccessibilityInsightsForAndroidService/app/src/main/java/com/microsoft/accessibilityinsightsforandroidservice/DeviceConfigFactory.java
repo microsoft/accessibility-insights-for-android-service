@@ -10,6 +10,7 @@ public class DeviceConfigFactory {
   public DeviceConfigFactory(String buildModel) {
     this.buildModel = buildModel;
   }
+
   public DeviceConfigFactory() {
     this(Build.MODEL);
   }

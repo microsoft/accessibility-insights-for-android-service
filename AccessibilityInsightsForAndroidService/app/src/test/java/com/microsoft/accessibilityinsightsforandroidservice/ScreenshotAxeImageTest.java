@@ -76,7 +76,9 @@ public class ScreenshotAxeImageTest {
     try (MockedStatic<Base64> base64StaticMock = Mockito.mockStatic(Base64.class)) {
       when(byteArrayOutputStreamProviderMock.get()).thenReturn(byteArrayOutputStreamMock);
       when(byteArrayOutputStreamMock.toByteArray()).thenReturn(byteArrayStub);
-      base64StaticMock.when(() -> Base64.encodeToString(byteArrayStub, Base64.NO_WRAP)).thenReturn(expectedString);
+      base64StaticMock
+          .when(() -> Base64.encodeToString(byteArrayStub, Base64.NO_WRAP))
+          .thenReturn(expectedString);
 
       Assert.assertEquals(testSubject.toBase64Png(), expectedString);
 

@@ -20,7 +20,6 @@ import com.google.android.apps.common.testing.accessibility.framework.utils.cont
 import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.List;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -53,8 +52,10 @@ public class ATFAScannerTest {
   @Before
   public void prepare() {
     accessibilityCheckPresetStaticMock = Mockito.mockStatic(AccessibilityCheckPreset.class);
-    accessibilityHierarchyAndroidStaticMock = Mockito.mockStatic(AccessibilityHierarchyAndroid.class);
-    accessibilityCheckResultUtilsStaticMock = Mockito.mockStatic(AccessibilityCheckResultUtils.class);
+    accessibilityHierarchyAndroidStaticMock =
+        Mockito.mockStatic(AccessibilityHierarchyAndroid.class);
+    accessibilityCheckResultUtilsStaticMock =
+        Mockito.mockStatic(AccessibilityCheckResultUtils.class);
     screenshotStub = new BitmapImage(bitmapMock);
     parametersStub = new Parameters();
     filteredResultsStub = Collections.emptyList();
@@ -70,13 +71,22 @@ public class ATFAScannerTest {
 
   @Test
   public void scanWithATFAReturnsCorrectResult() throws ViewChangedException {
-    accessibilityCheckPresetStaticMock.when(() -> AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
-            AccessibilityCheckPreset.LATEST))
+    accessibilityCheckPresetStaticMock
+        .when(
+            () ->
+                AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
+                    AccessibilityCheckPreset.LATEST))
         .thenReturn(ImmutableSet.of(checkMock));
-    accessibilityHierarchyAndroidStaticMock.when(() -> AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock))
+    accessibilityHierarchyAndroidStaticMock
+        .when(
+            () -> AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock))
         .thenReturn(builderMock);
     when(builderMock.build()).thenReturn(hierarchyMock);
-    accessibilityCheckResultUtilsStaticMock.when(() -> AccessibilityCheckResultUtils.getResultsForTypes(eq(Collections.emptyList()), anySet()))
+    accessibilityCheckResultUtilsStaticMock
+        .when(
+            () ->
+                AccessibilityCheckResultUtils.getResultsForTypes(
+                    eq(Collections.emptyList()), anySet()))
         .thenReturn(filteredResultsStub);
 
     Assert.assertEquals(

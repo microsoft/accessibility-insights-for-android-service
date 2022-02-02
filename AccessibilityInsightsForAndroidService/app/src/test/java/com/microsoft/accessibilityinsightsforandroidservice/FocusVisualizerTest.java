@@ -3,13 +3,9 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
-import static org.mockito.internal.verification.VerificationModeFactory.times;
 
 import android.view.accessibility.AccessibilityNodeInfo;
-import java.util.ArrayList;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,7 +27,6 @@ public class FocusVisualizerTest {
   MockedConstruction<FocusElementHighlight> focusElementHighlightConstructionMock;
   MockedConstruction<FocusElementLine> focusElementLineConstructionMock;
 
-
   @Before
   public void prepare() throws Exception {
     focusElementHighlightConstructionMock = Mockito.mockConstruction(FocusElementHighlight.class);
@@ -51,7 +46,7 @@ public class FocusVisualizerTest {
     Assert.assertNotNull(testSubject);
   }
 
-    /* TODO: fix Whitebox cases
+  /* TODO: fix Whitebox cases
 
   @Test
   public void addNewFocusedElementCreatesElementOnFirstCall() {

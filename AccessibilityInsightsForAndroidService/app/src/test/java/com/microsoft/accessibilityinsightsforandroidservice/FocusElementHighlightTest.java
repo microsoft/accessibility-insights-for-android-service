@@ -19,7 +19,6 @@ import android.graphics.Rect;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import java.util.HashMap;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -61,7 +60,8 @@ public class FocusElementHighlightTest {
     rectConstructionMock = Mockito.mockConstruction(Rect.class);
 
     testSubject =
-        new FocusElementHighlight(accessibilityNodeInfoMock, initialPaints, 10, tabStopCount, viewMock);
+        new FocusElementHighlight(
+            accessibilityNodeInfoMock, initialPaints, 10, tabStopCount, viewMock);
   }
 
   @After
@@ -94,22 +94,26 @@ public class FocusElementHighlightTest {
 
     testSubject.drawElementHighlight(canvasMock);
 
-    verify(canvasMock, times(1)).drawCircle(anyFloat(), anyFloat(), anyFloat(), same(transparentInnerCirclePaintMock));
-    verify(canvasMock, times(1)).drawCircle(anyFloat(), anyFloat(), anyFloat(), same(outerCirclePaintMock));
+    verify(canvasMock, times(1))
+        .drawCircle(anyFloat(), anyFloat(), anyFloat(), same(transparentInnerCirclePaintMock));
+    verify(canvasMock, times(1))
+        .drawCircle(anyFloat(), anyFloat(), anyFloat(), same(outerCirclePaintMock));
     verifyNoMoreInteractions(canvasMock);
   }
 
   @Test
-  public void drawElementHighlightDrawsTwoCirclesAndANumberForNonCurrentElement()
-      throws Exception {
+  public void drawElementHighlightDrawsTwoCirclesAndANumberForNonCurrentElement() throws Exception {
     testSubject.setAsNonCurrentElement();
     when(accessibilityNodeInfoMock.refresh()).thenReturn(true);
     testSubject.drawElementHighlight(canvasMock);
 
-    verify(canvasMock, times(1)).drawCircle(anyFloat(), anyFloat(), anyFloat(), same(innerCirclePaintMock));
-    verify(canvasMock, times(1)).drawCircle(anyFloat(), anyFloat(), anyFloat(), same(outerCirclePaintMock));
+    verify(canvasMock, times(1))
+        .drawCircle(anyFloat(), anyFloat(), anyFloat(), same(innerCirclePaintMock));
+    verify(canvasMock, times(1))
+        .drawCircle(anyFloat(), anyFloat(), anyFloat(), same(outerCirclePaintMock));
     String expectedText = tabStopCount + "";
-    verify(canvasMock, times(1)).drawText(eq(expectedText), anyFloat(), anyFloat(), same(numberPaintMock));
+    verify(canvasMock, times(1))
+        .drawText(eq(expectedText), anyFloat(), anyFloat(), same(numberPaintMock));
     verifyNoMoreInteractions(canvasMock);
   }
 
@@ -123,8 +127,10 @@ public class FocusElementHighlightTest {
     testSubject.setPaints(updatedPaints);
     testSubject.drawElementHighlight(canvasMock);
 
-    verify(canvasMock, times(0)).drawCircle(anyFloat(), anyFloat(), anyFloat(), /* original */ same(outerCirclePaintMock));
-    verify(canvasMock, times(1)).drawCircle(anyFloat(), anyFloat(), anyFloat(), same(differentOuterCirclePaintMock));
+    verify(canvasMock, times(0))
+        .drawCircle(anyFloat(), anyFloat(), anyFloat(), /* original */ same(outerCirclePaintMock));
+    verify(canvasMock, times(1))
+        .drawCircle(anyFloat(), anyFloat(), anyFloat(), same(differentOuterCirclePaintMock));
   }
 
   @Test

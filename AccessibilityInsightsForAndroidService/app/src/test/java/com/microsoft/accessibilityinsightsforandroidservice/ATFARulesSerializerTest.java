@@ -3,8 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static org.mockito.Mockito.when;
-
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckPreset;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheck;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheckResult;
@@ -17,7 +15,6 @@ import com.google.gson.JsonParser;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -101,8 +98,11 @@ public class ATFARulesSerializerTest {
             + "  }\n"
             + "]";
 
-    accessibilityCheckPresetStaticMock.when(() -> AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
-            AccessibilityCheckPreset.LATEST))
+    accessibilityCheckPresetStaticMock
+        .when(
+            () ->
+                AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
+                    AccessibilityCheckPreset.LATEST))
         .thenReturn(ImmutableSet.of(checkStub));
 
     String actualSerializedRules = testSubject.serializeATFARules();

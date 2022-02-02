@@ -3,18 +3,14 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static android.os.Build.MODEL;
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
 import android.view.accessibility.AccessibilityNodeInfo;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)

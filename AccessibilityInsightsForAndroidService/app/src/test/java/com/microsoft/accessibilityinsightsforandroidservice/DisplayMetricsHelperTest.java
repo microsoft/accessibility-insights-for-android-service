@@ -12,7 +12,6 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
-
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;

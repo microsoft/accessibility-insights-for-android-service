@@ -29,20 +29,23 @@ public class UIThreadRunnerTest {
   public void createsNewHandlerUsingMainLooper() throws Exception {
     try (MockedStatic<Looper> looperStaticMock = Mockito.mockStatic(Looper.class)) {
       looperStaticMock.when(Looper::getMainLooper).thenReturn(looperMock);
-      try (MockedConstruction<Handler> handlerConstructionMock = Mockito.mockConstruction(Handler.class, (handlerMock, context) -> {
-          doAnswer(
-                  invocation -> {
-                      Runnable runnable = invocation.getArgument(0);
-                      runnable.run();
-                      return null;
-                  })
-                  .when(handlerMock)
-                  .post(any());
-      })) {
-          testSubject = new UIThreadRunner();
-          testSubject.run(runnableMock);
+      try (MockedConstruction<Handler> handlerConstructionMock =
+          Mockito.mockConstruction(
+              Handler.class,
+              (handlerMock, context) -> {
+                doAnswer(
+                        invocation -> {
+                          Runnable runnable = invocation.getArgument(0);
+                          runnable.run();
+                          return null;
+                        })
+                    .when(handlerMock)
+                    .post(any());
+              })) {
+        testSubject = new UIThreadRunner();
+        testSubject.run(runnableMock);
 
-          verify(runnableMock).run();
+        verify(runnableMock).run();
       }
     }
   }
