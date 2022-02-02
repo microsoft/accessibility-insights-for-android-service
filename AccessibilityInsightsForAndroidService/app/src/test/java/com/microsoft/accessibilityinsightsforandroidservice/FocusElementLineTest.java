@@ -4,10 +4,12 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Resources;
@@ -35,25 +37,27 @@ public class FocusElementLineTest {
 
   @Mock AccessibilityNodeInfo eventSourceMock;
   @Mock AccessibilityNodeInfo previousEventSourceMock;
-  @Mock Paint paintMock;
+  @Mock Paint foregroundLinePaintMock;
+  @Mock Paint backgroundLinePaintMock;
+  @Mock Paint differentBackgroundLinePaintMock;
   @Mock View viewMock;
   @Mock Resources resourcesMock;
   @Mock Canvas canvasMock;
   MockedConstruction<Rect> rectConstructionMock;
 
-  HashMap<String, Paint> paintsStub;
+  HashMap<String, Paint> initialPaints;
 
   @Before
   public void prepare() throws Exception {
-    paintsStub = new HashMap<>();
-    paintsStub.put("foregroundLine", paintMock);
-    paintsStub.put("backgroundLine", paintMock);
+    initialPaints = new HashMap<>();
+    initialPaints.put("foregroundLine", foregroundLinePaintMock);
+    initialPaints.put("backgroundLine", backgroundLinePaintMock);
 
     when(viewMock.getResources()).thenReturn(resourcesMock);
     rectConstructionMock = Mockito.mockConstruction(Rect.class);
 
     testSubject =
-        new FocusElementLine(eventSourceMock, previousEventSourceMock, paintsStub, viewMock);
+        new FocusElementLine(eventSourceMock, previousEventSourceMock, initialPaints, viewMock);
   }
 
   @After
@@ -66,42 +70,50 @@ public class FocusElementLineTest {
     Assert.assertNotNull(testSubject);
   }
 
-    /* TODO: fix Whitebox cases
-
   @Test
-  public void drawLineCallsCorrectPrivateMethod() throws Exception {
+  public void drawLineDrawsOneForegroundAndOneBackgroundLine() throws Exception {
     when(eventSourceMock.refresh()).thenReturn(true);
     when(previousEventSourceMock.refresh()).thenReturn(true);
 
-    FocusElementLine lineSpy = spy(testSubject);
-    lineSpy.drawLine(canvasMock);
-    verifyPrivate(lineSpy, times(2))
-        .invoke(
-            "drawConnectingLine",
-            anyInt(),
-            anyInt(),
-            anyInt(),
-            anyInt(),
-            any(Paint.class),
-            any(Canvas.class));
+    testSubject.drawLine(canvasMock);
+    verify(canvasMock, times(1)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(foregroundLinePaintMock));
+    verify(canvasMock, times(1)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(backgroundLinePaintMock));
+    verifyNoMoreInteractions(canvasMock);
   }
 
   @Test
+  public void setPaintUpdatesPaintsUsedToDrawLines() throws Exception {
+    when(eventSourceMock.refresh()).thenReturn(true);
+    when(previousEventSourceMock.refresh()).thenReturn(true);
+
+    HashMap<String, Paint> updatedPaints = new HashMap<>(initialPaints);
+    updatedPaints.put("backgroundLine", differentBackgroundLinePaintMock);
+
+    testSubject.setPaint(updatedPaints);
+    testSubject.drawLine(canvasMock);
+
+    verify(canvasMock, times(0)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(/* original */ backgroundLinePaintMock));
+    verify(canvasMock, times(1)).drawLine(anyFloat(), anyFloat(), anyFloat(), anyFloat(), same(differentBackgroundLinePaintMock));
+  }
+
+
+  @Test
   public void drawLineDoesNothingWhenEventSourceIsNull() {
-    testSubject = new FocusElementLine(null, previousEventSourceMock, paintsStub, viewMock);
+    testSubject = new FocusElementLine(null, previousEventSourceMock, initialPaints, viewMock);
     testSubject.drawLine(canvasMock);
     verifyNoInteractions(canvasMock);
   }
 
   @Test
   public void drawLineDoesNothingWhenPreviousEventSourceIsNull() {
-    testSubject = new FocusElementLine(eventSourceMock, null, paintsStub, viewMock);
+    testSubject = new FocusElementLine(eventSourceMock, null, initialPaints, viewMock);
     testSubject.drawLine(canvasMock);
     verifyNoInteractions(canvasMock);
   }
 
   @Test
   public void drawLineDoesNothingWhenPreviousEventSourceDoesNotRefresh() {
+    when(eventSourceMock.refresh()).thenReturn(true);
     when(previousEventSourceMock.refresh()).thenReturn(false);
     testSubject.drawLine(canvasMock);
     verifyNoInteractions(canvasMock);
@@ -113,18 +125,4 @@ public class FocusElementLineTest {
     testSubject.drawLine(canvasMock);
     verifyNoInteractions(canvasMock);
   }
-
-  @Test
-  public void setPaintWorksProperly() {
-    HashMap<String, Paint> paintsStub2 = new HashMap<>();
-    paintsStub2.put("test", paintMock);
-    testSubject.setPaint(paintsStub2);
-
-    HashMap<String, Paint> resultingPaintHashMap = Whitebox.getInternalState(testSubject, "paints");
-    Assert.assertEquals(resultingPaintHashMap.get("test"), paintMock);
-    Assert.assertNull(resultingPaintHashMap.get("foregroundLine"));
-    Assert.assertNull(resultingPaintHashMap.get("backgroundLine"));
-  }
-
-     */
 }
