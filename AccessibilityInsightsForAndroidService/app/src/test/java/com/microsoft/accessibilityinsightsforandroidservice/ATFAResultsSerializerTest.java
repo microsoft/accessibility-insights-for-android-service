@@ -33,11 +33,9 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({GsonBuilder.class, Gson.class})
+@RunWith(MockitoJUnitRunner.class)
 public class ATFAResultsSerializerTest {
 
   @Mock GsonBuilder gsonBuilder;

@@ -10,40 +10,48 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.powermock.api.mockito.PowerMockito.doAnswer;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({SynchronizedRequestDispatcher.class})
+@RunWith(MockitoJUnitRunner.class)
 public class SynchronizedRequestDispatcherTest {
   @Mock RequestDispatcher underlyingDispatcher;
 
   CancellationSignal cancellationSignal;
   SynchronizedRequestDispatcher testSubject;
 
+  MockedConstruction<CancellationSignal> cancellationSignalConstructionMock;
+
   @Before
   public void prepare() throws Exception {
-    cancellationSignal = makeBasicCancellationSignal();
-    whenNew(CancellationSignal.class)
-        .withNoArguments()
-        .thenAnswer(constructorInvocation -> makeBasicCancellationSignal());
+    cancellationSignal = mock(CancellationSignal.class);
+    setupBasicCancellationSignal(cancellationSignal);
+
+    cancellationSignalConstructionMock = setupBasicCancellationSignalsOnThisThread();
 
     testSubject = new SynchronizedRequestDispatcher();
+  }
+
+  @After
+  public void cleanUp() throws Exception {
+    cancellationSignalConstructionMock.close();
   }
 
   @Test
@@ -94,9 +102,6 @@ public class SynchronizedRequestDispatcherTest {
     testSubject.teardown(); // shouldn't throw
   }
 
-  private static final int THREAD_DELAY_ALLOWANCE_MS = 500;
-  private static final int THREAD_JOIN_TIMEOUT_MS = 5000;
-
   @Test
   public void teardownCancelsOngoingRequests() throws Exception {
     testSubject.setup(underlyingDispatcher);
@@ -113,21 +118,6 @@ public class SynchronizedRequestDispatcherTest {
     delayedRequest.allowToFinishOrBeCancelled();
     requestThread.join(THREAD_JOIN_TIMEOUT_MS);
     assertFalse(requestThread.isAlive());
-  }
-
-  private Thread startOnNewThread(ThrowingRunnable callback) {
-    return new Thread(
-        () -> {
-          try {
-            callback.run();
-          } catch (Throwable e) {
-            fail(
-                "unexpected exception from async request:\n\n"
-                    + e.getMessage()
-                    + "\n\n"
-                    + Arrays.toString(e.getStackTrace()));
-          }
-        });
   }
 
   @Test
@@ -196,7 +186,7 @@ public class SynchronizedRequestDispatcherTest {
     testSubject.setup(underlyingDispatcher);
     DelayedRequest delayedRequest = setupCancellableDelayedRequest();
     Thread requestThread =
-        new Thread(
+        startOnNewThread(
             () ->
                 assertThrows(
                     OperationCanceledException.class,
@@ -207,6 +197,33 @@ public class SynchronizedRequestDispatcherTest {
     delayedRequest.allowToFinishOrBeCancelled();
     requestThread.join(THREAD_JOIN_TIMEOUT_MS);
     assertFalse(requestThread.isAlive());
+  }
+
+  private MockedConstruction<CancellationSignal> setupBasicCancellationSignalsOnThisThread() {
+    return Mockito.mockConstruction(
+        CancellationSignal.class,
+        (mockSignal, context) -> {
+          setupBasicCancellationSignal(mockSignal);
+        });
+  }
+
+  private static final int THREAD_DELAY_ALLOWANCE_MS = 500;
+  private static final int THREAD_JOIN_TIMEOUT_MS = 5000;
+
+  private Thread startOnNewThread(ThrowingRunnable callback) {
+    return new Thread(
+        () -> {
+          try (MockedConstruction<CancellationSignal> cancellationSignalConstructionMock =
+              setupBasicCancellationSignalsOnThisThread()) {
+            callback.run();
+          } catch (Throwable e) {
+            fail(
+                "unexpected exception from async request:\n\n"
+                    + e.getMessage()
+                    + "\n\n"
+                    + Arrays.toString(e.getStackTrace()));
+          }
+        });
   }
 
   int delayedRequestPollIntervalMillis = 100;
@@ -266,8 +283,7 @@ public class SynchronizedRequestDispatcherTest {
         .thenReturn("immediately successful method response");
   }
 
-  private CancellationSignal makeBasicCancellationSignal() {
-    CancellationSignal mockSignal = mock(CancellationSignal.class);
+  private CancellationSignal setupBasicCancellationSignal(CancellationSignal mockSignal) {
     AtomicBoolean isCancelled = new AtomicBoolean(false);
     AtomicReference<CancellationSignal.OnCancelListener> onCancelListener =
         new AtomicReference<>(null);
@@ -286,7 +302,11 @@ public class SynchronizedRequestDispatcherTest {
         .when(mockSignal)
         .cancel();
 
-    doAnswer(
+    // lenient() prevents Mockito from throwing an UnnecessaryStubbingException - Mockito's default
+    // strict() context complains that this is unused because it is only ever used on secondary
+    // test threads, not the original @Test thread.
+    lenient()
+        .doAnswer(
             invocation -> {
               synchronized (mockSignal) {
                 if (isCancelled.get()) {

@@ -20,21 +20,17 @@ import com.google.android.apps.common.testing.accessibility.framework.utils.cont
 import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.List;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({
-  AccessibilityCheckPreset.class,
-  AccessibilityHierarchyAndroid.class,
-  AccessibilityCheckResultUtils.class
-})
+@RunWith(MockitoJUnitRunner.class)
 public class ATFAScannerTest {
 
   @Mock Bitmap bitmapMock;
@@ -44,35 +40,53 @@ public class ATFAScannerTest {
   @Mock AccessibilityHierarchyAndroid hierarchyMock;
   @Mock AccessibilityHierarchyAndroid.BuilderAndroid builderMock;
 
+  MockedStatic<AccessibilityCheckPreset> accessibilityCheckPresetStaticMock;
+  MockedStatic<AccessibilityHierarchyAndroid> accessibilityHierarchyAndroidStaticMock;
+  MockedStatic<AccessibilityCheckResultUtils> accessibilityCheckResultUtilsStaticMock;
+
   ATFAScanner testSubject;
   Parameters parametersStub;
   BitmapImage screenshotStub;
-  List<AccessibilityHierarchyCheckResult> resultsStub;
   List<AccessibilityHierarchyCheckResult> filteredResultsStub;
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(AccessibilityCheckPreset.class);
-    PowerMockito.mockStatic(AccessibilityHierarchyAndroid.class);
-    PowerMockito.mockStatic(AccessibilityCheckResultUtils.class);
+    accessibilityCheckPresetStaticMock = Mockito.mockStatic(AccessibilityCheckPreset.class);
+    accessibilityHierarchyAndroidStaticMock =
+        Mockito.mockStatic(AccessibilityHierarchyAndroid.class);
+    accessibilityCheckResultUtilsStaticMock =
+        Mockito.mockStatic(AccessibilityCheckResultUtils.class);
     screenshotStub = new BitmapImage(bitmapMock);
     parametersStub = new Parameters();
-    resultsStub = Collections.emptyList();
     filteredResultsStub = Collections.emptyList();
     testSubject = new ATFAScanner(contextMock);
   }
 
+  @After
+  public void cleanUp() {
+    accessibilityCheckResultUtilsStaticMock.close();
+    accessibilityHierarchyAndroidStaticMock.close();
+    accessibilityCheckPresetStaticMock.close();
+  }
+
   @Test
   public void scanWithATFAReturnsCorrectResult() throws ViewChangedException {
-    when(AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
-            AccessibilityCheckPreset.LATEST))
+    accessibilityCheckPresetStaticMock
+        .when(
+            () ->
+                AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
+                    AccessibilityCheckPreset.LATEST))
         .thenReturn(ImmutableSet.of(checkMock));
-    when(AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock))
+    accessibilityHierarchyAndroidStaticMock
+        .when(
+            () -> AccessibilityHierarchyAndroid.newBuilder(accessibilityNodeInfoMock, contextMock))
         .thenReturn(builderMock);
     when(builderMock.build()).thenReturn(hierarchyMock);
-    when(checkMock.runCheckOnHierarchy(hierarchyMock, null, parametersStub))
-        .thenReturn(resultsStub);
-    when(AccessibilityCheckResultUtils.getResultsForTypes(eq(resultsStub), anySet()))
+    accessibilityCheckResultUtilsStaticMock
+        .when(
+            () ->
+                AccessibilityCheckResultUtils.getResultsForTypes(
+                    eq(Collections.emptyList()), anySet()))
         .thenReturn(filteredResultsStub);
 
     Assert.assertEquals(

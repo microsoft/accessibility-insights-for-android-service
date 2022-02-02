@@ -6,28 +6,35 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.graphics.Color;
 import android.graphics.Paint;
 import java.util.HashMap;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({FocusVisualizerStyles.class, Color.class})
+@RunWith(MockitoJUnitRunner.class)
 public class FocusVisualizerStylesTest {
 
   FocusVisualizerStyles testSubject;
 
-  @Mock Paint paintMock;
+  MockedConstruction<Paint> paintConstructionMock;
+  MockedStatic<Color> colorStaticMock;
 
   @Before
   public void prepare() throws Exception {
-    PowerMockito.whenNew(Paint.class).withNoArguments().thenReturn(paintMock);
-    PowerMockito.mockStatic(Color.class);
+    paintConstructionMock = Mockito.mockConstruction(Paint.class);
+    colorStaticMock = Mockito.mockStatic(Color.class);
     testSubject = new FocusVisualizerStyles();
+  }
+
+  @After
+  public void cleanUp() {
+    colorStaticMock.close();
+    paintConstructionMock.close();
   }
 
   @Test

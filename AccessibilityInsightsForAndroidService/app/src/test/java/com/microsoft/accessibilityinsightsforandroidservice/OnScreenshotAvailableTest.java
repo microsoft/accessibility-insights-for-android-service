@@ -16,17 +16,17 @@ import android.media.ImageReader;
 import android.util.DisplayMetrics;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Logger.class})
+@RunWith(MockitoJUnitRunner.class)
 public class OnScreenshotAvailableTest {
 
   @Mock ImageReader imageReaderMock;
@@ -35,6 +35,8 @@ public class OnScreenshotAvailableTest {
   @Mock Image.Plane imagePlaneMock;
   @Mock BitmapProvider bitmapProviderMock;
   @Mock Bitmap bitmapMock;
+
+  MockedStatic<Logger> loggerStaticMock;
 
   Image.Plane[] imagePlanesStub;
   OnScreenshotAvailable testSubject;
@@ -46,7 +48,7 @@ public class OnScreenshotAvailableTest {
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(Logger.class);
+    loggerStaticMock = Mockito.mockStatic(Logger.class);
 
     DisplayMetrics metricsStub = new DisplayMetrics();
     metricsStub.widthPixels = widthStub;
@@ -59,6 +61,11 @@ public class OnScreenshotAvailableTest {
     imagePlanesStub[0] = imagePlaneMock;
 
     testSubject = new OnScreenshotAvailable(metricsStub, bitmapProviderMock, bitmapConsumerMock);
+  }
+
+  @After
+  public void cleanup() {
+    loggerStaticMock.close();
   }
 
   @Test

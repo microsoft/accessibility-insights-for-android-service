@@ -6,6 +6,7 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.view.View;
+import androidx.annotation.VisibleForTesting;
 import java.util.ArrayList;
 
 public class FocusVisualizationCanvas extends View {
@@ -22,7 +23,8 @@ public class FocusVisualizationCanvas extends View {
     this.drawHighlightsAndLines(canvas);
   }
 
-  private void drawHighlightsAndLines(Canvas canvas) {
+  @VisibleForTesting
+  public void drawHighlightsAndLines(Canvas canvas) {
     if (this.focusElementHighlights == null) {
       return;
     }

@@ -3,24 +3,24 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static org.powermock.api.mockito.PowerMockito.when;
-
 import android.graphics.Bitmap;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Bitmap.class})
+@RunWith(MockitoJUnitRunner.class)
 public class BitmapProviderTest {
 
   @Mock Bitmap.Config config;
   @Mock Bitmap bitmapMock;
+  MockedStatic<Bitmap> bitmapStaticMock;
+
   private final int width = 1;
   private final int height = 2;
 
@@ -28,9 +28,14 @@ public class BitmapProviderTest {
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(Bitmap.class);
-    when(Bitmap.createBitmap(width, height, config)).thenReturn(bitmapMock);
+    bitmapStaticMock = Mockito.mockStatic(Bitmap.class);
+    bitmapStaticMock.when(() -> Bitmap.createBitmap(width, height, config)).thenReturn(bitmapMock);
     testSubject = new BitmapProvider();
+  }
+
+  @After
+  public void cleanUp() {
+    bitmapStaticMock.close();
   }
 
   @Test
@@ -39,7 +44,6 @@ public class BitmapProviderTest {
     Assert.assertNotNull(createdBitmap);
     Assert.assertEquals(createdBitmap, bitmapMock);
 
-    PowerMockito.verifyStatic(Bitmap.class);
-    Bitmap.createBitmap(width, height, config);
+    bitmapStaticMock.verify(() -> Bitmap.createBitmap(width, height, config));
   }
 }

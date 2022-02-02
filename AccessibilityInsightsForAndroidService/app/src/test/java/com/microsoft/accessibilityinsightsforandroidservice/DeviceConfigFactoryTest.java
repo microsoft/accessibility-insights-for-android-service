@@ -5,19 +5,15 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.mockito.Mockito.when;
 
-import android.os.Build;
 import android.view.accessibility.AccessibilityNodeInfo;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Build.class})
+@RunWith(MockitoJUnitRunner.class)
 public class DeviceConfigFactoryTest {
   final CharSequence samplePackageName = "test-package-name";
   final String packageNameUnavailable = "No application detected";
@@ -29,7 +25,7 @@ public class DeviceConfigFactoryTest {
 
   @Before
   public void prepare() {
-    testSubject = new DeviceConfigFactory();
+    testSubject = new DeviceConfigFactory(sampleBuildModel);
   }
 
   @Test
@@ -44,8 +40,6 @@ public class DeviceConfigFactoryTest {
 
   @Test
   public void deviceConfigFactoryPropertiesExist() {
-    Whitebox.setInternalState(Build.class, "MODEL", sampleBuildModel);
-
     DeviceConfig deviceConfig = testSubject.getDeviceConfig(mockRootNode);
 
     Assert.assertNotNull(deviceConfig.deviceName);

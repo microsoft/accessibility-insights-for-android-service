@@ -6,7 +6,7 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
@@ -19,6 +19,7 @@ import android.util.DisplayMetrics;
 import android.view.Surface;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -26,12 +27,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({ImageReader.class})
+@RunWith(MockitoJUnitRunner.class)
 public class ScreenshotControllerTest {
 
   @Mock Supplier<DisplayMetrics> displayMetricsSupplierMock;
@@ -46,6 +46,9 @@ public class ScreenshotControllerTest {
   @Mock Bitmap bitmapMock;
   @Mock OnScreenshotAvailable onScreenshotAvailableMock;
   @Mock VirtualDisplay displayMock;
+
+  MockedStatic<ImageReader> imageReaderStaticMock;
+
   @Captor ArgumentCaptor<Consumer<Bitmap>> bitmapConsumerCallback;
 
   DisplayMetrics displayMetricsStub;
@@ -53,6 +56,7 @@ public class ScreenshotControllerTest {
 
   @Before
   public void prepare() {
+    imageReaderStaticMock = Mockito.mockStatic(ImageReader.class);
     displayMetricsStub = new DisplayMetricsStub();
     testSubject =
         new ScreenshotController(
@@ -61,6 +65,11 @@ public class ScreenshotControllerTest {
             onScreenshotAvailableProviderMock,
             bitmapProviderMock,
             mediaProjectionSupplierMock);
+  }
+
+  @After
+  public void cleanUp() {
+    imageReaderStaticMock.close();
   }
 
   @Test
@@ -79,15 +88,17 @@ public class ScreenshotControllerTest {
 
   @Test
   public void createVirtualDisplayWithExpectedImageReader() {
-    PowerMockito.mockStatic(ImageReader.class);
     bitmapConsumerCallback = createBitmapConsumerCallback();
     when(mediaProjectionSupplierMock.get()).thenReturn(mediaProjectionMock);
     when(displayMetricsSupplierMock.get()).thenReturn(displayMetricsStub);
-    when(ImageReader.newInstance(
-            displayMetricsStub.widthPixels,
-            displayMetricsStub.heightPixels,
-            PixelFormat.RGBA_8888,
-            2))
+    imageReaderStaticMock
+        .when(
+            () ->
+                ImageReader.newInstance(
+                    displayMetricsStub.widthPixels,
+                    displayMetricsStub.heightPixels,
+                    PixelFormat.RGBA_8888,
+                    2))
         .thenReturn(imageReaderMock);
     when(imageReaderMock.getSurface()).thenReturn(surfaceMock);
     when(onScreenshotAvailableProviderMock.getOnScreenshotAvailable(
@@ -118,14 +129,16 @@ public class ScreenshotControllerTest {
 
   @Test
   public void createVirtualDisplayCleansResourcesAppropriatelyBeforeGettingScreenshot() {
-    PowerMockito.mockStatic(ImageReader.class);
     when(mediaProjectionSupplierMock.get()).thenReturn(mediaProjectionMock);
     when(displayMetricsSupplierMock.get()).thenReturn(displayMetricsStub);
-    when(ImageReader.newInstance(
-            displayMetricsStub.widthPixels,
-            displayMetricsStub.heightPixels,
-            PixelFormat.RGBA_8888,
-            2))
+    imageReaderStaticMock
+        .when(
+            () ->
+                ImageReader.newInstance(
+                    displayMetricsStub.widthPixels,
+                    displayMetricsStub.heightPixels,
+                    PixelFormat.RGBA_8888,
+                    2))
         .thenReturn(imageReaderMock);
     when(imageReaderMock.getSurface()).thenReturn(surfaceMock);
     when(mediaProjectionMock.createVirtualDisplay(

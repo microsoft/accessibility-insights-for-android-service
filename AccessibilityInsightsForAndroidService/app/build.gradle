@@ -61,31 +61,6 @@ android {
         // experimental rules that trigger other false positive warnings if enabled.
         ignore 'ConvertToWebp', 'GoogleAppIndexingWarning', 'SyntheticAccessor', 'UnsafeExperimentalUsageError', 'UnsafeExperimentalUsageWarning'
     }
-    testOptions.unitTests.all {
-        // This is a workaround for https://github.com/powermock/powermock/issues/969, based on
-        // comment https://github.com/powermock/powermock/issues/969#issuecomment-841267805
-        jvmArgs "--illegal-access=warn",
-                "--add-opens","java.logging/java.util.logging=ALL-UNNAMED",
-                "--add-opens","java.base/java.time.zone=ALL-UNNAMED",
-                "--add-opens","java.base/java.lang.reflect=ALL-UNNAMED",
-                "--add-opens","java.base/java.security.cert=ALL-UNNAMED",
-                "--add-opens","java.base/java.text=ALL-UNNAMED",
-                "--add-opens","java.base/java.net=ALL-UNNAMED",
-                "--add-opens","java.base/java.nio=ALL-UNNAMED",
-                "--add-opens","java.base/java.nio.charset=ALL-UNNAMED",
-                "--add-opens","java.base/java.nio.file=ALL-UNNAMED",
-                "--add-opens","java.base/sun.nio.fs=ALL-UNNAMED",
-                "--add-opens","java.base/sun.security.x509=ALL-UNNAMED",
-                "--add-opens","java.base/java.util.regex=ALL-UNNAMED",
-                "--add-opens","java.base/java.util.stream=ALL-UNNAMED",
-                "--add-opens","java.base/java.util.concurrent=ALL-UNNAMED",
-                "--add-opens","java.base/java.util.concurrent.atomic=ALL-UNNAMED",
-                "--add-opens","java.base/java.util.concurrent.locks=ALL-UNNAMED",
-                "--add-opens","java.base/java.time=ALL-UNNAMED",
-                "--add-opens","java.base/java.util=ALL-UNNAMED",
-                "--add-opens","java.base/java.io=ALL-UNNAMED",
-                "--add-opens","java.base/java.lang=ALL-UNNAMED"
-    }
     tasks.withType(JavaCompile) {
         configure(options) {
             options.compilerArgs << '-Xlint:deprecation' << '-Xlint:unchecked' << '-Werror'
@@ -120,10 +95,7 @@ dependencies {
     lintClassPath 'org.bouncycastle:bcpkix-jdk15on:1.70'
     lintClassPath 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.mockito:mockito-core:3.12.4'
-    testImplementation 'org.powermock:powermock-api-mockito2:2.0.9'
-    testImplementation 'org.powermock:powermock-core:2.0.9'
-    testImplementation 'org.powermock:powermock-module-junit4:2.0.9'
+    testImplementation 'org.mockito:mockito-inline:4.3.1'
 }
 
 configurations.all {

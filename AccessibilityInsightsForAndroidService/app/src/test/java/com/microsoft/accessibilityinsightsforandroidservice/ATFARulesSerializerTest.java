@@ -3,8 +3,6 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
-import static org.mockito.Mockito.when;
-
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityCheckPreset;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheck;
 import com.google.android.apps.common.testing.accessibility.framework.AccessibilityHierarchyCheckResult;
@@ -13,23 +11,23 @@ import com.google.android.apps.common.testing.accessibility.framework.ResultMeta
 import com.google.android.apps.common.testing.accessibility.framework.uielement.AccessibilityHierarchy;
 import com.google.android.apps.common.testing.accessibility.framework.uielement.ViewHierarchyElement;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({AccessibilityCheckPreset.class, GsonBuilder.class, Gson.class})
+@RunWith(MockitoJUnitRunner.class)
 public class ATFARulesSerializerTest {
+  MockedStatic<AccessibilityCheckPreset> accessibilityCheckPresetStaticMock;
+
   ATFARulesSerializer testSubject;
 
   class TestCheckClass extends AccessibilityHierarchyCheck {
@@ -74,8 +72,13 @@ public class ATFARulesSerializerTest {
 
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(AccessibilityCheckPreset.class);
+    accessibilityCheckPresetStaticMock = Mockito.mockStatic(AccessibilityCheckPreset.class);
     testSubject = new ATFARulesSerializer();
+  }
+
+  @After
+  public void cleanUp() {
+    accessibilityCheckPresetStaticMock.close();
   }
 
   @Test
@@ -95,8 +98,11 @@ public class ATFARulesSerializerTest {
             + "  }\n"
             + "]";
 
-    when(AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
-            AccessibilityCheckPreset.LATEST))
+    accessibilityCheckPresetStaticMock
+        .when(
+            () ->
+                AccessibilityCheckPreset.getAccessibilityHierarchyChecksForPreset(
+                    AccessibilityCheckPreset.LATEST))
         .thenReturn(ImmutableSet.of(checkStub));
 
     String actualSerializedRules = testSubject.serializeATFARules();

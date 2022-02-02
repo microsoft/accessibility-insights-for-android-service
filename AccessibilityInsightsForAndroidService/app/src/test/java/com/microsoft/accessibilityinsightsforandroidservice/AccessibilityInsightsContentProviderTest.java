@@ -3,17 +3,15 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 import android.net.Uri;
 import android.os.Binder;
@@ -22,20 +20,17 @@ import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import java.io.File;
 import java.io.IOException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({
-  Binder.class,
-  AccessibilityInsightsContentProvider.class,
-  ParcelFileDescriptor.class
-})
+@RunWith(MockitoJUnitRunner.class)
 public class AccessibilityInsightsContentProviderTest {
   @Mock Uri uriMock;
   @Mock CancellationSignal cancellationSignalMock;
@@ -43,22 +38,32 @@ public class AccessibilityInsightsContentProviderTest {
   @Mock SynchronizedRequestDispatcher requestDispatcherMock;
   @Mock ParcelFileDescriptor tempFileDescriptor;
   @Mock File tempFileMock;
-  @Mock Bundle bundleMock;
+
+  MockedStatic<Binder> binderStaticMock;
+  MockedStatic<ParcelFileDescriptor> parcelFileDescriptorStaticMock;
+  MockedConstruction<Bundle> bundleConstructionMock;
 
   AccessibilityInsightsContentProvider testSubject;
 
   @Before
   public void prepare() throws Exception {
-    PowerMockito.mockStatic(Binder.class);
+    binderStaticMock = Mockito.mockStatic(Binder.class);
+    parcelFileDescriptorStaticMock = Mockito.mockStatic(ParcelFileDescriptor.class);
+    bundleConstructionMock = Mockito.mockConstruction(Bundle.class);
+
     testSubject = new AccessibilityInsightsContentProvider();
     assertTrue(testSubject.onCreate(requestDispatcherMock, tempFileProviderMock));
 
-    whenNew(Bundle.class).withNoArguments().thenReturn(bundleMock);
-    doNothing().when(bundleMock).putString(anyString(), anyString());
-
-    PowerMockito.mockStatic(ParcelFileDescriptor.class);
-    when(ParcelFileDescriptor.open(tempFileMock, ParcelFileDescriptor.MODE_READ_ONLY))
+    parcelFileDescriptorStaticMock
+        .when(() -> ParcelFileDescriptor.open(tempFileMock, ParcelFileDescriptor.MODE_READ_ONLY))
         .thenReturn(tempFileDescriptor);
+  }
+
+  @After
+  public void cleanUp() {
+    bundleConstructionMock.close();
+    parcelFileDescriptorStaticMock.close();
+    binderStaticMock.close();
   }
 
   private void setupCallerAsAdb() {
@@ -76,7 +81,7 @@ public class AccessibilityInsightsContentProviderTest {
   @Test
   public void callEmitsBundleWithSerializedSecurityExceptionIfNotAdb() {
     setupCallerAsNotAdb();
-    assertThrows(SecurityException.class, () -> testSubject.openFile(uriMock, "r", null));
+    assertThrows(SecurityException.class, () -> testSubject.call("METHOD", "ARG", null));
   }
 
   @Test
@@ -121,11 +126,8 @@ public class AccessibilityInsightsContentProviderTest {
   @Test
   public void openFileThrowsRuntimeExceptionOnTempFileError() throws Exception {
     setupCallerAsAdb();
-    String dispatcherResponse = "dispatcher response";
+
     when(uriMock.getPath()).thenReturn("uri-path");
-    String expectedMethod = "/uri-path";
-    when(requestDispatcherMock.request(expectedMethod, cancellationSignalMock))
-        .thenReturn(dispatcherResponse);
     when(tempFileProviderMock.createTempFileWithContents(any()))
         .thenThrow(new IOException("tempFileProvider error"));
 
@@ -143,8 +145,11 @@ public class AccessibilityInsightsContentProviderTest {
     when(requestDispatcherMock.request(eq(expectedMethod), notNull()))
         .thenReturn(dispatcherResponse);
 
-    assertSame(bundleMock, testSubject.call("method", null, null));
-    verify(bundleMock).putString("response", dispatcherResponse);
+    Bundle returnedBundle = testSubject.call("method", null, null);
+
+    assertEquals(1, bundleConstructionMock.constructed().size());
+    assertSame(returnedBundle, bundleConstructionMock.constructed().get(0));
+    verify(returnedBundle).putString("response", dispatcherResponse);
   }
 
   @Test
@@ -154,9 +159,11 @@ public class AccessibilityInsightsContentProviderTest {
     when(requestDispatcherMock.request(eq(expectedMethod), notNull()))
         .thenThrow(new Exception("dispatcher error"));
 
-    assertSame(bundleMock, testSubject.call("method", null, null));
+    Bundle returnedBundle = testSubject.call("method", null, null);
 
+    assertEquals(1, bundleConstructionMock.constructed().size());
+    assertSame(returnedBundle, bundleConstructionMock.constructed().get(0));
     String serializedException = "java.lang.Exception: dispatcher error";
-    verify(bundleMock).putString("response", serializedException);
+    verify(returnedBundle).putString("response", serializedException);
   }
 }

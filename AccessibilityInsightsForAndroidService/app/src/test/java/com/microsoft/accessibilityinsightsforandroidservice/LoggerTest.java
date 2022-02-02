@@ -4,118 +4,122 @@
 package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.util.Log;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Log.class})
+@RunWith(MockitoJUnitRunner.class)
 public class LoggerTest {
 
   final String logTag = "logTag";
   final String logMessage = "log message";
 
+  boolean originalEnableLogging;
+  MockedStatic<Log> logStaticMock;
+
   @Before
   public void prepare() {
-    PowerMockito.mockStatic(Log.class);
+    logStaticMock = Mockito.mockStatic(Log.class);
+    originalEnableLogging = Logger.ENABLE_LOGGING;
+  }
+
+  @After
+  public void cleanUp() {
+    Logger.ENABLE_LOGGING = originalEnableLogging;
+    logStaticMock.close();
   }
 
   @Test
   public void logVerboseDebugOn() {
-    Whitebox.setInternalState(Logger.class, "LOG", true);
+    Logger.ENABLE_LOGGING = true;
 
     Logger.logVerbose(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.v(logTag, logMessage);
+    logStaticMock.verify(() -> Log.v(logTag, logMessage));
   }
 
   @Test
   public void logVerboseDebugOff() {
-    Whitebox.setInternalState(Logger.class, "LOG", false);
+    Logger.ENABLE_LOGGING = false;
 
     Logger.logVerbose(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
   public void logDebugDebugOn() {
-    Whitebox.setInternalState(Logger.class, "LOG", true);
+    Logger.ENABLE_LOGGING = true;
 
     Logger.logDebug(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.d(logTag, logMessage);
+    logStaticMock.verify(() -> Log.d(logTag, logMessage));
   }
 
   @Test
   public void logDebugDebugOff() {
-    Whitebox.setInternalState(Logger.class, "LOG", false);
+    Logger.ENABLE_LOGGING = false;
 
     Logger.logDebug(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
   public void logErrorDebugOn() {
-    Whitebox.setInternalState(Logger.class, "LOG", true);
+    Logger.ENABLE_LOGGING = true;
 
     Logger.logError(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.e(logTag, logMessage);
+    logStaticMock.verify(() -> Log.e(logTag, logMessage));
   }
 
   @Test
   public void logErrorDebugOff() {
-    Whitebox.setInternalState(Logger.class, "LOG", false);
+    Logger.ENABLE_LOGGING = false;
 
     Logger.logError(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
   public void logInfoDebugOn() {
-    Whitebox.setInternalState(Logger.class, "LOG", true);
+    Logger.ENABLE_LOGGING = true;
 
     Logger.logInfo(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.i(logTag, logMessage);
+    logStaticMock.verify(() -> Log.i(logTag, logMessage));
   }
 
   @Test
   public void logInfoDebugOff() {
-    Whitebox.setInternalState(Logger.class, "LOG", false);
+    Logger.ENABLE_LOGGING = false;
 
     Logger.logInfo(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 
   @Test
   public void logWarningDebugOn() {
-    Whitebox.setInternalState(Logger.class, "LOG", true);
+    Logger.ENABLE_LOGGING = true;
 
     Logger.logWarning(logTag, logMessage);
 
-    PowerMockito.verifyStatic(Log.class);
-    Log.w(logTag, logMessage);
+    logStaticMock.verify(() -> Log.w(logTag, logMessage));
   }
 
   @Test
   public void logWarningDebugOff() {
-    Whitebox.setInternalState(Logger.class, "LOG", false);
+    Logger.ENABLE_LOGGING = false;
 
     Logger.logWarning(logTag, logMessage);
 
-    PowerMockito.verifyZeroInteractions(Log.class);
+    logStaticMock.verifyNoMoreInteractions();
   }
 }
