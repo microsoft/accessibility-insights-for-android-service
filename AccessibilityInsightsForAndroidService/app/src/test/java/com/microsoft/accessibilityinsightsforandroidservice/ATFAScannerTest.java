@@ -20,21 +20,18 @@ import com.google.android.apps.common.testing.accessibility.framework.utils.cont
 import com.google.common.collect.ImmutableSet;
 import java.util.Collections;
 import java.util.List;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({
-  AccessibilityCheckPreset.class,
-  AccessibilityHierarchyAndroid.class,
-  AccessibilityCheckResultUtils.class
-})
 public class ATFAScannerTest {
 
   @Mock Bitmap bitmapMock;

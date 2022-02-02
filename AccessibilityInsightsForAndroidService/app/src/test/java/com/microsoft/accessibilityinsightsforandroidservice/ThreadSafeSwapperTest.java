@@ -9,7 +9,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.powermock.reflect.Whitebox;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ThreadSafeSwapperTest {
@@ -33,7 +32,7 @@ public class ThreadSafeSwapperTest {
 
   @Test
   public void swapReturnsSwappedOutObject() {
-    Whitebox.setInternalState(testSubject, "currentObject", mockOldObject);
+    testSubject.swap(mockOldObject);
 
     GenericTestObject actualReturnedObject = testSubject.swap(mockNewObject);
 
@@ -42,7 +41,7 @@ public class ThreadSafeSwapperTest {
 
   @Test
   public void swapReplacesCurrentObjectWithMethodParameter() {
-    Whitebox.setInternalState(testSubject, "currentObject", mockOldObject);
+    testSubject.swap(mockOldObject);
 
     GenericTestObject actualOldObject = testSubject.swap(mockIntermediateObject);
     GenericTestObject actualIntermediateObject = testSubject.swap(mockNewObject);
@@ -54,7 +53,7 @@ public class ThreadSafeSwapperTest {
   @Test
   public void setIfCurrentlyNullDoesNotSetCurrentObjectIfNotNull() {
     boolean expectedReturnValue = false;
-    Whitebox.setInternalState(testSubject, "currentObject", mockOldObject);
+    testSubject.swap(mockOldObject);
 
     boolean actualReturnValue = testSubject.setIfCurrentlyNull(mockNewObject);
 
@@ -64,7 +63,7 @@ public class ThreadSafeSwapperTest {
   @Test
   public void setIfCurrentlyNullSetsCurrentObjectIfNull() {
     boolean expectedReturnValue = true;
-    Whitebox.setInternalState(testSubject, "currentObject", (GenericTestObject) null);
+    testSubject.swap(null);
 
     boolean actualReturnValue = testSubject.setIfCurrentlyNull(mockNewObject);
 

@@ -38,12 +38,11 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({TempFileProvider.class})
 public class TempFileProviderTest {
 
   @Mock Context contextMock;
@@ -85,17 +84,17 @@ public class TempFileProviderTest {
 
   @Test
   public void tempFileCreateWithSpecialCharactersInContent() throws IOException {
-    String specialCharactes = "\uD83E\uDD8F \uD83D\uDE1F \uD83D\uDC39 ⌛️";
-    File tempFile = testSubject.createTempFileWithContents(specialCharactes);
+    String specialCharacters = "\uD83E\uDD8F \uD83D\uDE1F \uD83D\uDC39 ⌛️";
+    File tempFile = testSubject.createTempFileWithContents(specialCharacters);
     byte[] fileContent = Files.readAllBytes(tempFile.toPath());
-    assertArrayEquals(specialCharactes.getBytes(StandardCharsets.UTF_8), fileContent);
+    assertArrayEquals(specialCharacters.getBytes(StandardCharsets.UTF_8), fileContent);
   }
 
   @Test
   public void createTempFileWithContentsThrowsIOExceptionIfTempFileCanNotBeCreated()
       throws IOException {
     try (MockedStatic<File> fileStaticMock = Mockito.mockStatic(File.class)) {
-      fileStaticMock.when(File::createTempFile).thenThrow(new IOException());
+      fileStaticMock.when(() -> File.createTempFile(any(), any())).thenThrow(new IOException());
       assertThrows(IOException.class, () -> testSubject.createTempFileWithContents("Content"));
     }
   }

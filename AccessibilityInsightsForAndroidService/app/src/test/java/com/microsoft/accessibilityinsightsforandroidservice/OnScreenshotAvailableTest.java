@@ -16,17 +16,18 @@ import android.media.ImageReader;
 import android.util.DisplayMetrics;
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({Logger.class})
 public class OnScreenshotAvailableTest {
 
   @Mock ImageReader imageReaderMock;
@@ -36,7 +37,7 @@ public class OnScreenshotAvailableTest {
   @Mock BitmapProvider bitmapProviderMock;
   @Mock Bitmap bitmapMock;
 
-  MockedStatic loggerStaticMock;
+  MockedStatic<Logger> loggerStaticMock;
 
   Image.Plane[] imagePlanesStub;
   OnScreenshotAvailable testSubject;

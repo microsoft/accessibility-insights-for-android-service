@@ -13,22 +13,21 @@ import com.google.android.apps.common.testing.accessibility.framework.ResultMeta
 import com.google.android.apps.common.testing.accessibility.framework.uielement.AccessibilityHierarchy;
 import com.google.android.apps.common.testing.accessibility.framework.uielement.ViewHierarchyElement;
 import com.google.common.collect.ImmutableSet;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonParser;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
+
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({AccessibilityCheckPreset.class, GsonBuilder.class, Gson.class})
 public class ATFARulesSerializerTest {
   MockedStatic<AccessibilityCheckPreset> accessibilityCheckPresetStaticMock;
 

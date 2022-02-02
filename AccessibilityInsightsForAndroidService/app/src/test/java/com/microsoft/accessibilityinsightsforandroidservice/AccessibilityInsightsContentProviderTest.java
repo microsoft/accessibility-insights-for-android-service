@@ -3,11 +3,11 @@
 
 package com.microsoft.accessibilityinsightsforandroidservice;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.verify;
@@ -20,19 +20,18 @@ import android.os.CancellationSignal;
 import android.os.ParcelFileDescriptor;
 import java.io.File;
 import java.io.IOException;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({
-  Binder.class,
-  AccessibilityInsightsContentProvider.class,
-  ParcelFileDescriptor.class
-})
 public class AccessibilityInsightsContentProviderTest {
   @Mock Uri uriMock;
   @Mock CancellationSignal cancellationSignalMock;

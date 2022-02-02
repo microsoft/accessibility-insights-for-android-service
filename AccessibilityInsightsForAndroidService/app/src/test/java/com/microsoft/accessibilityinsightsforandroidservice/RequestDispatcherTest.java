@@ -5,21 +5,20 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.verifyStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.mockito.Mockito.when;
 
 import android.os.CancellationSignal;
+
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
-@PrepareForTest({Logger.class})
 public class RequestDispatcherTest {
   @Mock ScreenshotController screenshotController;
   @Mock AxeScanner axeScanner;
@@ -57,7 +56,7 @@ public class RequestDispatcherTest {
   }
 
   private void setupMockRequestFulfiller() throws Exception {
-    testSubject = PowerMockito.spy(testSubject);
+    testSubject = Mockito.spy(testSubject);
     when(testSubject.getRequestFulfiller("mock method")).thenReturn(requestFulfillerMock);
     when(requestFulfillerMock.fulfillRequest(cancellationSignal)).thenReturn("mock response");
   }
