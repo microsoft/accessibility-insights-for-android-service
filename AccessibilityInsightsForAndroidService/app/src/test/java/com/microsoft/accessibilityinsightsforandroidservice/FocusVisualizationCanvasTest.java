@@ -10,7 +10,6 @@ import static org.mockito.Mockito.times;
 import android.content.Context;
 import android.graphics.Canvas;
 import java.util.ArrayList;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,29 +30,6 @@ public class FocusVisualizationCanvasTest {
     testSubject = new FocusVisualizationCanvas(contextMock);
   }
 
-    /* TODO: fix Whitebox cases
-
-  @Test
-  public void setDrawItems() {
-    ArrayList<FocusElementHighlight> highlightStub = new ArrayList<>();
-    highlightStub.add(focusElementHighlightMock);
-    highlightStub.add(focusElementHighlightMock);
-
-    ArrayList<FocusElementLine> lineStub = new ArrayList<>();
-    lineStub.add(focusElementLineMock);
-    lineStub.add(focusElementLineMock);
-    lineStub.add(focusElementLineMock);
-
-    testSubject.setDrawItems(highlightStub, lineStub);
-    ArrayList<FocusElementHighlight> resultingElementArrayList =
-        Whitebox.getInternalState(testSubject, "focusElementHighlights");
-    Assert.assertEquals(resultingElementArrayList.size(), 2);
-
-    ArrayList<FocusElementHighlight> resultingLineArrayList =
-        Whitebox.getInternalState(testSubject, "focusElementLines");
-    Assert.assertEquals(resultingLineArrayList.size(), 3);
-  }
-
   @Test
   public void drawHighlightsAndLinesOnlyDrawsHighlightOnFirstPass() throws Exception {
     ArrayList<FocusElementLine> lineStub = new ArrayList<>();
@@ -63,8 +39,7 @@ public class FocusVisualizationCanvasTest {
     highlightStub.add(focusElementHighlightMock);
 
     testSubject.setDrawItems(highlightStub, lineStub);
-
-    Whitebox.invokeMethod(testSubject, "drawHighlightsAndLines", canvasMock);
+    testSubject.drawHighlightsAndLines(canvasMock);
 
     verify(focusElementHighlightMock, times(1)).drawElementHighlight(any(Canvas.class));
     verify(focusElementLineMock, times(0)).drawLine(any(Canvas.class));
@@ -81,8 +56,7 @@ public class FocusVisualizationCanvasTest {
     highlightStub.add(focusElementHighlightMock);
 
     testSubject.setDrawItems(highlightStub, lineStub);
-
-    Whitebox.invokeMethod(testSubject, "drawHighlightsAndLines", canvasMock);
+    testSubject.drawHighlightsAndLines(canvasMock);
 
     // Note: drawElementHighlight will call twice for each subsequent onDraw event.  This is to
     // ensure that the line is drawn underneath the highlight, as the canvas drawings draw on
@@ -90,6 +64,4 @@ public class FocusVisualizationCanvasTest {
     verify(focusElementHighlightMock, times(3)).drawElementHighlight(any(Canvas.class));
     verify(focusElementLineMock, times(1)).drawLine(any(Canvas.class));
   }
-
-     */
 }
