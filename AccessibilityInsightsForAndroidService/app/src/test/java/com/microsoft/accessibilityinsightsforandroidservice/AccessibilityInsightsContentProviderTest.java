@@ -81,7 +81,7 @@ public class AccessibilityInsightsContentProviderTest {
   @Test
   public void callEmitsBundleWithSerializedSecurityExceptionIfNotAdb() {
     setupCallerAsNotAdb();
-    assertThrows(SecurityException.class, () -> testSubject.openFile(uriMock, "r", null));
+    assertThrows(SecurityException.class, () -> testSubject.call("METHOD", "ARG", null));
   }
 
   @Test
@@ -126,11 +126,8 @@ public class AccessibilityInsightsContentProviderTest {
   @Test
   public void openFileThrowsRuntimeExceptionOnTempFileError() throws Exception {
     setupCallerAsAdb();
-    String dispatcherResponse = "dispatcher response";
+
     when(uriMock.getPath()).thenReturn("uri-path");
-    String expectedMethod = "/uri-path";
-    when(requestDispatcherMock.request(expectedMethod, cancellationSignalMock))
-        .thenReturn(dispatcherResponse);
     when(tempFileProviderMock.createTempFileWithContents(any()))
         .thenThrow(new IOException("tempFileProvider error"));
 
@@ -148,11 +145,11 @@ public class AccessibilityInsightsContentProviderTest {
     when(requestDispatcherMock.request(eq(expectedMethod), notNull()))
         .thenReturn(dispatcherResponse);
 
-    assertEquals(1, bundleConstructionMock.constructed().size());
-    Bundle bundleMock = bundleConstructionMock.constructed().get(0);
+    Bundle returnedBundle = testSubject.call("method", null, null);
 
-    assertSame(bundleMock, testSubject.call("method", null, null));
-    verify(bundleMock).putString("response", dispatcherResponse);
+    assertEquals(1, bundleConstructionMock.constructed().size());
+    assertSame(returnedBundle, bundleConstructionMock.constructed().get(0));
+    verify(returnedBundle).putString("response", dispatcherResponse);
   }
 
   @Test
@@ -162,10 +159,11 @@ public class AccessibilityInsightsContentProviderTest {
     when(requestDispatcherMock.request(eq(expectedMethod), notNull()))
         .thenThrow(new Exception("dispatcher error"));
 
-    assertEquals(1, bundleConstructionMock.constructed().size());
-    Bundle bundleMock = bundleConstructionMock.constructed().get(0);
+    Bundle returnedBundle = testSubject.call("method", null, null);
 
+    assertEquals(1, bundleConstructionMock.constructed().size());
+    assertSame(returnedBundle, bundleConstructionMock.constructed().get(0));
     String serializedException = "java.lang.Exception: dispatcher error";
-    verify(bundleMock).putString("response", serializedException);
+    verify(returnedBundle).putString("response", serializedException);
   }
 }
