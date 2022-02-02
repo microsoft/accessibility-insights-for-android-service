@@ -47,14 +47,13 @@ public class TempFileProviderTest {
 
   @Mock Context contextMock;
   @Mock WorkManager workManagerMock;
-  @Captor ArgumentCaptor<List<? extends WorkRequest>> workRequestCaptor;
+  @Captor ArgumentCaptor<WorkRequest> workRequestCaptor;
 
   TempFileProvider testSubject;
   File cacheDirectory;
 
   void makeFileLookOld(File file) {
-    // We substract one second because the setLastModified documentation said is acurate to one
-    // second
+    // We subtract one second because setLastModified is documented as being accurate to 1s
     file.setLastModified(
         new Date().getTime() - TempFileProvider.tempFileLifetimeMillis - 60 * 1000);
   }
@@ -94,7 +93,7 @@ public class TempFileProviderTest {
   public void createTempFileWithContentsThrowsIOExceptionIfTempFileCanNotBeCreated()
       throws IOException {
     try (MockedStatic<File> fileStaticMock = Mockito.mockStatic(File.class)) {
-      fileStaticMock.when(() -> File.createTempFile(any(), any())).thenThrow(new IOException());
+      fileStaticMock.when(() -> File.createTempFile(any(), any(), any())).thenThrow(new IOException());
       assertThrows(IOException.class, () -> testSubject.createTempFileWithContents("Content"));
     }
   }
@@ -169,16 +168,11 @@ public class TempFileProviderTest {
             null, inputData, new ArrayList<>(), null, 1, null, null, null, null, null);
     return workerParameters;
   }
-
-  // We are working with the version of the enqueue method that returns a list
-  // because it is the only one that Mockito can mock.
-  // The version that accepts a WorkRequest as a parameter is marked as final.
-  // We are assuming that the list will only contain the current WorkingManager information.
+  
   @NonNull
   private WorkSpec getLastWorkManagerRequest() {
     verify(workManagerMock, times(1)).enqueue(workRequestCaptor.capture());
-    assertEquals(1, workRequestCaptor.getValue().size());
-    WorkSpec workSpec = workRequestCaptor.getValue().get(0).getWorkSpec();
+    WorkSpec workSpec = workRequestCaptor.getValue().getWorkSpec();
     return workSpec;
   }
 }
