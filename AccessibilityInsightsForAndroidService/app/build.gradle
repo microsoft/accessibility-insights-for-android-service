@@ -87,7 +87,6 @@ dependencies {
         exclude group: 'org.checkerframework', module: 'checker'
     }
     implementation 'com.google.code.gson:gson:2.9.0'
-
     implementation 'com.google.guava:guava:31.0.1-android'
 
     // Dev dependencies (not redistributed)
