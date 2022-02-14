@@ -96,6 +96,14 @@ dependencies {
     lintClassPath 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.mockito:mockito-inline:4.3.1'
+    constraints {
+        lintClassPath('com.google.code.gson:gson') {
+            version {
+                strictly '[2.8.9, 3.0.0['
+            }
+            because 'one of the default android linters has a transitive dependency on 2.8.5, and 2.8.9 contains a security fix'
+        }
+    }
 }
 
 configurations.all {
