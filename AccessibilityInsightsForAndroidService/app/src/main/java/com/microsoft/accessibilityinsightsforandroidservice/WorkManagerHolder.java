@@ -13,7 +13,7 @@ import java.util.HashMap;
 public class WorkManagerHolder {
     private static HashMap<Context, WorkManager> ContextToManagerMap = new HashMap<Context, WorkManager>();
 
-    public static WorkManager GetWorkManager(Context context) {
+    public static WorkManager getWorkManager(Context context) {
         WorkManager managerForContext = ContextToManagerMap.get(context);
 
         if (managerForContext == null) {

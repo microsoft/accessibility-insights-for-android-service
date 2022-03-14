@@ -5,7 +5,6 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 import android.content.Context;
 import androidx.annotation.NonNull;
-import androidx.work.Configuration;
 import androidx.work.Data;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
@@ -32,7 +31,7 @@ public class TempFileProvider {
   @NonNull private WorkManager workManager;
 
   public TempFileProvider(Context context) {
-    this(context, WorkManagerHolder.GetWorkManager(context));
+    this(context, WorkManagerHolder.getWorkManager(context));
   }
 
   public TempFileProvider(Context context, WorkManager workManager) {
