@@ -22,7 +22,7 @@ public class WorkManagerHolder {
         managerForContext = WorkManager.getInstance(context);
         ContextToManagerMap.put(context, managerForContext);
       }
+      return managerForContext;
     }
-    return managerForContext;
   }
 }
