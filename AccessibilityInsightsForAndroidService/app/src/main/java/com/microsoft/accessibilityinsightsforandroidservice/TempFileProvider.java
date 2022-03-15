@@ -31,7 +31,7 @@ public class TempFileProvider {
   @NonNull private WorkManager workManager;
 
   public TempFileProvider(Context context) {
-    this(context, WorkManager.getInstance(context));
+    this(context, WorkManagerHolder.getWorkManager(context));
   }
 
   public TempFileProvider(Context context, WorkManager workManager) {
