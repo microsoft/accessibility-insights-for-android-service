@@ -58,5 +58,10 @@
             android:exported="true"
             android:permission="android.permission.SET_DEBUG_APP">
         </provider>
+        <provider
+            android:name="androidx.work.impl.WorkManagerInitializer"
+            android:authorities="${applicationId}.workmanager-init"
+            android:exported="false"
+            android:enabled="false"/>
     </application>
 </manifest>
