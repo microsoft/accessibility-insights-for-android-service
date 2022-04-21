@@ -44,3 +44,25 @@ jobs:
 
       - script: node $(system.defaultWorkingDirectory)/pipeline/verify-clean-lockfile.js
         displayName: verify that building did not change the lockfile unexpectedly
+
+      - task: PublishPipelineArtifact@1
+        displayName: publish artifact
+        inputs:
+          targetPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/debug/app-debug.apk'
+          artifactName: debugApk
+
+  - template: ./e2e-emulator-template.yaml
+    parameters:
+      apiLevel: 24 # minimum supported
+
+  - template: ./e2e-emulator-template.yaml
+    parameters:
+      apiLevel: 28 
+
+  - template: ./e2e-emulator-template.yaml
+    parameters:
+      apiLevel: 30
+
+  - template: ./e2e-emulator-template.yaml
+    parameters:
+      apiLevel: 32
