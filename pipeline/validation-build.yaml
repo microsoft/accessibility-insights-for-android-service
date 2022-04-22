@@ -69,12 +69,6 @@ jobs:
       - script: node $(system.defaultWorkingDirectory)/pipeline/verify-clean-lockfile.js
         displayName: verify that building did not change the lockfile unexpectedly
 
-      - task: PublishPipelineArtifact@1
-        displayName: publish artifact
-        inputs:
-          targetPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/debug/app-debug.apk'
-          artifactName: debugApk
-
   - job: 'e2e_test_'
 
     dependsOn: 'gradlew_assemble'
