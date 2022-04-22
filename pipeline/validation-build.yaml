@@ -69,7 +69,7 @@ jobs:
       - script: node $(system.defaultWorkingDirectory)/pipeline/verify-clean-lockfile.js
         displayName: verify that building did not change the lockfile unexpectedly
 
-  - job: 'e2e_test_'
+  - job: 'e2e_test'
 
     dependsOn: 'gradlew_assemble'
 
@@ -89,4 +89,4 @@ jobs:
     steps:
       - template: ./e2e-emulator-template.yaml
         parameters:
-          apiLevel: ${apiLevel}
+          apiLevel: $(apiLevel)
