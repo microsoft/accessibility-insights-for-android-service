@@ -8,7 +8,7 @@ jobs:
   - job: 'gradlew_assemble'
 
     pool:
-        vmImage: 'windows-latest'
+        vmImage: 'ubuntu-latest'
 
     steps:
       - task: Gradle@2
