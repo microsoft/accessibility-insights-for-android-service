@@ -1,36 +1,30 @@
 parameters:
   apiLevel: null
 
-jobs:
-  - job: 'e2e_test_API_${{ parameters.apiLevel }}'
-    dependsOn: 'gradlew_build'
-    pool:
-        vmImage: 'macOS-latest'
+steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: debugApk
+      path: $(system.defaultWorkingDirectory)
 
-    steps:
-      - task: DownloadPipelineArtifact@2
-        inputs:
-          artifact: debugApk
-          path: $(system.defaultWorkingDirectory)
+  - task: Bash@3
+    inputs:
+      filePath: 'pipeline/scripts/setup-emulator.sh'
+    env:
+      ANDROID_API_LEVEL: ${{ parameters.apiLevel }}
 
-      - task: Bash@3
-        inputs:
-          filePath: 'pipeline/scripts/setup-emulator.sh'
-        env:
-          ANDROID_API_LEVEL: ${{ parameters.apiLevel }}
+  - task: Bash@3
+    displayName: Test Config Command
+    inputs:
+      targetType: 'inline'
+      script: |
+        $ANDROID_HOME/platform-tools/adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/config
+      failOnStderr: true
 
-      - task: Bash@3
-        displayName: Test Config Command
-        inputs:
-          targetType: 'inline'
-          script: |
-            $ANDROID_HOME/platform-tools/adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/config
-          failOnStderr: true
-
-      - task: Bash@3
-        displayName: Test Result Command
-        inputs:
-          targetType: 'inline'
-          script: |
-            $ANDROID_HOME/platform-tools/adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/result
-          failOnStderr: true
+  - task: Bash@3
+    displayName: Test Result Command
+    inputs:
+      targetType: 'inline'
+      script: |
+        $ANDROID_HOME/platform-tools/adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/result
+      failOnStderr: true
