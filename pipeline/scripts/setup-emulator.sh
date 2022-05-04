@@ -13,7 +13,7 @@ echo "Starting emulator"
 # Start emulator in background
 nohup $ANDROID_HOME/emulator/emulator -avd "$emulator_name" -no-snapshot -no-boot-anim > /dev/null 2>&1 &
 
-echo -n "Waiting for boot_completed to have value"
+echo "Waiting for boot_completed to have value"
 $ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo -n "."; sleep 1; done; input keyevent 82'
 
 echo "Waiting for emulator to finish booting"

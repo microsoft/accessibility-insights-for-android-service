@@ -32,7 +32,7 @@ jobs:
   - job: 'gradlew_build_test_lint'
 
     pool:
-        vmImage: 'windows-latest'
+        vmImage: 'ubuntu-latest'
 
     steps:
       - task: Gradle@2
