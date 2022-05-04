@@ -8,6 +8,7 @@ steps:
       path: $(system.defaultWorkingDirectory)
 
   - task: Bash@3
+    displayName: Setup Android emulator
     inputs:
       filePath: 'pipeline/scripts/setup-emulator.sh'
     env:
