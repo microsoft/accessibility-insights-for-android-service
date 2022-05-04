@@ -13,11 +13,11 @@ echo "Starting emulator"
 # Start emulator in background
 nohup $ANDROID_HOME/emulator/emulator -avd "$emulator_name" -no-snapshot -no-boot-anim > /dev/null 2>&1 &
 
-echo "Waiting for boot_completed to have value"
-$ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo -n "."; sleep 1; done; input keyevent 82'
+echo -n "Waiting for boot_completed to have value"
+$ANDROID_HOME/platform-tools/adb wait-for-device shell 'while [[ -z $(getprop sys.boot_completed | tr -d '\r') ]]; do echo -n "."; sleep 1; done; input keyevent 82; echo "."'
 
-echo "Waiting for emulator to finish booting"
-sleep 30 # pause to wait for the emulator to finish booting
+echo "Pausing to allow emulator to finish booting"
+sleep 20 # pause to wait for the emulator to finish booting
 
 $ANDROID_HOME/platform-tools/adb devices
 echo "Emulator started"
@@ -27,5 +27,5 @@ $ANDROID_HOME/platform-tools/adb install app-debug.apk
 $ANDROID_HOME/platform-tools/adb shell appops set com.microsoft.accessibilityinsightsforandroidservice PROJECT_MEDIA allow
 $ANDROID_HOME/platform-tools/adb shell settings put secure enabled_accessibility_services com.microsoft.accessibilityinsightsforandroidservice/com.microsoft.accessibilityinsightsforandroidservice.AccessibilityInsightsForAndroidService
 
-echo "Waiting for service to start"
+echo "Pausing to allow service to start"
 sleep 5 # pause to let the accessibility service start
