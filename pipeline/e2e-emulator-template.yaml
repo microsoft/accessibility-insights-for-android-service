@@ -1,0 +1,31 @@
+parameters:
+  apiLevel: null
+
+steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      artifact: debugApk
+      path: $(system.defaultWorkingDirectory)
+
+  - task: Bash@3
+    displayName: Setup Android emulator
+    inputs:
+      filePath: 'pipeline/scripts/setup-emulator.sh'
+    env:
+      ANDROID_API_LEVEL: ${{ parameters.apiLevel }}
+
+  - task: Bash@3
+    displayName: Test Config Command
+    inputs:
+      targetType: 'inline'
+      script: |
+        $ANDROID_HOME/platform-tools/adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/config
+      failOnStderr: true
+
+  - task: Bash@3
+    displayName: Test Result Command
+    inputs:
+      targetType: 'inline'
+      script: |
+        $ANDROID_HOME/platform-tools/adb shell content read --uri content://com.microsoft.accessibilityinsightsforandroidservice/result
+      failOnStderr: true

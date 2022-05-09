@@ -5,10 +5,34 @@ trigger:
   - main
 
 jobs:
-  - job: 'gradlew_build'
+  - job: 'gradlew_assemble'
 
     pool:
-        vmImage: 'windows-latest'
+        vmImage: 'ubuntu-latest'
+
+    steps:
+      - task: Gradle@2
+        displayName: build dev ai-android service
+        inputs:
+          workingDirectory: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService'
+          gradleWrapperFile: 'AccessibilityInsightsForAndroidService/gradlew'
+          gradleOptions: '-Xmx3072m'
+          options: -S
+          javaHomeOption: 'JDKVersion'
+          jdkVersionOption: '1.11'
+          jdkArchitectureOption: 'x64'
+          tasks: 'assemble'
+
+      - task: PublishPipelineArtifact@1
+        displayName: publish artifact
+        inputs:
+          targetPath: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/outputs/apk/debug/app-debug.apk'
+          artifactName: debugApk
+
+  - job: 'gradlew_build_test_lint'
+
+    pool:
+        vmImage: 'ubuntu-latest'
 
     steps:
       - task: Gradle@2
@@ -44,3 +68,25 @@ jobs:
 
       - script: node $(system.defaultWorkingDirectory)/pipeline/verify-clean-lockfile.js
         displayName: verify that building did not change the lockfile unexpectedly
+
+  - job: 'e2e_test'
+
+    dependsOn: 'gradlew_assemble'
+
+    pool:
+        # per ADO docs, only macOS hosted agents support Android emulators. The emulator is installed on other agents, but didn't 
+        # function properly on Ubuntu when this was added.
+        # https://docs.microsoft.com/en-us/azure/devops/pipelines/ecosystems/android?view=azure-devops#test-on-the-android-emulator
+        vmImage: 'macOS-latest' 
+
+    strategy:
+      matrix:
+        API_24: { apiLevel: 24 } # minSdkVersion in build.gradle 
+        API_28: { apiLevel: 28 } # targetSdkVersion in build.gradle 
+        API_30: { apiLevel: 30 } # current most popular API level (Android 11)
+        API_32: { apiLevel: 32 } # current latest API level         
+
+    steps:
+      - template: ./e2e-emulator-template.yaml
+        parameters:
+          apiLevel: $(apiLevel)
