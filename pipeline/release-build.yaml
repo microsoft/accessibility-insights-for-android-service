@@ -15,8 +15,8 @@ jobs:
 
       - task: NodeTool@0
         inputs:
-          versionSpec: '12.x'
-        displayName: use node 12.x (latest LTS)
+          versionSpec: '16.x'
+        displayName: use node 16.x (latest LTS)
 
       - script: node $(system.defaultWorkingDirectory)/pipeline/infer-version-code-from-version-name.js
         displayName: validate APK_VERSION_NAME and infer APK_VERSION_CODE
