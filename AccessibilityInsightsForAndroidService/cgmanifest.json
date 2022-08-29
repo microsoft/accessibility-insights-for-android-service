@@ -1,10 +1,11 @@
 {
-  "Registrations":[
+  "$schema": "https://json.schemastore.org/component-detection-manifest.json",
+  "Registrations": [
     {
       "component": {
         "type": "git",
         "git": {
-          "repositoryUrl":"https://github.com/googlecodelabs/android-accessibility",
+          "repositoryUrl": "https://github.com/googlecodelabs/android-accessibility",
           "commitHash": "d78994bf77b2438f4bc31e557d4c12e35a0219fb"
         }
       }
