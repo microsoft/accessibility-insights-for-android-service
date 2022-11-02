@@ -91,7 +91,7 @@ dependencies {
 
     // Dev dependencies (not redistributed)
     androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0')
-    lintClassPath 'org.apache.commons:commons-compress:1.21'
+    lintClassPath 'org.apache.commons:commons-compress:1.22'
     lintClassPath 'org.bouncycastle:bcpkix-jdk15on:1.70'
     lintClassPath 'org.bouncycastle:bcprov-jdk15on:1.70'
     testImplementation 'junit:junit:4.13.2'
