@@ -4,6 +4,9 @@
 trigger:
   - main
 
+variables:
+    Codeql.Enabled: true
+
 jobs:
   - job: 'gradlew_assemble'
 
