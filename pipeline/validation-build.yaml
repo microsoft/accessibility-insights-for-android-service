@@ -69,6 +69,10 @@ jobs:
       - script: node $(system.defaultWorkingDirectory)/pipeline/verify-clean-lockfile.js
         displayName: verify that building did not change the lockfile unexpectedly
 
+  - job: 'CodeQL'
+    variables:
+      Codeql.Enabled: true
+      
   - job: 'e2e_test'
 
     dependsOn: 'gradlew_assemble'
