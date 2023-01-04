@@ -119,7 +119,7 @@ jobs:
         displayName: (signed-apk) rename APK file to remove unsigned qualifier
         workingDirectory: '$(build.artifactstagingdirectory)/signed-apk'
 
-      - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@1
+      - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@2
         displayName: '(signed-apk) sign release APK with ESRP CodeSigning'
         inputs:
           ConnectedServiceName: 'ESRP Code Signing'
