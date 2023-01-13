@@ -5,7 +5,9 @@ package com.microsoft.accessibilityinsightsforandroidservice;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.RETURNS_SELF;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -32,18 +34,22 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class ATFAResultsSerializerTest {
 
-  @Mock GsonBuilder gsonBuilder;
+  GsonBuilder gsonBuilder = mock(GsonBuilder.class, RETURNS_SELF);
   @Mock Gson gson;
-  FieldNamingStrategy fieldNamingStrategy;
-  ExclusionStrategy exclusionStrategy;
   JsonSerializer<Class> jsonSerializer;
   ATFAResultsSerializer testSubject;
+
+  ArgumentCaptor<ExclusionStrategy> exclusiontStrategy =
+      ArgumentCaptor.forClass(ExclusionStrategy.class);
+  ArgumentCaptor<FieldNamingStrategy> fieldNamingStrategy =
+      ArgumentCaptor.forClass(FieldNamingStrategy.class);
 
   class TestClass {
     public String testField;
@@ -51,23 +57,6 @@ public class ATFAResultsSerializerTest {
 
   @Before
   public void prepare() {
-    doAnswer(
-            AdditionalAnswers.answer(
-                (FieldNamingStrategy strategy) -> {
-                  fieldNamingStrategy = strategy;
-                  return gsonBuilder;
-                }))
-        .when(gsonBuilder)
-        .setFieldNamingStrategy(any());
-
-    doAnswer(
-            AdditionalAnswers.answer(
-                (ExclusionStrategy strategy) -> {
-                  exclusionStrategy = strategy;
-                  return gsonBuilder;
-                }))
-        .when(gsonBuilder)
-        .setExclusionStrategies(any());
 
     doAnswer(
             AdditionalAnswers.answer(
@@ -81,6 +70,8 @@ public class ATFAResultsSerializerTest {
     when(gsonBuilder.create()).thenReturn(gson);
 
     testSubject = new ATFAResultsSerializer(gsonBuilder);
+    verify(gsonBuilder).setExclusionStrategies(exclusiontStrategy.capture());
+    verify(gsonBuilder).setFieldNamingStrategy(fieldNamingStrategy.capture());
   }
 
   @Test
@@ -90,8 +81,8 @@ public class ATFAResultsSerializerTest {
     }
     Field[] testFields = ExtendingClass.class.getFields();
 
-    String testFieldExtendingClass = fieldNamingStrategy.translateName(testFields[0]);
-    String testFieldBaseClass = fieldNamingStrategy.translateName(testFields[1]);
+    String testFieldExtendingClass = fieldNamingStrategy.getValue().translateName(testFields[0]);
+    String testFieldBaseClass = fieldNamingStrategy.getValue().translateName(testFields[1]);
 
     Assert.assertEquals("TestClass.testField", testFieldBaseClass);
     Assert.assertEquals("ExtendingClass.testField", testFieldExtendingClass);
@@ -107,8 +98,10 @@ public class ATFAResultsSerializerTest {
             .filter(c -> !classesToExclude.contains(c))
             .collect(Collectors.toList());
 
-    classesToExclude.forEach(c -> Assert.assertTrue(exclusionStrategy.shouldSkipClass(c)));
-    classesToInclude.forEach(c -> Assert.assertFalse(exclusionStrategy.shouldSkipClass(c)));
+    classesToExclude.forEach(
+        c -> Assert.assertTrue(exclusiontStrategy.getValue().shouldSkipClass(c)));
+    classesToInclude.forEach(
+        c -> Assert.assertFalse(exclusiontStrategy.getValue().shouldSkipClass(c)));
   }
 
   @Test
