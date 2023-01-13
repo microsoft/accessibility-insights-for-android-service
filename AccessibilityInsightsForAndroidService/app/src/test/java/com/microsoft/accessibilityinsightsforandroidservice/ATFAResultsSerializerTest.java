@@ -35,6 +35,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.AdditionalAnswers;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -46,10 +47,8 @@ public class ATFAResultsSerializerTest {
   JsonSerializer<Class> jsonSerializer;
   ATFAResultsSerializer testSubject;
 
-  ArgumentCaptor<ExclusionStrategy> exclusiontStrategy =
-      ArgumentCaptor.forClass(ExclusionStrategy.class);
-  ArgumentCaptor<FieldNamingStrategy> fieldNamingStrategy =
-      ArgumentCaptor.forClass(FieldNamingStrategy.class);
+  @Captor ArgumentCaptor<ExclusionStrategy> exclusiontStrategy;
+  @Captor ArgumentCaptor<FieldNamingStrategy> fieldNamingStrategy;
 
   class TestClass {
     public String testField;
