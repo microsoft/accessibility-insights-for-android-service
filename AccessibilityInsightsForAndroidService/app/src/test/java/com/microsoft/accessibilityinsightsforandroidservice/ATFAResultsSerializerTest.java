@@ -44,11 +44,10 @@ public class ATFAResultsSerializerTest {
 
   GsonBuilder gsonBuilder = mock(GsonBuilder.class, RETURNS_SELF);
   @Mock Gson gson;
+  @Captor ArgumentCaptor<FieldNamingStrategy> fieldNamingStrategy;
+  @Captor ArgumentCaptor<ExclusionStrategy> exclusiontStrategy;
   JsonSerializer<Class> jsonSerializer;
   ATFAResultsSerializer testSubject;
-
-  @Captor ArgumentCaptor<ExclusionStrategy> exclusiontStrategy;
-  @Captor ArgumentCaptor<FieldNamingStrategy> fieldNamingStrategy;
 
   class TestClass {
     public String testField;
