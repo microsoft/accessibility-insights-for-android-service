@@ -41,7 +41,7 @@ public class ATFAResultsSerializerTest {
   GsonBuilder gsonBuilder = mock(GsonBuilder.class, RETURNS_SELF);
   @Mock Gson gson;
   @Captor ArgumentCaptor<FieldNamingStrategy> fieldNamingStrategy;
-  @Captor ArgumentCaptor<ExclusionStrategy> exclusiontStrategy;
+  @Captor ArgumentCaptor<ExclusionStrategy> exclusionStrategy;
   @Captor ArgumentCaptor<JsonSerializer<Class>> jsonSerializer;
   ATFAResultsSerializer testSubject;
 
@@ -51,12 +51,11 @@ public class ATFAResultsSerializerTest {
 
   @Before
   public void prepare() {
-
     when(gsonBuilder.create()).thenReturn(gson);
 
     testSubject = new ATFAResultsSerializer(gsonBuilder);
 
-    verify(gsonBuilder).setExclusionStrategies(exclusiontStrategy.capture());
+    verify(gsonBuilder).setExclusionStrategies(exclusionStrategy.capture());
     verify(gsonBuilder).setFieldNamingStrategy(fieldNamingStrategy.capture());
     verify(gsonBuilder).registerTypeAdapter(eq(Class.class), jsonSerializer.capture());
   }
@@ -86,9 +85,9 @@ public class ATFAResultsSerializerTest {
             .collect(Collectors.toList());
 
     classesToExclude.forEach(
-        c -> Assert.assertTrue(exclusiontStrategy.getValue().shouldSkipClass(c)));
+        c -> Assert.assertTrue(exclusionStrategy.getValue().shouldSkipClass(c)));
     classesToInclude.forEach(
-        c -> Assert.assertFalse(exclusiontStrategy.getValue().shouldSkipClass(c)));
+        c -> Assert.assertFalse(exclusionStrategy.getValue().shouldSkipClass(c)));
   }
 
   @Test
