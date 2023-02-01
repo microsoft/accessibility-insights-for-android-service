@@ -28,7 +28,7 @@ in a build.gradle file without updating the lockfile. To update the
 lockfile:
 
     1) Pull this branch
-    2) Run "./gradlew build" from /AccessibilityInsightsForAndroidService
+    2) Run "./gradlew build --no-daemon" from /AccessibilityInsightsForAndroidService
     3) Commit and push the resulting change to gradle.lockfile
     
 Diff of the unexpected change:
