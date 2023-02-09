@@ -63,7 +63,7 @@ function parseReleaseDepsFromLockfile(path) {
 // output format: ["org.jetbrains/annotations 15.0", ...]
 function parseDepsFromNoticeFile(path) {
     const noticeContent = fs.readFileSync(path).toString();
-    const componentRegex = /\<summary\>\s*([a-zA-Z0-9\._\- \/]+) - ([a-zA-Z0-9\._\-\s]+)\s*\<\/summary\>/gm
+    const componentRegex = /\<summary\>\s*([a-zA-Z0-9\._\- \/@]+) - ([a-zA-Z0-9\._\-\s\(\)]+)\s*\<\/summary\>/gm;
     let captureGroups;
     const deps = [];
     while ((captureGroups = componentRegex.exec(noticeContent)) !== null) {
