@@ -1,0 +1,231 @@
+# This is a production pipeline that runs on CI triggers.
+trigger: none
+
+# Do not edit. The resources tell us where our 1ES pipeline is being pulled from:
+resources:
+  repositories:
+  - repository: 1esPipelines
+    type: git
+    name: 1ESPipelineTemplates/1ESPipelineTemplates
+    ref: refs/tags/release
+
+extends:
+  # Do not edit. This is the 1ES template that holds different SDL and compliance tasks that the template injects into the pipeline.
+  # It uses the Official template because it's a production pipeline.
+  template: v1/1ES.Official.PipelineTemplate.yml@1esPipelines
+
+  parameters:
+    # Accessibility Insights team's 1ES hosted pool.
+    # This variable is saved in Azure DevOps from the "Edit" pipeline view.
+    # The dev pipeline uses the dev pool and the prod pipeline uses the prod pool.
+    pool: $(a11yInsightsPool)
+
+    stages:
+    - stage: Stage
+      jobs:
+      - job: HostJob
+        steps:
+          # setup dependencies
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '16.x'
+            displayName: use node 16.x (latest LTS)
+
+          - script: node $(system.defaultWorkingDirectory)/pipeline/infer-version-code-from-version-name.js
+            displayName: validate APK_VERSION_NAME and infer APK_VERSION_CODE
+
+          # build
+
+          - task: Gradle@2
+            displayName: build and test ai-android service
+            inputs:
+              workingDirectory: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService'
+              gradleWrapperFile: 'AccessibilityInsightsForAndroidService/gradlew'
+              gradleOptions: '-Xmx3072m'
+              options: -S -PapkVersionCode=$(APK_VERSION_CODE) -PapkVersionName=$(APK_VERSION_NAME)
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.11'
+              jdkArchitectureOption: 'x64'
+              publishJUnitResults: true
+              testResultsFiles: '**/TEST-*.xml'
+              tasks: 'build'
+
+          - script: type $(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk\release\output-metadata.json
+            displayName: print out generated release APK info
+
+          - script: node $(system.defaultWorkingDirectory)/pipeline/verify-clean-lockfile.js
+            displayName: verify that building did not change the lockfile unexpectedly
+
+          # lint-results artifact
+
+          - task: CopyFiles@2
+            displayName: (lint-results) copy lint-results files to artifact staging
+            condition: succeededOrFailed()
+            inputs:
+              contents: |
+                lint-results.html
+                lint-results.xml
+              sourceFolder: '$(system.defaultWorkingDirectory)/AccessibilityInsightsForAndroidService/app/build/reports'
+              targetFolder: '$(build.artifactstagingdirectory)/lint-results'
+
+          - task: PublishPipelineArtifact@1
+            displayName: (lint-results) publish lint-results artifact
+            condition: succeededOrFailed()
+            inputs:
+              artifactName: 'lint-results'
+              targetPath: '$(build.artifactstagingdirectory)/lint-results'
+
+          # terms artifact
+
+          - task: CopyFiles@2
+            displayName: (terms) copy LICENSE to artifact staging
+            inputs:
+              contents: LICENSE
+              sourceFolder: '$(system.defaultWorkingDirectory)'
+              targetFolder: '$(build.artifactstagingdirectory)/terms'
+
+          - task: ComponentGovernanceComponentDetection@0
+            displayName: '(terms) dependency detection (Component Governance)'
+            timeoutInMinutes: 5
+
+          - task: msospo.ospo-extension.8d7f9abb-6896-461d-9e25-4f74ed65ddb2.notice@0
+            displayName: '(terms) generate NOTICE.html file'
+            inputs:
+                outputfile: '$(build.artifactstagingdirectory)/terms/NOTICE.html'
+                outputformat: html
+            timeoutInMinutes: 5
+
+          - task: PublishPipelineArtifact@1
+            displayName: (terms) publish artifact
+            inputs:
+              artifactName: 'terms'
+              targetPath: '$(build.artifactstagingdirectory)/terms'
+
+          - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js $(build.artifactstagingdirectory)/terms/NOTICE.html
+            displayName: (terms) verify NOTICE.html content matches lockfile
+
+          # unsigned-apk artifact
+
+          - task: CopyFiles@2
+            displayName: (unsigned-apk) copy build output to artifact staging
+            inputs:
+              sourceFolder: '$(system.defaultWorkingDirectory)\AccessibilityInsightsForAndroidService\app\build\outputs\apk'
+              targetFolder: '$(build.artifactstagingdirectory)/unsigned-apk'
+
+          - task: PublishPipelineArtifact@1
+            displayName: (unsigned-apk) publish artifact
+            inputs:
+              artifactName: 'unsigned-apk'
+              targetPath: '$(build.artifactstagingdirectory)/unsigned-apk'
+
+          # signed-apk artifact
+
+          - task: CopyFiles@2
+            displayName: (signed-apk) copy unsigned APK to signing working directory
+            inputs:
+              contents: |
+                app-release-unsigned.apk
+              sourceFolder: '$(build.artifactstagingdirectory)/unsigned-apk/release'
+              targetFolder: '$(build.artifactstagingdirectory)/signed-apk'
+
+          - script: 'move app-release-unsigned.apk AccessibilityInsightsforAndroidService.apk'
+            displayName: (signed-apk) rename APK file to remove unsigned qualifier
+            workingDirectory: '$(build.artifactstagingdirectory)/signed-apk'
+
+          - task: SFP.build-tasks.custom-build-task-1.EsrpCodeSigning@2
+            displayName: '(signed-apk) sign release APK with ESRP CodeSigning'
+            inputs:
+              ConnectedServiceName: 'ESRP Code Signing'
+              FolderPath: '$(build.artifactstagingdirectory)/signed-apk'
+              Pattern: '*.apk'
+              signConfigType: inlineSignParams
+              inlineOperation: |
+                [
+                        {
+                            "KeyCode" : "CP-458288-Java",
+                            "OperationCode" : "AndroidSign",
+                            "Parameters" : {},
+                            "ToolName" : "sign",
+                            "ToolVersion" : "1.0"
+                        },
+                        {
+                            "KeyCode" : "CP-458288-Java", 
+                            "OperationCode" : "JavaVerify",
+                            "Parameters" : {},
+                            "ToolName" : "sign",
+                            "ToolVersion" : "1.0"
+                        }
+                ]
+
+          - task: PublishPipelineArtifact@1
+            displayName: (signed-apk) publish artifact
+            inputs:
+              artifactName: 'signed-apk'
+              targetPath: '$(build.artifactstagingdirectory)/signed-apk'
+
+          # github-release-archive artifact
+
+          - task: CopyFiles@2
+            displayName: (github-release-archive) copy files to artifact staging
+            inputs:
+              contents: |
+                terms/LICENSE
+                terms/NOTICE.html
+                signed-apk/AccessibilityInsightsforAndroidService.apk
+              sourceFolder: '$(build.artifactstagingdirectory)'
+              targetFolder: '$(build.artifactstagingdirectory)/github-release-archive/contents'
+              flattenFolders: true
+
+          - task: ArchiveFiles@2
+            displayName: '(github-release-archive) create release archive'
+            inputs:
+              rootFolderOrFile: '$(build.artifactstagingdirectory)/github-release-archive/contents'
+              includeRootFolder: false
+              archiveFile: '$(build.artifactstagingdirectory)/github-release-archive/AccessibilityInsightsForAndroid.zip'
+
+          - task: PublishPipelineArtifact@1
+            displayName: (github-release-archive) publish artifact
+            inputs:
+              artifactName: 'github-release-archive'
+              targetPath: '$(build.artifactstagingdirectory)/github-release-archive'
+
+          # npm-wrapper artifact
+
+          - task: CopyFiles@2
+            displayName: (npm-wrapper) Copy generated files for packaging
+            inputs:
+              contents: |
+                terms/LICENSE
+                terms/NOTICE.html
+                signed-apk/AccessibilityInsightsforAndroidService.apk
+              sourceFolder: '$(build.artifactstagingdirectory)'
+              targetFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
+              flattenFolders: true
+
+          - script: npm version $(APK_VERSION_NAME)
+            displayName: (npm-wrapper) set package version to APK_VERSION_NAME
+            workingDirectory: '$(system.defaultWorkingDirectory)/npm-wrapper'
+
+          - script: npm pack
+            displayName: (npm-wrapper) npm pack
+            workingDirectory: '$(system.defaultWorkingDirectory)/npm-wrapper'
+
+          - task: CopyFiles@2
+            displayName: (npm-wrapper) copy packed NPM wrapper to artifact staging
+            inputs:
+              contents: |
+                accessibility-insights-for-android-service-bin-$(APK_VERSION_NAME).tgz
+              sourceFolder: '$(system.defaultWorkingDirectory)/npm-wrapper'
+              targetFolder: '$(build.artifactstagingdirectory)/npm-wrapper'
+
+          - script: 'move accessibility-insights-for-android-service-bin-$(APK_VERSION_NAME).tgz accessibility-insights-for-android-service-bin.tgz'
+            displayName: (npm-wrapper) rename packed archive to remove version number
+            workingDirectory: '$(build.artifactstagingdirectory)/npm-wrapper'
+
+          - task: PublishPipelineArtifact@1
+            displayName: (npm-wrapper) publish artifact
+            inputs:
+              artifactName: 'npm-wrapper'
+              targetPath: '$(build.artifactstagingdirectory)/npm-wrapper'
+
