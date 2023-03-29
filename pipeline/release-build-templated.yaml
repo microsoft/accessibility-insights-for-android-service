@@ -15,6 +15,10 @@ extends:
   template: v1/1ES.Official.PipelineTemplate.yml@1esPipelines
 
   parameters:
+    sdl:
+      suppression:
+        suppressionFile: $(Build.SourcesDirectory)\guardian\SDL\.gdnsuppress
+
     # Accessibility Insights team's 1ES hosted pool.
     # This variable is saved in Azure DevOps from the "Edit" pipeline view.
     # The dev pipeline uses the dev pool and the prod pipeline uses the prod pool.
