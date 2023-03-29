@@ -1,0 +1,26 @@
+{
+  "version": "latest",
+  "baselines": {
+    "default": {
+      "name": "default",
+      "createdDate": "2023-03-29 15:42:01Z",
+      "lastUpdatedDate": "2023-03-29 15:49:29Z"
+    }
+  },
+  "results": {
+    "b3736a918ff8d688843a2c76bfce1661c484e260144140c9df23f1147da102c0": {
+      "signature": "b3736a918ff8d688843a2c76bfce1661c484e260144140c9df23f1147da102c0",
+      "alternativeSignatures": [],
+      "target": "spotbugs.xml",
+      "memberOf": [
+        "default"
+      ],
+      "tool": "spotbugs",
+      "ruleId": "gdn.unknownFormatResult",
+      "justification": null,
+      "createdDate": "2023-03-29 15:42:01Z",
+      "expirationDate": null,
+      "type": null
+    }
+  }
+}
