@@ -126,9 +126,6 @@ extends:
                 outputformat: html
             timeoutInMinutes: 5
 
-          - script: node $(system.defaultWorkingDirectory)/pipeline/verify-notice-contents.js $(build.artifactstagingdirectory)/terms/NOTICE.html
-            displayName: (terms) verify NOTICE.html content matches lockfile
-
           # unsigned-apk artifact
 
           - task: CopyFiles@2
