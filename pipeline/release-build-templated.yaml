@@ -182,9 +182,9 @@ extends:
             displayName: (github-release-archive) copy files to artifact staging
             inputs:
               contents: |
-                terms/LICENSE
-                terms/NOTICE.html
-                signed-apk/AccessibilityInsightsforAndroidService.apk
+                artifacts/terms/LICENSE
+                artifacts/terms/NOTICE.html
+                artifacts/signed-apk/AccessibilityInsightsforAndroidService.apk
               sourceFolder: '$(build.artifactstagingdirectory)'
               targetFolder: '$(build.artifactstagingdirectory)/github-release-archive/contents'
               flattenFolders: true
