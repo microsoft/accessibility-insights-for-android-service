@@ -56,9 +56,9 @@ extends:
                 #  targetPath: $(build.artifactstagingdirectory)/signed-apk
                 #  artifactName: signed-apk
                 # The accessibility-insights task is configured in this pipeline to upload the github release archive artifact to this directory
-                #- output: pipelineArtifact
-                #  targetPath: $(build.artifactstagingdirectory)/github-release-archive
-                #  artifactName: github-release-archive
+                - output: pipelineArtifact
+                  targetPath: $(build.artifactstagingdirectory)/github-release-archive
+                  artifactName: github-release-archive
                 # The accessibility-insights task is configured in this pipeline to upload the npm-wrapper artifact to this directory
                 #- output: pipelineArtifact
                 #  targetPath: $(build.artifactstagingdirectory)/npm-wrapper
@@ -186,15 +186,15 @@ extends:
                 terms/NOTICE.html
                 signed-apk/AccessibilityInsightsforAndroidService.apk
               sourceFolder: '$(build.artifactstagingdirectory)'
-              targetFolder: '$(build.artifactstagingdirectory)/artifacts/github-release-archive/contents'
+              targetFolder: '$(build.artifactstagingdirectory)/github-release-archive/contents'
               flattenFolders: true
 
           - task: ArchiveFiles@2
             displayName: '(github-release-archive) create release archive'
             inputs:
-              rootFolderOrFile: '$(build.artifactstagingdirectory)/artifacts/github-release-archive/contents'
+              rootFolderOrFile: '$(build.artifactstagingdirectory)/github-release-archive/contents'
               includeRootFolder: false
-              archiveFile: '$(build.artifactstagingdirectory)/artifacts/github-release-archive/AccessibilityInsightsForAndroid.zip'
+              archiveFile: '$(build.artifactstagingdirectory)/github-release-archive/AccessibilityInsightsForAndroid.zip'
 
           # npm-wrapper artifact
 
