@@ -186,15 +186,15 @@ extends:
                 artifacts/terms/NOTICE.html
                 artifacts/signed-apk/AccessibilityInsightsforAndroidService.apk
               sourceFolder: '$(build.artifactstagingdirectory)'
-              targetFolder: '$(build.artifactstagingdirectory)/github-release-archive/contents'
+              targetFolder: '$(build.artifactstagingdirectory)/artifacts/github-release-archive/contents'
               flattenFolders: true
 
           - task: ArchiveFiles@2
             displayName: '(github-release-archive) create release archive'
             inputs:
-              rootFolderOrFile: '$(build.artifactstagingdirectory)/github-release-archive/contents'
+              rootFolderOrFile: '$(build.artifactstagingdirectory)/artifacts/github-release-archive/contents'
               includeRootFolder: false
-              archiveFile: '$(build.artifactstagingdirectory)/github-release-archive/AccessibilityInsightsForAndroid.zip'
+              archiveFile: '$(build.artifactstagingdirectory)/artifacts/github-release-archive/AccessibilityInsightsForAndroid.zip'
 
           # npm-wrapper artifact
 
