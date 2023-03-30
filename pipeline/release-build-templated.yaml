@@ -16,10 +16,10 @@ extends:
 
   parameters:
     sdl:
-      suppression:
-        suppressionFile: $(system.defaultWorkingDirectory)/guardian/SDL/gdnsuppress
-      #baseline:
-      #  suppressionFile: $(system.defaultWorkingDirectory)/guardian/SDL/.gdnsuppress
+      #suppression:
+        #suppressionFile: $(system.defaultWorkingDirectory)/guardian/SDL/gdnsuppress
+      baseline:
+         baselineFile: $(Build.SourcesDirectory)\guardian\SDL\.gdnbaselines
 
     # Accessibility Insights team's 1ES hosted pool.
     # This variable is saved in Azure DevOps from the "Edit" pipeline view.
