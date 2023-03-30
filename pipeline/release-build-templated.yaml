@@ -17,7 +17,7 @@ extends:
   parameters:
     sdl:
       suppression:
-        suppressionFile: $(system.defaultWorkingDirectory)/guardian/SDL/.gdnbaselines
+        suppressionFile: $(system.defaultWorkingDirectory)/guardian/SDL/gdnbaselines
       #baseline:
       #  suppressionFile: $(system.defaultWorkingDirectory)/guardian/SDL/.gdnsuppress
 
