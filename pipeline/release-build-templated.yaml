@@ -16,8 +16,8 @@ extends:
 
   parameters:
     sdl:
-      #suppression:
-        #suppressionFile: $(system.defaultWorkingDirectory)/guardian/SDL/gdnsuppress
+      # Adding baseline file for failures that we are unable to fix this time.
+      # https://eng.ms/docs/cloud-ai-platform/devdiv/one-engineering-system-1es/1es-docs/1es-pipeline-templates/features/sdlanalysis/baselines#azure-devops-based-builds
       baseline:
          baselineFile: $(Build.SourcesDirectory)\guardian\SDL\.gdnbaselines
 
@@ -42,27 +42,11 @@ extends:
                 # signed-apk, github release archive and npm-wrapper to this directory
                 - output: pipelineArtifact
                   targetPath: $(build.artifactstagingdirectory)/artifacts/
-                  artifactName: lint-results
-                  # The accessibility-insights task is configured in this pipeline to upload the terms file to this directory
-                #- output: pipelineArtifact
-                #  targetPath: $(build.artifactstagingdirectory)/terms
-                #  artifactName: terms
-                # The accessibility-insights task is configured in this pipeline to upload the unsigned-apk artifact to this directory
-                #- output: pipelineArtifact
-                #  targetPath: $(build.artifactstagingdirectory)/unsigned-apk
-                #  artifactName: unsigned-apk
-                # The accessibility-insights task is configured in this pipeline to upload the signed-apk artifact to this directory
-                #- output: pipelineArtifact
-                #  targetPath: $(build.artifactstagingdirectory)/signed-apk
-                #  artifactName: signed-apk
+                  artifactName: published-artifacts
                 # The accessibility-insights task is configured in this pipeline to upload the github release archive artifact to this directory
                 - output: pipelineArtifact
                   targetPath: $(build.artifactstagingdirectory)/github-release-archive
                   artifactName: github-release-archive
-                # The accessibility-insights task is configured in this pipeline to upload the npm-wrapper artifact to this directory
-                #- output: pipelineArtifact
-                #  targetPath: $(build.artifactstagingdirectory)/npm-wrapper
-                #  artifactName: npm-wrapper
 
         steps:
           # setup dependencies
