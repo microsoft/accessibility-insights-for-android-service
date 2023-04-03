@@ -39,7 +39,7 @@ extends:
         templateContext:
             outputs:
                 # The accessibility-insights task is configured in this pipeline to upload the lint results, terms file, unsigned-apk artifact,
-                # signed-apk, github release archive and npm-wrapper to this directory
+                # signed-apk and npm-wrapper to this directory
                 - output: pipelineArtifact
                   targetPath: $(build.artifactstagingdirectory)/artifacts/
                   artifactName: published-artifacts
