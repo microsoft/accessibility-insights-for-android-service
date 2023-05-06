@@ -9,6 +9,9 @@ Licensed under the MIT License.
 
 Accessibility Insights for Android Service is a service for Android that helps in assessing the accessibility of Android applications.
 
+### Notice
+The Accessibility Insights team is proud to provide accessibility scanning solutions across multiple platforms including Web, Windows Desktop, and Android. Unfortunately, the usage of Accessibility Insights for Android did not meet expectations and we will be **ending support of that product** effective June 1 2023, so we can focus on our more popular products for Web and Windows Desktop. The product download link will be removed to promote security and discourage use of an unmaintained version of the product. The source code will remain available under the MIT open-source license. We are grateful to the community who continue to use our accessibility testing products!
+
 <!-- ### Running the service -->
 
 ### Building the code
