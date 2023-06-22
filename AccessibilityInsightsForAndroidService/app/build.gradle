@@ -126,7 +126,7 @@ dependencies {
 
 configurations.all {
     resolutionStrategy {
-        force 'commons-codec:commons-codec:1.15'
+        force 'commons-codec:commons-codec:1.16.0'
         force 'junit:junit:4.13.2'
         force 'org.jsoup:jsoup:1.15.4'
         force 'com.google.protobuf:protobuf-java:3.22.0'
